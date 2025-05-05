@@ -1,36 +1,119 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Instauto - Plataforma de Conexão entre Motoristas e Oficinas
 
-## Getting Started
+O Instauto é uma solução SaaS completa projetada para conectar motoristas a oficinas mecânicas, enquanto oferece um sistema ERP + CRM integrado para gestão eficiente de oficinas automotivas.
 
-First, run the development server:
+## 🚀 Visão Geral
+
+A plataforma resolve dois problemas principais:
+
+### Para Motoristas:
+- Encontrar oficinas confiáveis e próximas
+- Solicitar orçamentos para serviços automotivos
+- Acompanhar o status de reparos em tempo real
+- Receber lembretes de manutenção preventiva
+- Manter um histórico completo de manutenção do veículo
+
+### Para Oficinas Mecânicas:
+- Sistema completo de ERP + CRM
+- Gestão de ordens de serviço
+- Controle de estoque e peças
+- Gestão financeira
+- Agendamento de serviços
+- Diagnóstico com IA para problemas mecânicos
+- Aumento de visibilidade e captação de novos clientes
+
+## 🛠️ Tecnologias Utilizadas
+
+- **Frontend**: Next.js 14 com App Router, React, TypeScript
+- **Estilização**: Tailwind CSS, Framer Motion para animações
+- **Componentes**: Material UI, Heroicons
+- **Funcionalidades**: IA para diagnósticos, integração com WhatsApp
+
+## 📱 Principais Funcionalidades
+
+### Lado do Motorista
+- Busca de oficinas por localização e tipo de serviço
+- Solicitação de orçamentos
+- Agendamento de serviços
+- Avaliação de serviços
+- Histórico de manutenção
+
+### Lado da Oficina
+- Dashboard gerencial
+- Gestão de clientes
+- Ordens de serviço digitais
+- Controle de estoque
+- Gestão financeira
+- Diagnóstico assistido por IA
+- Relatórios de desempenho
+
+## 🔄 Fluxo de Trabalho
+
+1. Motorista busca serviço na plataforma
+2. Oficinas próximas recebem a solicitação
+3. Oficinas enviam orçamentos pelo sistema
+4. Motorista escolhe a melhor proposta
+5. Oficina realiza o serviço atualizando o status
+6. Cliente recebe notificações de progresso
+7. Após conclusão, cliente avalia o serviço
+
+## 💻 Como Executar Localmente
+
+### Pré-requisitos
+- Node.js 18.0 ou superior
+- npm ou yarn
+
+### Instalação
 
 ```bash
+# Clone o repositório
+git clone https://github.com/seuusuario/instauto-v7.git
+
+# Entre no diretório
+cd instauto-v7
+
+# Instale as dependências
+npm install
+# ou
+yarn
+
+# Inicie o servidor de desenvolvimento
 npm run dev
-# or
+# ou
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+A aplicação estará disponível em `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📊 Estrutura de Diretórios
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+instauto-v7/
+├── public/          # Arquivos estáticos (imagens, ícones)
+├── src/             # Código fonte
+│   ├── app/         # Páginas e rotas (App Router)
+│   │   ├── dashboard/     # Área do sistema para oficinas
+│   │   ├── oficinas/      # Landing page para oficinas
+│   │   └── page.tsx       # Página inicial (motoristas)
+│   ├── components/  # Componentes reutilizáveis
+│   └── styles/      # Estilos globais e temas
+└── package.json     # Dependências e scripts
+```
 
-## Learn More
+## 🚧 Status do Projeto
 
-To learn more about Next.js, take a look at the following resources:
+O projeto está em desenvolvimento ativo. Próximos passos:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [ ] Implementação do backend e banco de dados
+- [ ] Autenticação e autorização
+- [ ] Sistema de pagamento e faturamento
+- [ ] Aplicativo móvel para motoristas
+- [ ] API para integração com sistemas de terceiros
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📜 Licença
 
-## Deploy on Vercel
+Este projeto está licenciado sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Desenvolvido com 💙 pela equipe Instauto

@@ -1,26 +1,156 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --header-height: 72px;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased text-gray-800 bg-white;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .btn-primary {
+    @apply bg-blue text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow-md active:scale-95;
+  }
+
+  .btn-primary:hover {
+    @apply bg-blue-dark;
+  }
+
+  .btn-secondary {
+    @apply bg-yellow text-gray-900 py-3 px-6 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow-md active:scale-95;
+  }
+
+  .btn-secondary:hover {
+    @apply bg-yellow-dark;
+  }
+
+  .btn-outline {
+    @apply border-2 border-blue text-blue py-3 px-6 rounded-lg font-medium transition-all duration-300 hover:shadow-sm active:scale-95;
+  }
+
+  .btn-outline:hover {
+    @apply bg-blue-light;
+  }
+
+  .container-custom {
+    @apply w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-[1440px];
+  }
+
+  .animate-fade-in {
+    @apply opacity-0 translate-y-4;
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in-delay-1 {
+    animation-delay: 0.2s;
+  }
+
+  .animate-fade-in-delay-2 {
+    animation-delay: 0.4s;
+  }
+
+  .animate-fade-in-delay-3 {
+    animation-delay: 0.6s;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md;
+  }
+
+  .glass-effect {
+    @apply bg-white/80 backdrop-blur-md border border-white/20;
+  }
+  
+  .feature-icon-container {
+    @apply relative flex items-center justify-center h-12 w-12 rounded-xl bg-blue-light text-blue;
+  }
+  
+  .feature-icon-container::before {
+    content: '';
+    @apply absolute -inset-0.5 rounded-xl bg-gradient-to-r from-blue to-blue-dark opacity-30 blur;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-syne);
+  font-weight: 700;
+}
+
+p, span, a, button, input, textarea, select, li {
+  font-family: var(--font-jakarta);
+}
+
+.pattern-grid {
+  background-image: linear-gradient(#0047CC 1.5px, transparent 1.5px, transparent calc(100% - 1.5px), #0047CC calc(100% - 1.5px)), linear-gradient(90deg, #0047CC 1.5px, transparent 1.5px, transparent calc(100% - 1.5px), #0047CC calc(100% - 1.5px));
+  background-size: 30px 30px;
+  background-position: -1px -1px;
+  opacity: 0.07;
+}
+
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 71, 204, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 71, 204, 0.05) 1px, transparent 1px);
+}
+
+.pattern-dots {
+  background-image: radial-gradient(#0047CC 2px, transparent 2px);
+  background-size: 24px 24px;
+  opacity: 0.1;
+}
+
+.pattern-stripes {
+  background: repeating-linear-gradient(
+    45deg,
+    #0047CC,
+    #0047CC 2px,
+    transparent 2px,
+    transparent 12px
+  );
+  opacity: 0.07;
+}
+
+/* Padrão de hexágonos */
+.pattern-hexagons {
+  background-color: transparent;
+  background-image: repeating-linear-gradient(30deg, rgba(0, 71, 204, 0.1) 12%, transparent 12.5%, transparent 87%, rgba(0, 71, 204, 0.1) 87.5%, rgba(0, 71, 204, 0.1)), repeating-linear-gradient(150deg, rgba(0, 71, 204, 0.1) 12%, transparent 12.5%, transparent 87%, rgba(0, 71, 204, 0.1) 87.5%, rgba(0, 71, 204, 0.1)), repeating-linear-gradient(90deg, rgba(0, 71, 204, 0.1) 12%, transparent 12.5%, transparent 87%, rgba(0, 71, 204, 0.1) 87.5%, rgba(0, 71, 204, 0.1));
+  background-size: 40px 70px;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
 }
