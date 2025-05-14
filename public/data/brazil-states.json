@@ -1,0 +1,44 @@
+{
+  "states": [
+    { "code": "AC", "name": "Acre", "region": "Norte", "coordinates": { "x": 25, "y": 33 } },
+    { "code": "AL", "name": "Alagoas", "region": "Nordeste", "coordinates": { "x": 83, "y": 39 } },
+    { "code": "AP", "name": "Amapá", "region": "Norte", "coordinates": { "x": 53, "y": 18 } },
+    { "code": "AM", "name": "Amazonas", "region": "Norte", "coordinates": { "x": 35, "y": 33 } },
+    { "code": "BA", "name": "Bahia", "region": "Nordeste", "coordinates": { "x": 71, "y": 45 } },
+    { "code": "CE", "name": "Ceará", "region": "Nordeste", "coordinates": { "x": 74, "y": 30 } },
+    { "code": "DF", "name": "Distrito Federal", "region": "Centro-Oeste", "coordinates": { "x": 62, "y": 51 } },
+    { "code": "ES", "name": "Espírito Santo", "region": "Sudeste", "coordinates": { "x": 74, "y": 58 } },
+    { "code": "GO", "name": "Goiás", "region": "Centro-Oeste", "coordinates": { "x": 58, "y": 53 } },
+    { "code": "MA", "name": "Maranhão", "region": "Nordeste", "coordinates": { "x": 64, "y": 33 } },
+    { "code": "MT", "name": "Mato Grosso", "region": "Centro-Oeste", "coordinates": { "x": 50, "y": 48 } },
+    { "code": "MS", "name": "Mato Grosso do Sul", "region": "Centro-Oeste", "coordinates": { "x": 53, "y": 62 } },
+    { "code": "MG", "name": "Minas Gerais", "region": "Sudeste", "coordinates": { "x": 65, "y": 55 } },
+    { "code": "PA", "name": "Pará", "region": "Norte", "coordinates": { "x": 53, "y": 33 } },
+    { "code": "PB", "name": "Paraíba", "region": "Nordeste", "coordinates": { "x": 81, "y": 34 } },
+    { "code": "PR", "name": "Paraná", "region": "Sul", "coordinates": { "x": 60, "y": 69 } },
+    { "code": "PE", "name": "Pernambuco", "region": "Nordeste", "coordinates": { "x": 78, "y": 38 } },
+    { "code": "PI", "name": "Piauí", "region": "Nordeste", "coordinates": { "x": 69, "y": 36 } },
+    { "code": "RJ", "name": "Rio de Janeiro", "region": "Sudeste", "coordinates": { "x": 72, "y": 64 } },
+    { "code": "RN", "name": "Rio Grande do Norte", "region": "Nordeste", "coordinates": { "x": 80, "y": 31 } },
+    { "code": "RS", "name": "Rio Grande do Sul", "region": "Sul", "coordinates": { "x": 55, "y": 82 } },
+    { "code": "RO", "name": "Rondônia", "region": "Norte", "coordinates": { "x": 38, "y": 43 } },
+    { "code": "RR", "name": "Roraima", "region": "Norte", "coordinates": { "x": 38, "y": 20 } },
+    { "code": "SC", "name": "Santa Catarina", "region": "Sul", "coordinates": { "x": 57, "y": 76 } },
+    { "code": "SP", "name": "São Paulo", "region": "Sudeste", "coordinates": { "x": 63, "y": 61 } },
+    { "code": "SE", "name": "Sergipe", "region": "Nordeste", "coordinates": { "x": 78, "y": 42 } },
+    { "code": "TO", "name": "Tocantins", "region": "Norte", "coordinates": { "x": 61, "y": 42 } }
+  ],
+  "regions": [
+    { "name": "Norte", "color": "#3182CE" },
+    { "name": "Nordeste", "color": "#DD6B20" },
+    { "name": "Centro-Oeste", "color": "#38A169" },
+    { "name": "Sudeste", "color": "#E53E3E" },
+    { "name": "Sul", "color": "#805AD5" }
+  ],
+  "mapDimensions": {
+    "width": 100, 
+    "height": 100,
+    "viewBox": "0 0 100 100"
+  },
+  "brazilOutline": "M85,80 C75,90 65,93 55,95 C45,97 35,98 25,96 C15,94 10,90 5,80 C2,75 1,65 2,55 C3,45 5,40 10,30 C15,20 20,15 25,12 C30,10 40,8 50,8 C60,8 70,10 75,15 C80,20 85,30 85,40 C85,50 82,60 80,70 C78,75 82,75 85,80 Z M55,20 C60,25 65,30 70,40 C75,50 76,60 75,70 C74,80 70,85 65,88 C60,90 55,88 50,85 C45,82 40,80 35,70 C30,60 29,50 30,40 C31,30 35,25 40,22 C45,19 50,18 55,20 Z"
+} 

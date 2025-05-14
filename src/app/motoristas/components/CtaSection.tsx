@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Download, MessageCircle, Send } from "lucide-react";
+import { ArrowRight, Car, MessageCircle, Send } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -85,20 +85,20 @@ export default function CtaSection() {
               viewport={{ once: true }}
               className="text-white/80 text-lg max-w-2xl mx-auto mb-10"
             >
-              Baixe agora o aplicativo Instauto e tenha acesso às melhores oficinas da sua região, preços transparentes e acompanhamento em tempo real.
+              Cadastre-se agora no Instauto e adicione seus veículos na "Garagem" do site. Tenha acesso às melhores oficinas da sua região, preços transparentes e acompanhamento em tempo real.
             </motion.p>
             
             <div className="flex flex-col md:flex-row justify-center gap-4 mb-16">
               <motion.a 
-                href="#download"
+                href="/cadastro"
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
                 viewport={{ once: true }}
                 className="btn-secondary flex items-center justify-center"
               >
-                <Download className="mr-2 h-5 w-5" />
-                Baixar Aplicativo
+                <Car className="mr-2 h-5 w-5" />
+                Cadastrar Veículos
               </motion.a>
               
               <motion.a 
@@ -202,7 +202,7 @@ export default function CtaSection() {
                       ))}
                     </div>
                     <p className="text-gray-600 mt-2">
-                      4.9/5 - Mais de 10.000 avaliações
+                      4.9/5 - Mais de 10.000 usuários satisfeitos
                     </p>
                   </div>
                 </div>
@@ -210,7 +210,7 @@ export default function CtaSection() {
             </div>
           </div>
           
-          {/* Badges e avaliações */}
+          {/* Badges e estatísticas */}
           <div className="flex flex-wrap justify-center gap-6 mt-16">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
@@ -219,8 +219,7 @@ export default function CtaSection() {
               viewport={{ once: true }}
               className="flex items-center bg-white/10 backdrop-blur-md rounded-full px-5 py-2 border border-white/20"
             >
-              <span className="text-yellow mr-2">★★★★★</span>
-              <span className="text-white/80 text-sm">4.9 na App Store</span>
+              <span className="text-white/80 text-sm">+30.000 Serviços realizados</span>
             </motion.div>
             
             <motion.div 
@@ -230,18 +229,7 @@ export default function CtaSection() {
               viewport={{ once: true }}
               className="flex items-center bg-white/10 backdrop-blur-md rounded-full px-5 py-2 border border-white/20"
             >
-              <span className="text-yellow mr-2">★★★★★</span>
-              <span className="text-white/80 text-sm">4.8 no Google Play</span>
-            </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              viewport={{ once: true }}
-              className="flex items-center bg-white/10 backdrop-blur-md rounded-full px-5 py-2 border border-white/20"
-            >
-              <span className="text-white/80 text-sm">+30.000 Serviços realizados</span>
+              <span className="text-white/80 text-sm">+3.600 Oficinas parceiras</span>
             </motion.div>
           </div>
         </div>

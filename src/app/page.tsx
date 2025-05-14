@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 // Componentes da página
 import HeroSection from "./motoristas/components/HeroSection";
@@ -13,11 +13,12 @@ import HowItWorksSection from "./motoristas/components/HowItWorksSection";
 import TestimonialsSection from "./motoristas/components/TestimonialsSection";
 import FeaturesSection from "./motoristas/components/FeaturesSection";
 import PartnersSection from "./motoristas/components/PartnersSection";
-import DownloadAppSection from "./motoristas/components/DownloadAppSection";
+import PlatformAccessSection from "./motoristas/components/DownloadAppSection";
 import FaqSection from "./motoristas/components/FaqSection";
 import CtaSection from "./motoristas/components/CtaSection";
 import VehiclesSection from "./motoristas/components/VehiclesSection";
 import ServicesSection from "./motoristas/components/ServicesSection";
+import CoverageSimpleSection from "./motoristas/components/CoverageSimpleSection";
 
 export default function HomePage() {
   // Inicializa as animações AOS
@@ -34,20 +35,17 @@ export default function HomePage() {
   
   // Items do menu
   const navItems = [
-    { label: "Benefícios", href: "#beneficios" },
     { label: "Como Funciona", href: "#como-funciona" },
-    { label: "Veículos", href: "#veiculos" },
+    { label: "Benefícios", href: "#beneficios" },
     { label: "Serviços", href: "#servicos" },
-    { label: "Depoimentos", href: "#depoimentos" },
-    { label: "Parceiros", href: "#parceiros" },
-    { label: "Perguntas", href: "#faq" },
+    { label: "Dúvidas", href: "#faq" },
   ];
 
   return (
     <main ref={mainRef} className="overflow-hidden">
       <Navbar 
         items={navItems} 
-        transparent={true} 
+        transparent={false} 
         showOfficinasLink={true}
       />
       
@@ -58,8 +56,9 @@ export default function HomePage() {
       <ServicesSection />
       <TestimonialsSection />
       <FeaturesSection />
+      <CoverageSimpleSection />
       <PartnersSection />
-      <DownloadAppSection />
+      <PlatformAccessSection />
       <FaqSection />
       <CtaSection />
 

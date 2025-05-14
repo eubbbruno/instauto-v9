@@ -13,6 +13,7 @@ import PartnersCarousel from "./components/PartnersCarousel";
 import HowItWorksSection from "./components/HowItWorksSection";
 import TestimonialsSection from "./components/TestimonialsSection";
 import FeaturesSection from "./components/FeaturesSection";
+import CoverageSimpleSection from "./components/CoverageSimpleSection";
 import PartnersSection from "./components/PartnersSection";
 import DownloadAppSection from "./components/DownloadAppSection";
 import FaqSection from "./components/FaqSection";
@@ -33,11 +34,10 @@ export default function MotoristasPage() {
   
   // Items do menu
   const navItems = [
-    { label: "Benefícios", href: "#beneficios" },
     { label: "Como Funciona", href: "#como-funciona" },
-    { label: "Depoimentos", href: "#depoimentos" },
-    { label: "Parceiros", href: "#parceiros" },
-    { label: "Perguntas", href: "#faq" },
+    { label: "Benefícios", href: "#beneficios" },
+    { label: "Serviços", href: "#servicos" },
+    { label: "Dúvidas", href: "#faq" },
   ];
 
   return (
@@ -54,6 +54,7 @@ export default function MotoristasPage() {
       <HowItWorksSection />
       <TestimonialsSection />
       <FeaturesSection />
+      <CoverageSimpleSection />
       <PartnersSection />
       <DownloadAppSection />
       <FaqSection />
