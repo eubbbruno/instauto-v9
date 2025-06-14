@@ -3,8 +3,10 @@
 import { useEffect, useRef } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+
+// Componentes de layout
+import Header from "./motoristas/components/Header";
+import Footer from "./motoristas/components/Footer";
 
 // Componentes da página
 import HeroSection from "./motoristas/components/HeroSection";
@@ -32,22 +34,10 @@ export default function HomePage() {
   
   // Referências para scroll
   const mainRef = useRef(null);
-  
-  // Items do menu
-  const navItems = [
-    { label: "Como Funciona", href: "#como-funciona" },
-    { label: "Benefícios", href: "#beneficios" },
-    { label: "Serviços", href: "#servicos" },
-    { label: "Dúvidas", href: "#faq" },
-  ];
 
   return (
     <main ref={mainRef} className="overflow-hidden">
-      <Navbar 
-        items={navItems} 
-        transparent={false} 
-        showOfficinasLink={true}
-      />
+      <Header />
       
       <HeroSection />
       <BenefitsSection />

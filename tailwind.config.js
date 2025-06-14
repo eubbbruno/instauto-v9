@@ -26,6 +26,16 @@ module.exports = {
           800: '#262626',
           900: '#171717',
         },
+        brand: {
+          light: '#EAF4FF',
+          yellow: '#FFFBEA',
+          blue: '#0A2ADA',
+          dark: '#031023'
+        },
+        text: {
+          base: '#0F172A',
+          light: '#FFFFFF'
+        }
       },
       fontFamily: {
         sans: ['var(--font-jakarta)', 'sans-serif'],

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Syne, Plus_Jakarta_Sans } from "next/font/google";
+import { NotificacaoProvider } from "@/contexts/NotificacaoContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import "./globals.css";
 
 const syne = Syne({
@@ -27,7 +29,11 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${syne.variable} ${jakarta.variable}`}>
       <body className="bg-white" suppressHydrationWarning={true}>
-        <main>{children}</main>
+        <AuthProvider>
+          <NotificacaoProvider>
+            <main>{children}</main>
+          </NotificacaoProvider>
+        </AuthProvider>
       </body>
     </html>
   );

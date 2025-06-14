@@ -1,15 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import {
-  Bars3Icon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { gsap } from "gsap";
+import { Menu, X, ChevronDown, ArrowRight } from "lucide-react";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+  const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
+  const ctaButtonRef = useRef<HTMLAnchorElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  
   // Items do menu para a página de oficinas
   const navItems = [
     { label: "Como Funciona", href: "#como-funciona" },
@@ -18,39 +22,206 @@ const Header = () => {
     { label: "FAQ", href: "#faq" },
   ];
 
+  // Efeito de animação do botão CTA usando GSAP
+  useEffect(() => {
+    if (ctaButtonRef.current) {
+      const tl = gsap.timeline({ repeat: -1, yoyo: true });
+      tl.to(ctaButtonRef.current.querySelector('.btn-shine'), { 
+        duration: 2.5, 
+        backgroundPosition: '200% center',
+        ease: "sine.inOut" 
+      });
+    }
+  }, []);
+
+  // Verificar o scroll para aplicar efeitos
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+      
+      // Detectar seção ativa para destacar no menu
+      const sections = navItems.map(item => item.href.replace('#', ''));
+      
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= 100 && rect.bottom >= 100) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [navItems]);
+
+  // Efeito de partículas no header
+  useEffect(() => {
+    const createParticleEffect = () => {
+      if (!headerRef.current) return;
+      
+      // Limpar partículas anteriores
+      const oldParticles = headerRef.current.querySelectorAll('.header-particle');
+      oldParticles.forEach(p => p.remove());
+      
+      // Criar novas partículas
+      const particleContainer = document.createElement('div');
+      particleContainer.className = 'absolute inset-0 overflow-hidden pointer-events-none';
+      headerRef.current.appendChild(particleContainer);
+      
+      // Criar 12 partículas
+      for (let i = 0; i < 12; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'header-particle absolute rounded-full';
+        
+        // Tamanho aleatório
+        const size = Math.random() * 6 + 2;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        
+        // Cor azul com opacidade variável
+        const opacity = Math.random() * 0.15 + 0.05;
+        particle.style.backgroundColor = `rgba(10, 42, 218, ${opacity})`; // Ajustado para brand-blue
+        
+        // Posição aleatória
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        
+        // Animação CSS
+        particle.style.animation = `floatParticle ${Math.random() * 10 + 10}s infinite linear`;
+        
+        particleContainer.appendChild(particle);
+      }
+      
+      // Adicionar keyframes se não existirem
+      if (!document.getElementById('particle-keyframes')) {
+        const style = document.createElement('style');
+        style.id = 'particle-keyframes';
+        style.textContent = `
+          @keyframes floatParticle {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, 15px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    };
+    
+    createParticleEffect();
+    
+    return () => {
+      if (headerRef.current) {
+        const particles = headerRef.current.querySelectorAll('.header-particle');
+        particles.forEach(p => p.remove());
+      }
+      
+      const style = document.getElementById('particle-keyframes');
+      if (style) style.remove();
+    };
+  }, []);
+
   return (
-    <header className="py-4 sticky top-0 z-50 bg-white shadow-sm">
-      <div className="container-custom flex justify-between items-center">
+    <header 
+      ref={headerRef}
+      className={`py-4 sticky top-0 z-50 transition-all duration-500 ${
+        scrolled 
+          ? "bg-brand-light shadow-xl" 
+          : "bg-brand-light"
+      }`}
+      data-contrast="light"
+    >
+      {/* Linha decorativa superior */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-blue via-blue-600 to-brand-blue"></div>
+      
+      <div className="container-custom flex justify-between items-center relative">
+        {/* Logo SVG animada */}
         <div className="flex items-center">
-          <Link href="/" className="text-2xl font-bold text-blue flex items-center">
-            <div className="bg-blue text-white rounded-lg w-10 h-10 flex items-center justify-center mr-2 shadow-sm">
-              <span className="font-syne">Ia</span>
-            </div>
-            <span className="font-syne">Instauto</span>
+          <Link href="/oficinas" className="flex items-center relative group">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="relative z-10"
+            >
+              <Image 
+                src="/images/logo-of-dark.svg" 
+                alt="Instauto Logo" 
+                width={150} 
+                height={40}
+                className="h-10 w-auto"
+              />
+              
+              {/* Efeito de brilho sob o logo */}
+              <div className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-brand-blue/0 via-brand-blue/70 to-brand-blue/0 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+            </motion.div>
           </Link>
         </div>
         
         {/* Menu desktop */}
-        <nav className="hidden md:flex space-x-8">
-          {navItems.map((item) => (
-            <a 
-              key={item.href}
-              href={item.href} 
-              className="text-gray-600 hover:text-blue transition-colors font-sans"
-            >
-              {item.label}
-            </a>
-          ))}
+        <nav className="hidden md:flex space-x-6">
+          {navItems.map((item) => {
+            const isActive = `#${activeSection}` === item.href;
+            
+            return (
+              <Link 
+                key={item.href}
+                href={item.href} 
+                className={`relative group py-2 px-1 font-medium transition-colors ${
+                  isActive ? 'text-brand-blue font-semibold' : 'text-text-base hover:text-brand-blue'
+                }`}
+              >
+                <span className="relative z-10">{item.label}</span>
+                
+                {/* Linha de destaque animada */}
+                <span className={`absolute bottom-0 left-0 w-full h-0.5 transform origin-left transition-all duration-300 ${
+                  isActive 
+                    ? 'bg-brand-blue scale-x-100' 
+                    : 'bg-brand-blue/70 scale-x-0 group-hover:scale-x-100'
+                }`}></span>
+                
+                {/* Efeito de hover */}
+                <span className="absolute inset-0 bg-brand-blue/5 rounded scale-0 group-hover:scale-100 transition-transform duration-200"></span>
+              </Link>
+            );
+          })}
         </nav>
         
         {/* Botões desktop */}
-        <div className="hidden md:flex space-x-4">
-          <Link href="/" className="border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-md hover:bg-gray-50 transition-all">
-            <span className="font-sans">Para Motoristas</span>
+        <div className="hidden md:flex items-center space-x-5">
+          <Link 
+            href="/motorista" 
+            className="relative overflow-hidden !bg-blue !hover:bg-blue-dark text-text-light font-medium py-2 px-5 rounded-md transition-all duration-300 group"
+            style={{backgroundColor: '#0047CC'}}
+          >
+            <span className="relative z-10 font-sans">Para Motoristas</span>
+            <span className="absolute inset-0 bg-gradient-to-r from-blue/0 via-white/10 to-blue/0 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></span>
           </Link>
           
-          <Link href="/cadastro" className="bg-blue hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition-all duration-300 shadow-sm hover:shadow-md">
-            <span className="font-sans">Entrar</span>
+          {/* Botão CTA com efeito de brilho */}
+          <Link 
+            href="/oficina-basica" 
+            ref={ctaButtonRef}
+            className="relative overflow-hidden !bg-yellow !hover:bg-yellow-dark text-text-base font-bold py-2.5 px-6 rounded-lg shadow-lg transition-all duration-300 group"
+            style={{backgroundColor: '#FFDE59'}}
+          >
+            <span className="relative z-10 flex items-center font-sans">
+              Cadastrar Oficina
+              <ArrowRight className="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+            </span>
+            
+            {/* Efeito de brilho */}
+            <span className="btn-shine absolute inset-0 bg-gradient-to-r from-yellow/0 via-white/60 to-yellow/0 bg-[length:200%_100%]"></span>
           </Link>
         </div>
 
@@ -58,66 +229,91 @@ const Header = () => {
         <div className="md:hidden">
           <button
             type="button"
-            className="text-gray-700 hover:text-blue"
+            className="text-text-base hover:text-brand-blue transition-colors"
             onClick={() => setMobileMenuOpen(true)}
           >
-            <Bars3Icon className="h-6 w-6" />
+            <Menu className="h-7 w-7" />
           </button>
         </div>
       </div>
 
-      {/* Menu mobile */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-gray-900 bg-opacity-50 backdrop-blur-sm">
-          <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-lg p-6">
-            <div className="flex items-center justify-between mb-8">
-              <Link href="/" className="text-2xl font-bold text-blue flex items-center">
-                <div className="bg-blue text-white rounded-lg w-8 h-8 flex items-center justify-center mr-2">
-                  <span className="font-syne">Ia</span>
+      {/* Menu mobile deslizante */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div 
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <motion.div 
+              className="fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-2xl"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            >
+              <div className="flex flex-col h-full p-6">
+                <div className="flex items-center justify-between mb-8">
+                  <Link href="/oficinas" className="flex items-center" onClick={() => setMobileMenuOpen(false)}>
+                    <Image 
+                      src="/images/logo-of-dark.svg" 
+                      alt="Instauto Logo" 
+                      width={120} 
+                      height={32}
+                      className="h-8 w-auto"
+                    />
+                  </Link>
+                  <button
+                    type="button"
+                    className="text-text-base hover:text-brand-blue transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
                 </div>
-                <span className="font-syne">Instauto</span>
-              </Link>
-              <button
-                type="button"
-                className="text-gray-500 hover:text-gray-700"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <XMarkIcon className="h-6 w-6" />
-              </button>
-            </div>
-            
-            <nav className="space-y-6 mb-8">
-              {navItems.map((item) => (
-                <a 
-                  key={item.href}
-                  href={item.href} 
-                  className="block text-lg text-gray-700 hover:text-blue"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {item.label}
-                </a>
-              ))}
-            </nav>
-            
-            <div className="space-y-4">
-              <Link 
-                href="/" 
-                className="block w-full text-center border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-md hover:bg-gray-50 transition-all"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Para Motoristas
-              </Link>
-              <Link 
-                href="/cadastro" 
-                className="block w-full text-center bg-blue hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition-all"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Entrar
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
+                
+                <nav className="space-y-6 mb-8">
+                  {navItems.map((item) => (
+                    <motion.a 
+                      key={item.href}
+                      href={item.href} 
+                      className="flex items-center text-lg text-text-base hover:text-brand-blue border-b border-gray-200 pb-3"
+                      onClick={() => setMobileMenuOpen(false)}
+                      whileHover={{ x: 5 }}
+                      transition={{ type: "spring", stiffness: 400 }}
+                    >
+                      <ChevronDown className="w-4 h-4 mr-2 transform rotate-90 text-brand-blue" />
+                      {item.label}
+                    </motion.a>
+                  ))}
+                </nav>
+                
+                <div className="space-y-4 mt-auto">
+                  <Link 
+                    href="/motorista" 
+                    className="block w-full text-center !bg-blue !hover:bg-blue-dark text-text-light font-medium py-3 px-4 rounded-md transition-all"
+                    style={{backgroundColor: '#0047CC'}}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Para Motoristas
+                  </Link>
+                  
+                  <Link 
+                    href="/oficina-basica" 
+                    className="block w-full text-center !bg-yellow !hover:bg-yellow-dark text-text-base font-bold py-3 px-4 rounded-lg shadow-lg transition-all"
+                    style={{backgroundColor: '#FFDE59'}}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Cadastrar Oficina
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

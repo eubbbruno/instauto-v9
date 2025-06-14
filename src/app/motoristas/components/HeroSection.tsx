@@ -1,11 +1,26 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle, MapPin, Search } from "lucide-react";
+import { ArrowRight, CheckCircle } from "lucide-react";
 import Image from "next/image";
 import { Variants } from "framer-motion";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
+import { useState } from "react";
+
+interface AddressSuggestion {
+  cep: string;
+  logradouro: string;
+  bairro: string;
+  localidade: string;
+  uf: string;
+  ibge: string;
+  type?: 'cep' | 'city' | 'district';
+  display: string;
+}
 
 export default function HeroSection() {
+  const [selectedAddress, setSelectedAddress] = useState<AddressSuggestion | null>(null);
+
   // Variantes para animações
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -36,6 +51,12 @@ export default function HeroSection() {
     { text: "Acompanhe o serviço do início ao fim pelo app" },
     { text: "Atendimento prioritário nas oficinas parceiras" }
   ];
+
+  const handleAddressSelect = (address: AddressSuggestion) => {
+    setSelectedAddress(address);
+    console.log('Endereço selecionado:', address);
+    // Aqui você pode redirecionar para a página de resultados ou fazer a busca
+  };
 
   return (
     <section className="relative min-h-screen flex items-center bg-white overflow-hidden">
@@ -164,24 +185,11 @@ export default function HeroSection() {
                 transition={{ delay: 0.7, duration: 0.5 }}
                 className="mb-8"
               >
-                <div className="relative">
-                  <div className="flex items-center rounded-lg border border-gray-200 overflow-hidden shadow-sm">
-                    <div className="absolute left-3">
-                      <MapPin className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                      type="text"
-                      placeholder="Digite seu endereço ou CEP"
-                      className="block w-full pl-10 pr-3 py-3 focus:outline-none text-gray-700"
-                    />
-                    <button className="bg-blue hover:bg-blue-dark p-3 text-white transition-colors flex items-center justify-center min-w-12 h-12">
-                      <Search className="h-5 w-5" />
-                    </button>
-                  </div>
-                  <div className="text-sm text-gray-500 mt-2">
-                    Encontre oficinas próximas a você
-                  </div>
-                </div>
+                <AddressAutocomplete
+                  placeholder="Digite seu endereço ou CEP"
+                  onAddressSelect={handleAddressSelect}
+                  className=""
+                />
               </motion.div>
 
               {/* Lista de features */}
@@ -211,7 +219,7 @@ export default function HeroSection() {
                 className="flex flex-col sm:flex-row gap-4"
               >
                 <a 
-                  href="#como-funciona" 
+                  href="/oficinas/busca" 
                   className="btn-primary flex items-center justify-center py-2.5"
                 >
                   Encontrar Oficinas

@@ -2,9 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@import 'leaflet/dist/leaflet.css';
+
 @layer base {
   :root {
     --header-height: 72px;
+    --tw-text-base: #0F172A;
+    --tw-text-light: #FFFFFF;
   }
 
   html {
@@ -14,6 +18,10 @@
   body {
     @apply antialiased text-gray-800 bg-white;
   }
+  
+  /* Regras de contraste global */
+  [data-contrast="light"] { color: var(--tw-text-base); }
+  [data-contrast="dark"] { color: var(--tw-text-light); }
 }
 
 @layer components {
@@ -78,12 +86,69 @@
     content: '';
     @apply absolute -inset-0.5 rounded-xl bg-gradient-to-r from-blue to-blue-dark opacity-30 blur;
   }
+
+  /* Estilos customizados para Leaflet */
+  .custom-popup .leaflet-popup-content-wrapper {
+    border-radius: 8px;
+    padding: 0;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  .custom-popup .leaflet-popup-content {
+    margin: 0;
+    line-height: 1.4;
+  }
+  
+  .custom-popup .leaflet-popup-tip {
+    background: white;
+  }
+  
+  .custom-marker {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  
+  .user-location-marker {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Ajustes do Leaflet para o design do projeto */
+  .leaflet-control-zoom {
+    border: none !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    border-radius: 8px !important;
+  }
+
+  .leaflet-control-zoom-in,
+  .leaflet-control-zoom-out {
+    background-color: white !important;
+    border: 1px solid #e5e7eb !important;
+    color: #374151 !important;
+    font-size: 18px !important;
+    line-height: 26px !important;
+  }
+
+  .leaflet-control-zoom-in:hover,
+  .leaflet-control-zoom-out:hover {
+    background-color: #f9fafb !important;
+    color: #0047CC !important;
+  }
+
+  .leaflet-control-attribution {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(4px) !important;
+    border-radius: 4px !important;
+    font-size: 10px !important;
+  }
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(5px);
+    transform: translateY(1rem);
   }
   to {
     opacity: 1;

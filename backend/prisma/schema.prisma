@@ -1,0 +1,354 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  password    String
+  name        String
+  phone       String?
+  cpf         String?
+  cnpj        String?
+  type        UserType
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  motorista   Motorista?
+  oficina     Oficina?
+  
+  @@map("users")
+}
+
+model Motorista {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endereco  String?
+  cep       String?
+  cidade    String?
+  estado    String?
+  latitude  Float?
+  longitude Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  veiculos     Veiculo[]
+  agendamentos Agendamento[]
+  avaliacoes   Avaliacao[]
+  mensagens    Mensagem[]
+  pagamentos   Pagamento[]
+  notificacoes Notificacao[]
+
+  @@map("motoristas")
+}
+
+model Oficina {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName      String
+  endereco          String
+  cep               String
+  cidade            String
+  estado            String
+  latitude          Float
+  longitude         Float
+  telefone          String
+  whatsapp          String?
+  descricao         String?
+  especialidades    String
+  horarioFuncionamento String?
+  fotos             String
+  certificacoes     String
+  avaliacaoMedia    Float    @default(0)
+  totalAvaliacoes   Int      @default(0)
+  isVerified        Boolean  @default(false)
+  plano             PlanoType @default(BASICO)
+  statusAssinatura  String   @default("ativa")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relacionamentos
+  servicos     Servico[]
+  agendamentos Agendamento[]
+  avaliacoes   Avaliacao[]
+  mensagens    Mensagem[]
+  horarios     HorarioDisponivel[]
+  promocoes    Promocao[]
+
+  @@map("oficinas")
+}
+
+model Veiculo {
+  id          String   @id @default(uuid())
+  motoristaId String
+  motorista   Motorista @relation(fields: [motoristaId], references: [id], onDelete: Cascade)
+  marca       String
+  modelo      String
+  ano         Int
+  cor         String?
+  placa       String
+  chassi      String?
+  combustivel String?
+  kilometragem Int?
+  observacoes String?
+  fotos       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  agendamentos Agendamento[]
+  manutencoes  Manutencao[]
+
+  @@map("veiculos")
+}
+
+model Servico {
+  id            String   @id @default(uuid())
+  oficinaId     String
+  oficina       Oficina  @relation(fields: [oficinaId], references: [id], onDelete: Cascade)
+  nome          String
+  descricao     String?
+  categoria     String
+  preco         Float
+  duracaoMinutos Int
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relacionamentos
+  agendamentos AgendamentoServico[]
+  promocoes    PromocaoServico[]
+
+  @@map("servicos")
+}
+
+model Agendamento {
+  id            String            @id @default(uuid())
+  motoristaId   String
+  motorista     Motorista         @relation(fields: [motoristaId], references: [id], onDelete: Cascade)
+  oficinaId     String
+  oficina       Oficina           @relation(fields: [oficinaId], references: [id], onDelete: Cascade)
+  veiculoId     String
+  veiculo       Veiculo           @relation(fields: [veiculoId], references: [id], onDelete: Cascade)
+  dataHora      DateTime
+  status        AgendamentoStatus @default(AGENDADO)
+  observacoes   String?
+  precoTotal    Float?
+  duracaoTotal  Int?
+  metodoPagamento String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  // Relacionamentos
+  servicos     AgendamentoServico[]
+  avaliacoes   Avaliacao[]
+  pagamentos   Pagamento[]
+  mensagens    Mensagem[]
+
+  @@map("agendamentos")
+}
+
+model AgendamentoServico {
+  id            String      @id @default(uuid())
+  agendamentoId String
+  agendamento   Agendamento @relation(fields: [agendamentoId], references: [id], onDelete: Cascade)
+  servicoId     String
+  servico       Servico     @relation(fields: [servicoId], references: [id], onDelete: Cascade)
+  preco         Float
+  observacoes   String?
+
+  @@map("agendamento_servicos")
+}
+
+model HorarioDisponivel {
+  id        String   @id @default(uuid())
+  oficinaId String
+  oficina   Oficina  @relation(fields: [oficinaId], references: [id], onDelete: Cascade)
+  diaSemana Int
+  horaInicio String
+  horaFim   String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("horarios_disponiveis")
+}
+
+model Avaliacao {
+  id            String       @id @default(uuid())
+  motoristaId   String
+  motorista     Motorista    @relation(fields: [motoristaId], references: [id], onDelete: Cascade)
+  oficinaId     String
+  oficina       Oficina      @relation(fields: [oficinaId], references: [id], onDelete: Cascade)
+  agendamentoId String?
+  agendamento   Agendamento? @relation(fields: [agendamentoId], references: [id], onDelete: SetNull)
+  nota          Int
+  comentario    String?
+  recomenda     Boolean?
+  fotos         String
+  resposta      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("avaliacoes")
+}
+
+model Mensagem {
+  id            String       @id @default(uuid())
+  motoristaId   String
+  motorista     Motorista    @relation(fields: [motoristaId], references: [id], onDelete: Cascade)
+  oficinaId     String
+  oficina       Oficina      @relation(fields: [oficinaId], references: [id], onDelete: Cascade)
+  agendamentoId String?
+  agendamento   Agendamento? @relation(fields: [agendamentoId], references: [id], onDelete: SetNull)
+  remetenteId   String
+  conteudo      String
+  tipo          TipoMensagem @default(TEXTO)
+  anexos        String
+  lida          Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+
+  @@map("mensagens")
+}
+
+model Pagamento {
+  id            String        @id @default(uuid())
+  motoristaId   String
+  motorista     Motorista     @relation(fields: [motoristaId], references: [id], onDelete: Cascade)
+  agendamentoId String?
+  agendamento   Agendamento?  @relation(fields: [agendamentoId], references: [id], onDelete: SetNull)
+  valor         Float
+  metodo        MetodoPagamento
+  status        StatusPagamento @default(PENDENTE)
+  transacaoId   String?
+  gatewayId     String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("pagamentos")
+}
+
+model Manutencao {
+  id          String   @id @default(uuid())
+  veiculoId   String
+  veiculo     Veiculo  @relation(fields: [veiculoId], references: [id], onDelete: Cascade)
+  tipo        String
+  descricao   String
+  data        DateTime
+  kilometragem Int?
+  custo       Float?
+  local       String?
+  observacoes String?
+  proximaData DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("manutencoes")
+}
+
+model Notificacao {
+  id          String           @id @default(uuid())
+  motoristaId String
+  motorista   Motorista        @relation(fields: [motoristaId], references: [id], onDelete: Cascade)
+  titulo      String
+  conteudo    String
+  tipo        TipoNotificacao
+  lida        Boolean          @default(false)
+  dadosExtra  String?
+  createdAt   DateTime         @default(now())
+
+  @@map("notificacoes")
+}
+
+model Promocao {
+  id          String   @id @default(uuid())
+  oficinaId   String
+  oficina     Oficina  @relation(fields: [oficinaId], references: [id], onDelete: Cascade)
+  titulo      String
+  descricao   String
+  desconto    Float
+  valorMinimo Float?
+  validoAte   DateTime
+  isActive    Boolean  @default(true)
+  codigo      String?
+  createdAt   DateTime @default(now())
+
+  // Relacionamentos
+  servicos PromocaoServico[]
+
+  @@map("promocoes")
+}
+
+model PromocaoServico {
+  id        String   @id @default(uuid())
+  promocaoId String
+  promocao  Promocao @relation(fields: [promocaoId], references: [id], onDelete: Cascade)
+  servicoId String
+  servico   Servico  @relation(fields: [servicoId], references: [id], onDelete: Cascade)
+
+  @@map("promocao_servicos")
+}
+
+// Enums
+enum UserType {
+  MOTORISTA
+  OFICINA
+}
+
+enum PlanoType {
+  BASICO
+  PREMIUM
+  ENTERPRISE
+}
+
+enum AgendamentoStatus {
+  AGENDADO
+  CONFIRMADO
+  EM_ANDAMENTO
+  CONCLUIDO
+  CANCELADO
+}
+
+enum TipoMensagem {
+  TEXTO
+  IMAGEM
+  DOCUMENTO
+  AUDIO
+}
+
+enum MetodoPagamento {
+  DINHEIRO
+  CARTAO_CREDITO
+  CARTAO_DEBITO
+  PIX
+  TRANSFERENCIA
+}
+
+enum StatusPagamento {
+  PENDENTE
+  PROCESSANDO
+  APROVADO
+  REJEITADO
+  ESTORNADO
+}
+
+enum TipoNotificacao {
+  AGENDAMENTO
+  AVALIACAO
+  MENSAGEM
+  PAGAMENTO
+  PROMOCAO
+  SISTEMA
+} 
