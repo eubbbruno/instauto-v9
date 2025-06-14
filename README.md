@@ -67,10 +67,10 @@ A plataforma resolve dois problemas principais:
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seuusuario/instauto-v7.git
+git clone https://github.com/seuusuario/instauto-v9.git
 
 # Entre no diretório
-cd instauto-v7
+cd instauto-v9
 
 # Instale as dependências
 npm install
@@ -88,7 +88,7 @@ A aplicação estará disponível em `http://localhost:3000`
 ## 📊 Estrutura de Diretórios
 
 ```
-instauto-v7/
+instauto-v9/
 ├── public/          # Arquivos estáticos (imagens, ícones)
 ├── src/             # Código fonte
 │   ├── app/         # Páginas e rotas (App Router)
