@@ -5,6 +5,14 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 
+// *** LOGIN ADMIN FIXO PARA COMPATIBILIDADE ***
+const ADMIN_CREDENTIALS = {
+  'admin@instauto.com': { password: 'admin123', type: 'oficina', name: 'Admin Instauto' },
+  'motorista@instauto.com': { password: 'motorista123', type: 'motorista', name: 'Motorista Teste' },
+  'oficina@instauto.com': { password: 'oficina123', type: 'oficina', name: 'Oficina Teste' },
+  'bruno@instauto.com': { password: 'bruno123', type: 'oficina', name: 'Bruno Admin' }
+}
+
 // Tipos
 export interface User {
   id: string;
@@ -60,6 +68,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isOfficina: boolean;
   isMotorista: boolean;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -81,33 +90,67 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Verificar autenticação inicial
   useEffect(() => {
-    const getSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (session?.user) {
-          await loadUserProfile(session.user);
+    // Verificar autenticação local primeiro (login fixo)
+    const checkLocalAuth = () => {
+      const localUser = localStorage.getItem('instauto_user');
+      if (localUser) {
+        try {
+          const userData = JSON.parse(localUser);
+          // Simular objeto User para compatibilidade
+          const mockUser: User = {
+            id: userData.email,
+            email: userData.email,
+            name: userData.name,
+            type: userData.type,
+            avatar: userData.type === 'motorista' ? '🚗' : '🔧'
+          };
+          
+          setUser(mockUser);
+          setLoading(false);
+          return true;
+        } catch (error) {
+          console.error('Erro ao parsear dados locais:', error);
+          localStorage.removeItem('instauto_user');
+          return false;
         }
-      } catch (error) {
-        console.error('Erro ao verificar sessão:', error);
-      } finally {
-        setLoading(false);
       }
+      return false;
     };
 
-    getSession();
+    // Se não há autenticação local, verificar Supabase
+    const getInitialSession = async () => {
+      const hasLocalAuth = checkLocalAuth();
+      
+      if (!hasLocalAuth) {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.user) {
+            await loadUserProfile(session.user);
+          }
+        } catch (error) {
+          console.error('Erro ao verificar sessão Supabase:', error);
+        }
+      }
+      
+      setLoading(false);
+    };
 
-    // Escutar mudanças de autenticação
+    getInitialSession();
+
+    // Escutar mudanças de autenticação do Supabase
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
-          await loadUserProfile(session.user);
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
+        // Se não é autenticação local, usar sessão do Supabase
+        const localUser = localStorage.getItem('instauto_user');
+        if (!localUser) {
+          if (session?.user) {
+            await loadUserProfile(session.user);
+          } else {
+            setUser(null);
+          }
+          setLoading(false);
         }
-        setLoading(false);
       }
     );
 
@@ -175,143 +218,194 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Login
+  // Login com suporte a admin fixo
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
-    setLoading(true);
-    
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: credentials.email,
-        password: credentials.password
-      });
+      setLoading(true);
 
-      if (error) {
-        console.error('Erro no login:', error);
-        setLoading(false);
-        return false;
-      }
-
-      if (data.user) {
-        await loadUserProfile(data.user);
+      // *** TENTAR LOGIN FIXO PRIMEIRO ***
+      const adminUser = ADMIN_CREDENTIALS[credentials.email as keyof typeof ADMIN_CREDENTIALS];
+      
+      if (adminUser && adminUser.password === credentials.password) {
+        // Simular sessão local
+        localStorage.setItem('instauto_user', JSON.stringify({
+          email: credentials.email,
+          name: adminUser.name,
+          type: adminUser.type,
+          authenticated: true
+        }));
+        
+        setUser({
+          id: credentials.email,
+          email: credentials.email,
+          name: adminUser.name,
+          type: adminUser.type,
+          avatar: adminUser.type === 'motorista' ? '🚗' : '🔧'
+        });
+        
         setLoading(false);
         return true;
       }
 
-      setLoading(false);
+      // *** FALLBACK PARA SUPABASE ***
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: credentials.email,
+        password: credentials.password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        await loadUserProfile(data.user);
+        return true;
+      }
+
       return false;
     } catch (error) {
       console.error('Erro no login:', error);
-      setLoading(false);
       return false;
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Registro
+  // Register
   const register = async (data: RegisterData): Promise<boolean> => {
-    setLoading(true);
-    
     try {
+      setLoading(true);
+
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
           data: {
             name: data.name,
-            type: data.type
+            type: data.type,
           }
         }
       });
 
-      if (authError) {
-        console.error('Erro no registro:', authError);
-        setLoading(false);
-        return false;
-      }
+      if (authError) throw authError;
 
       if (authData.user) {
-        // Criar dados específicos baseado no tipo
-        if (data.type === 'oficina' && data.businessName) {
-          await supabase.from('workshops').insert({
-            profile_id: authData.user.id,
-            business_name: data.businessName,
-            cnpj: data.cnpj,
-            address: {},
-            services: [],
-            specialties: []
+        // Criar perfil do usuário
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: authData.user.id,
+            name: data.name,
+            email: data.email,
+            type: data.type,
+            phone: data.phone,
           });
-        } else if (data.type === 'motorista') {
-          await supabase.from('drivers').insert({
-            profile_id: authData.user.id,
-            cpf: data.cpf,
-            address: {}
-          });
+
+        if (profileError) throw profileError;
+
+        // Se for oficina, criar registro de oficina
+        if (data.type === 'oficina') {
+          const { error: workshopError } = await supabase
+            .from('workshops')
+            .insert({
+              profile_id: authData.user.id,
+              business_name: data.businessName || data.name,
+              cnpj: data.cnpj,
+              verified: false,
+            });
+
+          if (workshopError) throw workshopError;
         }
 
-        setLoading(false);
+        // Se for motorista, criar registro de motorista
+        if (data.type === 'motorista') {
+          const { error: driverError } = await supabase
+            .from('drivers')
+            .insert({
+              profile_id: authData.user.id,
+              cpf: data.cpf,
+            });
+
+          if (driverError) throw driverError;
+        }
+
         return true;
       }
 
-      setLoading(false);
       return false;
     } catch (error) {
       console.error('Erro no registro:', error);
-      setLoading(false);
       return false;
+    } finally {
+      setLoading(false);
     }
   };
 
   // Logout
   const logout = async () => {
     try {
+      // Limpar autenticação local
+      localStorage.removeItem('instauto_user');
+      
+      // Logout do Supabase
       await supabase.auth.signOut();
+      
       setUser(null);
-      router.push('/');
+      router.push('/auth');
     } catch (error) {
       console.error('Erro no logout:', error);
     }
   };
 
-  // Atualizar usuário
+  // Update user
   const updateUser = async (userData: Partial<User>) => {
     if (!user) return;
 
     try {
-      // Atualizar perfil
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          name: userData.name,
-          phone: userData.phone,
-          avatar_url: userData.avatar
-        })
-        .eq('id', user.id);
+      const updatedUser = { ...user, ...userData };
+      setUser(updatedUser);
 
-      if (profileError) {
-        console.error('Erro ao atualizar perfil:', profileError);
-        return;
+      // Se for usuário Supabase, atualizar no banco
+      if (!localStorage.getItem('instauto_user')) {
+        const { error } = await supabase
+          .from('profiles')
+          .update({
+            name: updatedUser.name,
+            phone: updatedUser.phone,
+            avatar_url: updatedUser.avatar,
+          })
+          .eq('id', updatedUser.id);
+
+        if (error) throw error;
       }
-
-      // Atualizar estado local
-      setUser(prev => prev ? { ...prev, ...userData } : null);
     } catch (error) {
       console.error('Erro ao atualizar usuário:', error);
     }
   };
 
-  const value: AuthContextType = {
-    user,
-    loading,
-    login,
-    register,
-    logout,
-    updateUser,
-    isAuthenticated: !!user,
-    isOfficina: user?.type === 'oficina',
-    isMotorista: user?.type === 'motorista'
+  // Sign out (alias para logout)
+  const signOut = async () => {
+    await logout();
   };
 
+  // Computed properties
+  const isAuthenticated = !!user;
+  const isOfficina = user?.type === 'oficina';
+  const isMotorista = user?.type === 'motorista';
+
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        logout,
+        updateUser,
+        isAuthenticated,
+        isOfficina,
+        isMotorista,
+        signOut,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

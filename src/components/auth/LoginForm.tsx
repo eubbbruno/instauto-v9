@@ -1,15 +1,11 @@
 "use client";
 
 import { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { EyeIcon, EyeSlashIcon, UserIcon, BuildingOfficeIcon } from '@heroicons/react/24/outline';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
-interface LoginFormProps {
-  userType: 'motorista' | 'oficina';
-}
-
-export default function LoginForm({ userType }: LoginFormProps) {
+export default function LoginForm() {
   const { login, loading } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
@@ -45,7 +41,6 @@ export default function LoginForm({ userType }: LoginFormProps) {
       const success = await login({
         email: formData.email,
         password: formData.password,
-        type: userType
       });
 
       if (!success) {
@@ -71,9 +66,7 @@ export default function LoginForm({ userType }: LoginFormProps) {
   };
 
   // Dados de demonstração para facilitar teste
-  const demoCredentials = userType === 'motorista' 
-    ? { email: 'joao@email.com', password: '123456' }
-    : { email: 'carlos@autocenter.com', password: '123456' };
+  const demoCredentials = { email: 'joao@email.com', password: '123456' };
 
   const handleDemoLogin = () => {
     setFormData(demoCredentials);
@@ -84,13 +77,9 @@ export default function LoginForm({ userType }: LoginFormProps) {
       {/* Demo credentials com visual melhorado */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 mb-6">
         <div className="flex items-center mb-3">
-          {userType === 'motorista' ? (
-            <UserIcon className="h-5 w-5 text-blue-600 mr-2" />
-          ) : (
-            <BuildingOfficeIcon className="h-5 w-5 text-blue-600 mr-2" />
-          )}
+          <UserIcon className="h-5 w-5 text-blue-600 mr-2" />
           <h3 className="text-sm font-semibold text-blue-800">
-            🚀 Acesso para demonstração - {userType === 'motorista' ? 'Motorista' : 'Oficina'}
+            🚀 Acesso para demonstração - Motorista
           </h3>
         </div>
         

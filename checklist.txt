@@ -25,11 +25,14 @@
 [✓] Página de localização de oficinas próximas (src/app/motorista/localizacao/page.tsx)
 [✓] Página de gerenciamento de pagamentos (src/app/motorista/pagamentos/page.tsx)
 [✓] Página de emergência 24h (src/app/motorista/emergencia/page.tsx)
-[✓] Correção e melhoria do dashboard principal do motorista (src/app/motorista/page.tsx)
-[✓] Página de notificações completa (src/app/motorista/notificacoes/page.tsx)
-[✓] Página de localização de oficinas próximas (src/app/motorista/localizacao/page.tsx)
-[✓] Página de gerenciamento de pagamentos (src/app/motorista/pagamentos/page.tsx)
-[✓] Página de emergência 24h (src/app/motorista/emergencia/page.tsx)
+[✓] PADRONIZAÇÃO COMPLETA DOS DASHBOARDS - Design azul elegante para todos os tipos
+[✓] DashboardSidebar inteligente com auto-detecção de tipo de usuário
+[✓] Correção do sidebar de motorista (não puxa mais navegação de oficina)
+[✓] Layouts uniformizados para motorista e oficina-basica
+[✓] Sistema de busca de endereços com AddressAutocomplete + ViaCEP API
+[✓] Página de busca de oficinas estilo Booking/Airbnb com mapa integrado
+[✓] Integração de estatísticas diretamente nas páginas (removido DashboardStats duplicado)
+[✓] Correção de múltiplos erros de lint e estrutura de componentes
 
 ## 🔄 EM ANDAMENTO
 [⟳] Refinamento da página de captação de oficinas

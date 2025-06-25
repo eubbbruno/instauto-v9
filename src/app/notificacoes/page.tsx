@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useNotificacoes } from '@/contexts/NotificacaoContext';
 import { Notificacao } from '@/components/NotificacaoIndicador';
+import GlobalHeader from '@/components/GlobalHeader';
 import { 
   BellIcon,
   EnvelopeIcon,
@@ -86,142 +87,138 @@ export default function NotificacoesPage() {
   };
   
   return (
-    <div className="max-w-[1200px] mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Notificações</h1>
-        <p className="text-gray-600">Gerencie todas as suas notificações em um só lugar</p>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <GlobalHeader 
+        title="Notificações"
+        showSearch={true}
+      />
       
-      {/* Filtros e ações */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <div className="flex flex-wrap gap-2">
-          {filtros.map(filtro => (
-            <button
-              key={filtro.id}
-              onClick={() => toggleFiltro(filtro.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                filtroAtivo === filtro.id 
-                  ? 'bg-[#0047CC] text-white' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {filtro.icone}
-              {filtro.nome}
-            </button>
-          ))}
-          
-          {filtroAtivo && (
-            <button
-              onClick={() => setFiltroAtivo(null)}
-              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
-            >
-              <ArrowPathIcon className="h-5 w-5" />
-              Limpar filtro
-            </button>
-          )}
+      <div className="max-w-[1200px] mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Notificações</h1>
+          <p className="text-gray-600">Gerencie todas as suas notificações em um só lugar</p>
         </div>
         
-        <div className="flex gap-2">
-          <button
-            onClick={marcarTodasComoLidas}
-            className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
-          >
-            <CheckCircleIcon className="h-5 w-5" />
-            Marcar todas como lidas
-          </button>
-          
-          <button
-            onClick={confirmarLimparTodas}
-            className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
-          >
-            <TrashIcon className="h-5 w-5" />
-            Limpar todas
-          </button>
-        </div>
-      </div>
-      
-      {/* Lista de notificações */}
-      {notificacoesFiltradas.length > 0 ? (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden border">
-          {notificacoesFiltradas.map((notificacao, index) => (
-            <motion.div 
-              key={notificacao.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className={`p-4 sm:p-6 border-b last:border-b-0 ${!notificacao.lida ? 'bg-blue-50' : ''}`}
-            >
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="shrink-0">
-                  {getIconeNotificacao(notificacao.tipo)}
-                </div>
-                
-                <div className="flex-1">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-                    <h3 className="font-semibold text-gray-800">{notificacao.titulo}</h3>
-                    <span className="text-sm text-gray-500">{notificacao.tempo}</span>
-                  </div>
-                  
-                  <p className="text-gray-600 mb-3">{notificacao.mensagem}</p>
-                  
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {notificacao.link && (
-                      <Link 
-                        href={notificacao.link}
-                        className="text-sm font-medium text-[#0047CC] hover:underline"
-                      >
-                        Ver detalhes
-                      </Link>
-                    )}
-                    
-                    {!notificacao.lida && (
-                      <button
-                        onClick={() => marcarComoLida(notificacao.id)}
-                        className="text-sm font-medium text-gray-600 hover:text-gray-800"
-                      >
-                        Marcar como lida
-                      </button>
-                    )}
-                    
-                    <button
-                      onClick={() => confirmarRemover(notificacao.id)}
-                      className="text-sm font-medium text-red-500 hover:text-red-700"
-                    >
-                      Remover
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      ) : (
-        <div className="bg-white rounded-xl shadow-sm border p-8 text-center">
-          <div className="mx-auto w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-            <BellIcon className="h-8 w-8 text-gray-400" />
+        {/* Filtros e ações */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex flex-wrap gap-2">
+            {filtros.map(filtro => (
+              <button
+                key={filtro.id}
+                onClick={() => toggleFiltro(filtro.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  filtroAtivo === filtro.id 
+                    ? 'bg-[#0047CC] text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {filtro.icone}
+                {filtro.nome}
+              </button>
+            ))}
+            
+            {filtroAtivo && (
+              <button
+                onClick={() => setFiltroAtivo(null)}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+              >
+                <ArrowPathIcon className="h-5 w-5" />
+                Limpar filtro
+              </button>
+            )}
           </div>
           
-          <h3 className="text-lg font-medium text-gray-800 mb-2">
-            {filtroAtivo ? 'Nenhuma notificação encontrada com este filtro' : 'Você não tem notificações'}
-          </h3>
-          
-          <p className="text-gray-600 mb-6 max-w-md mx-auto">
-            {filtroAtivo 
-              ? 'Tente selecionar outro filtro ou remover todos os filtros para ver todas as suas notificações.' 
-              : 'Quando você receber notificações, elas aparecerão aqui.'}
-          </p>
-          
-          {filtroAtivo && (
+          <div className="flex gap-2">
             <button
-              onClick={() => setFiltroAtivo(null)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-[#0047CC] text-white hover:bg-[#003db3] transition-colors"
+              onClick={marcarTodasComoLidas}
+              className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
             >
-              <ArrowPathIcon className="h-5 w-5" />
-              Ver todas as notificações
+              <CheckCircleIcon className="h-5 w-5" />
+              Marcar todas como lidas
             </button>
-          )}
+            
+            <button
+              onClick={confirmarLimparTodas}
+              className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+            >
+              <TrashIcon className="h-5 w-5" />
+              Limpar todas
+            </button>
+          </div>
         </div>
-      )}
+        
+        {/* Lista de notificações */}
+        {notificacoesFiltradas.length > 0 ? (
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden border">
+            {notificacoesFiltradas.map((notificacao, index) => (
+              <motion.div 
+                key={notificacao.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className={`p-4 sm:p-6 border-b last:border-b-0 ${!notificacao.lida ? 'bg-blue-50' : ''}`}
+              >
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="shrink-0">
+                    {getIconeNotificacao(notificacao.tipo)}
+                  </div>
+                  
+                  <div className="flex-1">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                      <h3 className="font-semibold text-gray-800">{notificacao.titulo}</h3>
+                      <span className="text-sm text-gray-500">{notificacao.tempo}</span>
+                    </div>
+                    
+                    <p className="text-gray-600 mb-3">{notificacao.mensagem}</p>
+                    
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {notificacao.link && (
+                        <Link 
+                          href={notificacao.link}
+                          className="text-sm font-medium text-[#0047CC] hover:underline"
+                        >
+                          Ver detalhes
+                        </Link>
+                      )}
+                      
+                      {!notificacao.lida && (
+                        <button
+                          onClick={() => marcarComoLida(notificacao.id)}
+                          className="text-sm font-medium text-gray-600 hover:text-gray-800"
+                        >
+                          Marcar como lida
+                        </button>
+                      )}
+                      
+                      <button
+                        onClick={() => confirmarRemover(notificacao.id)}
+                        className="text-sm font-medium text-red-500 hover:text-red-700"
+                      >
+                        Remover
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl shadow-sm border p-8 text-center">
+            <div className="mx-auto w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+              <BellIcon className="h-8 w-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-800 mb-2">
+              {filtroAtivo ? 'Nenhuma notificação encontrada' : 'Nenhuma notificação'}
+            </h3>
+            <p className="text-gray-600">
+              {filtroAtivo 
+                ? 'Não há notificações do tipo selecionado.'
+                : 'Você está em dia! Não há notificações pendentes.'
+              }
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 } 

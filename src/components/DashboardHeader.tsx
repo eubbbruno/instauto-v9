@@ -6,12 +6,15 @@ import {
   ChevronDownIcon, 
   Bars3Icon,
   XMarkIcon,
-  ChatBubbleLeftEllipsisIcon
+  ChatBubbleLeftEllipsisIcon,
+  CogIcon,
+  ArrowRightOnRectangleIcon,
+  UserIcon
 } from "@heroicons/react/24/outline";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/SupabaseAuthContext";
 import NotificacaoIndicador from "./NotificacaoIndicador";
 import { useNotificacoes } from "@/contexts/NotificacaoContext";
 

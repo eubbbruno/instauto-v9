@@ -14,7 +14,9 @@ import {
   CalendarIcon,
   ChevronLeftIcon,
   ChatBubbleLeftRightIcon,
-  PhotoIcon
+  PhotoIcon,
+  HomeIcon,
+  UserCircleIcon
 } from "@heroicons/react/24/outline";
 import AvaliacaoOficina from "@/components/AvaliacaoOficina";
 import MapView from "@/components/MapView";

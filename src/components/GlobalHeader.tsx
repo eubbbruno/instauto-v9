@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/SupabaseAuthContext';
 import NotificacoesBadge from '@/components/NotificacoesBadge';
 import {
   BellIcon,
@@ -13,7 +13,10 @@ import {
   MagnifyingGlassIcon,
   CogIcon,
   SunIcon,
-  QuestionMarkCircleIcon
+  QuestionMarkCircleIcon,
+  XMarkIcon,
+  PhoneIcon,
+  MapPinIcon
 } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 
