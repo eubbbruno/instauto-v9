@@ -67,7 +67,7 @@ A plataforma resolve dois problemas principais:
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seuusuario/instauto-v9.git
+git clone https://github.com/eubbbruno/instauto-v9.git
 
 # Entre no diretório
 cd instauto-v9

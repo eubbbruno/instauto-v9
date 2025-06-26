@@ -1,7 +1,7 @@
 {
   "name": "instauto-backend",
   "version": "1.0.0",
-  "description": "Backend API para Instauto V7",
+  "description": "Backend API para Instauto V9",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
