@@ -2,38 +2,33 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, senha, tipo } = await request.json();
+    const body = await request.json();
+    const { email, password, senha } = body;
+    
+    // Aceitar tanto "password" quanto "senha"
+    const userPassword = password || senha;
 
     // Validação básica
-    if (!email || !senha || !tipo) {
+    if (!email || !userPassword) {
       return NextResponse.json(
-        { error: 'Email, senha e tipo são obrigatórios' },
+        { error: 'Email e senha são obrigatórios' },
         { status: 400 }
       );
     }
 
-    // Validar tipo de usuário
-    if (!['motorista', 'oficina'].includes(tipo)) {
-      return NextResponse.json(
-        { error: 'Tipo de usuário inválido' },
-        { status: 400 }
-      );
-    }
-
-    // TODO: Integrar com backend Express
-    // Por enquanto, simulando autenticação
+    // Credenciais de teste atualizadas conforme o site
     const mockUsers = {
-      'motorista@test.com': {
+      'joao@email.com': {
         id: '1',
-        email: 'motorista@test.com',
+        email: 'joao@email.com',
         nome: 'João Silva',
         tipo: 'motorista',
         senha: '123456'
       },
-      'oficina@test.com': {
+      'carlos@autocenter.com': {
         id: '2',
-        email: 'oficina@test.com',
-        nome: 'Oficina Central',
+        email: 'carlos@autocenter.com',
+        nome: 'Carlos Silva - Auto Center Silva',
         tipo: 'oficina',
         senha: '123456'
       }
@@ -41,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     const user = mockUsers[email as keyof typeof mockUsers];
     
-    if (!user || user.senha !== senha || user.tipo !== tipo) {
+    if (!user || user.senha !== userPassword) {
       return NextResponse.json(
         { error: 'Credenciais inválidas' },
         { status: 401 }
@@ -54,7 +49,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       success: true,
       message: 'Login realizado com sucesso',
-      user: {
+      usuario: {
         id: user.id,
         email: user.email,
         nome: user.nome,
