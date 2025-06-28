@@ -1,7 +1,7 @@
 ﻿'use client'
 
 import { useEffect, useState, Suspense } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 function AuthCallbackContent() {
@@ -12,6 +12,14 @@ function AuthCallbackContent() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
+        if (!isSupabaseConfigured() || !supabase) {
+          setStatus(' Supabase não configurado')
+          setTimeout(() => {
+            router.push('/auth')
+          }, 3000)
+          return
+        }
+
         const { data, error } = await supabase.auth.getSession()
         
         if (error) {

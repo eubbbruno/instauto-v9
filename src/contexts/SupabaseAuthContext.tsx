@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 
 // *** LOGIN ADMIN FIXO PARA COMPATIBILIDADE ***
@@ -118,11 +118,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return false;
     };
 
-    // Se não há autenticação local, verificar Supabase
+    // Se não há autenticação local, verificar Supabase (apenas se configurado)
     const getInitialSession = async () => {
       const hasLocalAuth = checkLocalAuth();
       
-      if (!hasLocalAuth) {
+      if (!hasLocalAuth && isSupabaseConfigured() && supabase) {
         try {
           const { data: { session } } = await supabase.auth.getSession();
           if (session?.user) {
@@ -138,27 +138,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     getInitialSession();
 
-    // Escutar mudanças de autenticação do Supabase
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        // Se não é autenticação local, usar sessão do Supabase
-        const localUser = localStorage.getItem('instauto_user');
-        if (!localUser) {
-          if (session?.user) {
-            await loadUserProfile(session.user);
-          } else {
-            setUser(null);
+    // Escutar mudanças de autenticação do Supabase (apenas se configurado)
+    let subscription: { unsubscribe: () => void } | null = null;
+    
+    if (isSupabaseConfigured() && supabase) {
+      const { data } = supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          // Se não é autenticação local, usar sessão do Supabase
+          const localUser = localStorage.getItem('instauto_user');
+          if (!localUser) {
+            if (session?.user) {
+              await loadUserProfile(session.user);
+            } else {
+              setUser(null);
+            }
+            setLoading(false);
           }
-          setLoading(false);
         }
-      }
-    );
+      );
+      subscription = data;
+    }
 
-    return () => subscription.unsubscribe();
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
   }, []);
 
   // Carregar perfil do usuário
   const loadUserProfile = async (supabaseUser: SupabaseUser) => {
+    if (!isSupabaseConfigured() || !supabase) {
+      return;
+    }
+
     try {
       const { data: profile, error } = await supabase
         .from('profiles')
@@ -196,12 +209,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           });
         } else {
           // Se for motorista, buscar dados do motorista
-          const { data: driver } = await supabase
-            .from('drivers')
-            .select('*')
-            .eq('profile_id', profile.id)
-            .single();
-
           setUser({
             id: profile.id,
             name: profile.name,
@@ -209,12 +216,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             type: profile.type,
             phone: profile.phone,
             avatar: profile.avatar_url,
-            cpf: driver?.cpf
+            cpf: profile.cpf
           });
         }
       }
     } catch (error) {
-      console.error('Erro ao carregar perfil:', error);
+      console.error('Erro ao carregar perfil do usuário:', error);
     }
   };
 
