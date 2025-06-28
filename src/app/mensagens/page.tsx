@@ -1,3 +1,78 @@
+﻿'use client';
+
+import { useState } from 'react';
+import { 
+  MagnifyingGlassIcon, 
+  ChatBubbleLeftRightIcon,
+  BuildingStorefrontIcon,
+  UserCircleIcon
+} from '@heroicons/react/24/outline';
+import GlobalHeader from '@/components/GlobalHeader';
+
+interface ContatoChat {
+  id: string;
+  nome: string;
+  avatar?: string;
+  tipo: 'oficina' | 'motorista';
+  online: boolean;
+  ultimaMensagem?: {
+    texto: string;
+    dataHora: string;
+    remetente: string;
+  };
+  naoLidas: number;
+}
+
+export default function MensagensPage() {
+  const [buscaContato, setBuscaContato] = useState('');
+  const [contatoAtivo, setContatoAtivo] = useState<string | null>(null);
+  
+  const contatos: ContatoChat[] = [
+    {
+      id: '1',
+      nome: 'Auto Center Silva',
+      avatar: '',
+      tipo: 'oficina',
+      online: true,
+      ultimaMensagem: {
+        texto: 'Seu agendamento foi confirmado para amanhã às 14h',
+        dataHora: new Date().toISOString(),
+        remetente: 'oficina'
+      },
+      naoLidas: 2
+    },
+    {
+      id: '2',
+      nome: 'Mecânica do João',
+      avatar: '',
+      tipo: 'oficina',
+      online: false,
+      ultimaMensagem: {
+        texto: 'Orçamento aprovado. Iniciando os reparos.',
+        dataHora: new Date(Date.now() - 3600000).toISOString(),
+        remetente: 'oficina'
+      },
+      naoLidas: 0
+    }
+  ];
+
+  const contatosFiltrados = contatos.filter(contato =>
+    contato.nome.toLowerCase().includes(buscaContato.toLowerCase())
+  );
+
+  const formatarHorario = (dataHora: string) => {
+    const data = new Date(dataHora);
+    const agora = new Date();
+    const diferenca = agora.getTime() - data.getTime();
+    const minutos = Math.floor(diferenca / 60000);
+    const horas = Math.floor(diferenca / 3600000);
+    
+    if (minutos < 1) return 'agora';
+    if (minutos < 60) return `${minutos}m`;
+    if (horas < 24) return `${horas}h`;
+    return data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <GlobalHeader 
@@ -12,9 +87,7 @@
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[70vh]">
-          {/* Lista de contatos */}
           <div className="bg-white rounded-lg shadow-md overflow-hidden md:col-span-1 border h-full flex flex-col">
-            {/* Barra de busca */}
             <div className="p-3 border-b">
               <div className="relative">
                 <input
@@ -30,7 +103,6 @@
               </div>
             </div>
             
-            {/* Lista de contatos */}
             <div className="flex-1 overflow-y-auto">
               {contatosFiltrados.length > 0 ? (
                 <div className="divide-y">
@@ -98,20 +170,14 @@
             </div>
           </div>
           
-          {/* Área de chat */}
           <div className="md:col-span-2 h-full">
             {contatoAtivo ? (
-              <ChatComponent
-                contato={contatos.find(c => c.id === contatoAtivo) as ContatoChat}
-                mensagens={mensagens[contatoAtivo] || []}
-                usuarioId="usuario-123"
-                usuarioNome="João Silva"
-                usuarioAvatar="https://randomuser.me/api/portraits/men/32.jpg"
-                onEnviarMensagem={enviarMensagem}
-                onDigitando={notificarDigitando}
-                onVisualizarMensagem={marcarComoLida}
-                className="h-full"
-              />
+              <div className="h-full bg-white rounded-lg shadow-md p-4">
+                <div className="text-center">
+                  <h3 className="text-lg font-medium text-gray-800">Chat</h3>
+                  <p className="text-gray-600">Funcionalidade em desenvolvimento</p>
+                </div>
+              </div>
             ) : (
               <div className="h-full flex items-center justify-center bg-white rounded-lg shadow-md">
                 <div className="text-center p-6">
@@ -129,4 +195,5 @@
         </div>
       </div>
     </div>
-  ); 
+  );
+}
