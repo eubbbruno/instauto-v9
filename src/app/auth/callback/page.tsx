@@ -5,70 +5,127 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 function AuthCallbackContent() {
-  const [status, setStatus] = useState(' Processando login...')
+  const [status, setStatus] = useState('🔄 Processando login...')
   const router = useRouter()
   const searchParams = useSearchParams()
+
+  // Função para redirecionar baseado no tipo de usuário - igual à página de auth
+  const redirectUserByType = (userType: string, planType?: string) => {
+    if (userType === 'motorista') {
+      router.push('/motorista')
+    } else if (userType === 'oficina') {
+      // Se tem plano PRO vai para dashboard completo, senão vai para básico
+      if (planType === 'pro') {
+        router.push('/dashboard')
+      } else {
+        router.push('/oficina-basica')
+      }
+    } else {
+      // Fallback: se não conseguir determinar o tipo, vai para motorista
+      router.push('/motorista')
+    }
+  }
 
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
         if (!isSupabaseConfigured() || !supabase) {
-          setStatus(' Supabase não configurado')
+          setStatus('❌ Supabase não configurado')
           setTimeout(() => {
             router.push('/auth')
           }, 3000)
           return
         }
 
+        // Verificar se há um código de autorização na URL
+        const code = searchParams.get('code')
+        if (code) {
+          setStatus('🔄 Processando código de autorização...')
+          
+          const { data: sessionData, error: sessionError } = await supabase.auth.exchangeCodeForSession(code)
+          
+          if (sessionError) {
+            console.error('Erro ao trocar código por sessão:', sessionError)
+            setStatus(`❌ Erro: ${sessionError.message}`)
+            setTimeout(() => {
+              router.push('/auth')
+            }, 3000)
+            return
+          }
+
+          if (sessionData.session && sessionData.session.user) {
+            setStatus('✅ Login realizado com sucesso!')
+            
+            // Buscar perfil do usuário para redirecionamento correto
+            const { data: profile, error: profileError } = await supabase
+              .from('profiles')
+              .select('type, plan_type')
+              .eq('id', sessionData.session.user.id)
+              .single()
+
+            if (profileError) {
+              console.warn('Erro ao buscar perfil:', profileError)
+              // Se não encontrar perfil, usar dados do metadata do usuário ou perguntar tipo
+              const userType = sessionData.session.user.user_metadata?.type || 'motorista'
+              
+              setTimeout(() => {
+                redirectUserByType(userType)
+              }, 2000)
+            } else {
+              setTimeout(() => {
+                redirectUserByType(profile.type, profile.plan_type)
+              }, 2000)
+            }
+            return
+          }
+        }
+
+        // Se não há código, verificar se já há uma sessão ativa
         const { data, error } = await supabase.auth.getSession()
         
         if (error) {
           console.error('Erro ao obter sessão:', error)
-          setStatus(` Erro: ${error.message}`)
-          return
-        }
-
-        if (!data.session) {
-          const code = searchParams.get('code')
-          if (code) {
-            setStatus(' Processando código de autorização...')
-            
-            const { data: sessionData, error: sessionError } = await supabase.auth.exchangeCodeForSession(code)
-            
-            if (sessionError) {
-              console.error('Erro ao trocar código por sessão:', sessionError)
-              setStatus(` Erro: ${sessionError.message}`)
-              return
-            }
-
-            if (sessionData.session) {
-              setStatus(' Login realizado com sucesso!')
-              console.log('Usuário logado:', sessionData.session.user)
-              
-              setTimeout(() => {
-                router.push('/oficinas')
-              }, 2000)
-              return
-            }
-          }
-          
-          setStatus(' Nenhuma sessão ou código encontrado')
+          setStatus(`❌ Erro: ${error.message}`)
           setTimeout(() => {
             router.push('/auth')
           }, 3000)
           return
         }
 
-        setStatus(' Login realizado com sucesso!')
-        console.log('Usuário logado:', data.session.user)
-        
-        setTimeout(() => {
-          router.push('/oficinas')
-        }, 2000)
+        if (data.session && data.session.user) {
+          setStatus('✅ Login realizado com sucesso!')
+          
+          // Buscar perfil do usuário
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('type, plan_type')
+            .eq('id', data.session.user.id)
+            .single()
 
-      } catch (error: any) {
+          if (profileError) {
+            console.warn('Erro ao buscar perfil:', profileError)
+            const userType = data.session.user.user_metadata?.type || 'motorista'
+            
+            setTimeout(() => {
+              redirectUserByType(userType)
+            }, 2000)
+          } else {
+            setTimeout(() => {
+              redirectUserByType(profile.type, profile.plan_type)
+            }, 2000)
+          }
+          return
+        }
+        
+        // Se chegou até aqui, não há sessão válida
+        setStatus('❌ Nenhuma sessão válida encontrada')
+        setTimeout(() => {
+          router.push('/auth')
+        }, 3000)
+
+      } catch (error) {
         console.error('Erro no callback:', error)
-        setStatus(` Erro: ${error.message}`)
+        setStatus(`❌ Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
         
         setTimeout(() => {
           router.push('/auth')
@@ -82,19 +139,25 @@ function AuthCallbackContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
       <div className="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md">
-        <div className="text-6xl mb-4"></div>
-        <h1 className="text-2xl font-bold mb-4">InstaAuto</h1>
-        <div className="text-lg mb-4">{status}</div>
+        <div className="text-6xl mb-4">🚗</div>
+        <h1 className="text-2xl font-bold mb-4 text-gray-900">Instauto</h1>
+        <div className="text-lg mb-4 text-gray-700">{status}</div>
         
         {status.includes('sucesso') && (
           <div className="text-sm text-gray-600">
-            Redirecionando para as oficinas...
+            Redirecionando para seu dashboard...
           </div>
         )}
         
-        {status.includes('') && (
+        {status.includes('❌') && (
           <div className="text-sm text-gray-600">
             Redirecionando para login...
+          </div>
+        )}
+
+        {status.includes('🔄') && (
+          <div className="mt-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
           </div>
         )}
       </div>
@@ -106,9 +169,12 @@ function LoadingFallback() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
       <div className="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md">
-        <div className="text-6xl mb-4"></div>
-        <h1 className="text-2xl font-bold mb-4">InstaAuto</h1>
-        <div className="text-lg mb-4"> Carregando...</div>
+        <div className="text-6xl mb-4">🚗</div>
+        <h1 className="text-2xl font-bold mb-4 text-gray-900">Instauto</h1>
+        <div className="text-lg mb-4 text-gray-700">🔄 Carregando...</div>
+        <div className="mt-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+        </div>
       </div>
     </div>
   )
