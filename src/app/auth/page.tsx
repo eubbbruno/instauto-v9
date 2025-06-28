@@ -211,10 +211,18 @@ export default function AuthPage() {
     setMessage('🔄 Redirecionando para Google...')
 
     try {
+      const redirectUrl = `${window.location.origin}/auth/callback`
+      
+      // DEBUG: Mostrar URLs sendo usadas
+      console.log('🔍 DEBUG AUTH:')
+      console.log('- window.location.origin:', window.location.origin)
+      console.log('- redirectTo:', redirectUrl)
+      console.log('- Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -242,10 +250,18 @@ export default function AuthPage() {
     setMessage('🔄 Redirecionando para Facebook...')
 
     try {
+      const redirectUrl = `${window.location.origin}/auth/callback`
+      
+      // DEBUG: Mostrar URLs sendo usadas
+      console.log('🔍 DEBUG AUTH FACEBOOK:')
+      console.log('- window.location.origin:', window.location.origin)
+      console.log('- redirectTo:', redirectUrl)
+      console.log('- Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
         }
       })
 

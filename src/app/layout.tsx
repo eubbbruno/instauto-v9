@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${syne.variable} ${jakarta.variable}`}>
+    <html lang="pt-BR" className={`${syne.variable} ${jakarta.variable}`} suppressHydrationWarning={true}>
       <body className="bg-white" suppressHydrationWarning={true}>
         <AuthProvider>
           <NotificacaoProvider>
