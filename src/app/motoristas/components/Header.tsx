@@ -115,7 +115,7 @@ const Header = () => {
               transition={{ delay: 0.4 }}
               className="relative group"
             >
-              <Link href="/motorista">
+              <Link href="/auth/motorista">
                 <button 
                   className="px-4 py-2 rounded-lg font-medium border border-white/30 hover:bg-white/10 text-white transition-all group-hover:border-white"
                 >
@@ -192,7 +192,7 @@ const Header = () => {
 
             <div className="pt-6 space-y-4">
               <Link 
-                href="/motorista"
+                href="/auth/motorista"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block w-full"
               >

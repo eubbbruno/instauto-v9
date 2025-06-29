@@ -175,7 +175,7 @@ const HeroSection = () => {
               className="flex flex-col sm:flex-row gap-4 mb-8"
             >
               <Link 
-                href="/oficina-basica" 
+                href="/auth/oficina" 
                 ref={ctaButtonRef}
                 className="group relative bg-yellow hover:bg-yellow-dark text-text-base font-bold py-3.5 px-8 rounded-lg transition-all duration-300 shadow-lg hover:shadow-yellow/30 overflow-hidden"
                 style={{backgroundColor: '#FFDE59'}}

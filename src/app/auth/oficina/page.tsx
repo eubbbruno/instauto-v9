@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { EyeIcon, EyeSlashIcon, BuildingOfficeIcon, CheckCircleIcon, StarIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, EyeSlashIcon, BuildingOfficeIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
@@ -193,12 +193,12 @@ export default function AuthOficinaPage() {
   // Tela de completar perfil
   if (step === 'profile') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-600 via-orange-700 to-red-800 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
           <div className="p-8">
             <div className="text-center mb-8">
-              <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
-                <BuildingOfficeIcon className="w-8 h-8 text-orange-600" />
+              <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                <BuildingOfficeIcon className="w-8 h-8 text-blue-600" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900">Complete os dados da oficina</h2>
               <p className="text-gray-600 mt-2">Últimos detalhes para começar!</p>
@@ -222,7 +222,7 @@ export default function AuthOficinaPage() {
                   required
                   value={formData.cnpj}
                   onChange={(e) => setFormData({...formData, cnpj: e.target.value})}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900 bg-white font-medium"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white font-medium"
                   placeholder="00.000.000/0001-00"
                 />
               </div>
@@ -233,7 +233,7 @@ export default function AuthOficinaPage() {
                   required
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900 bg-white font-medium"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white font-medium"
                   placeholder="(11) 99999-9999"
                 />
               </div>
@@ -259,7 +259,7 @@ export default function AuthOficinaPage() {
                     onClick={() => setFormData({...formData, planType: 'pro'})}
                     className={`p-4 rounded-lg border-2 text-sm font-bold transition-all ${
                       formData.planType === 'pro'
-                        ? 'bg-orange-100 border-orange-500 text-orange-800'
+                        ? 'bg-yellow-100 border-yellow-500 text-yellow-800'
                         : 'bg-gray-100 border-gray-300 text-gray-800 hover:border-gray-400'
                     }`}
                   >
@@ -273,7 +273,7 @@ export default function AuthOficinaPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 px-4 rounded-lg transition-all disabled:opacity-50 text-lg"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-lg transition-all disabled:opacity-50 text-lg"
               >
                 {loading ? '🔄 Finalizando...' : '✅ Finalizar Cadastro'}
               </button>
@@ -289,9 +289,9 @@ export default function AuthOficinaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-600 via-orange-700 to-red-800">
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800">
       <div className="p-4">
-        <Link href="/" className="inline-flex items-center text-orange-200 hover:text-white font-semibold transition-colors">
+        <Link href="/" className="inline-flex items-center text-blue-200 hover:text-white font-semibold transition-colors">
           ← Voltar para início
         </Link>
       </div>
@@ -300,38 +300,38 @@ export default function AuthOficinaPage() {
         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden">
           <div className="grid md:grid-cols-2 gap-0">
             {/* Coluna da esquerda - Informações */}
-            <div className="p-8 bg-gradient-to-br from-orange-600 to-red-700 text-white">
+            <div className="p-8 bg-gradient-to-br from-blue-600 to-indigo-800 text-white">
               <div className="flex items-center gap-3 mb-6">
                 <div className="text-4xl">🔧</div>
                 <h1 className="text-3xl font-bold">Oficinas</h1>
               </div>
               <h2 className="text-xl font-semibold mb-4">Expanda seu negócio automotivo</h2>
-              <p className="text-orange-100 mb-8 leading-relaxed">
+              <p className="text-blue-100 mb-8 leading-relaxed">
                 Conecte-se com milhares de motoristas, gerencie seus serviços e aumente sua receita com nossa plataforma.
               </p>
               <div className="space-y-4 mb-8">
                 <div className="flex items-start gap-3">
-                  <CheckCircleIcon className="w-6 h-6 text-orange-300 mt-1 flex-shrink-0" />
-                  <span className="text-orange-100">Receba pedidos de orçamento automaticamente</span>
+                  <CheckCircleIcon className="w-6 h-6 text-blue-300 mt-1 flex-shrink-0" />
+                  <span className="text-blue-100">Receba pedidos de orçamento automaticamente</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircleIcon className="w-6 h-6 text-orange-300 mt-1 flex-shrink-0" />
-                  <span className="text-orange-100">Gerencie agendamentos e ordens de serviço</span>
+                  <CheckCircleIcon className="w-6 h-6 text-blue-300 mt-1 flex-shrink-0" />
+                  <span className="text-blue-100">Gerencie agendamentos e ordens de serviço</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircleIcon className="w-6 h-6 text-orange-300 mt-1 flex-shrink-0" />
-                  <span className="text-orange-100">Sistema completo de gestão</span>
+                  <CheckCircleIcon className="w-6 h-6 text-blue-300 mt-1 flex-shrink-0" />
+                  <span className="text-blue-100">Sistema completo de gestão</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircleIcon className="w-6 h-6 text-orange-300 mt-1 flex-shrink-0" />
-                  <span className="text-orange-100">Aumente sua visibilidade online</span>
+                  <CheckCircleIcon className="w-6 h-6 text-blue-300 mt-1 flex-shrink-0" />
+                  <span className="text-blue-100">Aumente sua visibilidade online</span>
                 </div>
               </div>
-              <div className="p-4 bg-orange-700/60 rounded-lg">
+              <div className="p-4 bg-blue-700/60 rounded-lg">
                 <h4 className="font-semibold text-sm mb-2">Status:</h4>
                 <div className="flex items-center gap-2 text-sm">
                   <span>{isSupabaseConfigured() ? '✅' : '❌'}</span>
-                  <span className="text-orange-200">{isSupabaseConfigured() ? 'Sistema Online' : 'Sistema Offline'}</span>
+                  <span className="text-blue-200">{isSupabaseConfigured() ? 'Sistema Online' : 'Sistema Offline'}</span>
                 </div>
               </div>
             </div>
@@ -363,7 +363,7 @@ export default function AuthOficinaPage() {
                 <button
                   onClick={() => setActiveTab('register')}
                   className={`flex-1 py-3 px-4 text-center font-bold transition-colors ${
-                    activeTab === 'register' ? 'text-orange-600 border-b-2 border-orange-600 bg-orange-50' : 'text-gray-600 hover:text-gray-900'
+                    activeTab === 'register' ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
                   Cadastrar Oficina
@@ -371,7 +371,7 @@ export default function AuthOficinaPage() {
                 <button
                   onClick={() => setActiveTab('login')}
                   className={`flex-1 py-3 px-4 text-center font-bold transition-colors ${
-                    activeTab === 'login' ? 'text-orange-600 border-b-2 border-orange-600 bg-orange-50' : 'text-gray-600 hover:text-gray-900'
+                    activeTab === 'login' ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
                   Já tenho conta
@@ -424,7 +424,7 @@ export default function AuthOficinaPage() {
                       required
                       value={formData.businessName}
                       onChange={(e) => setFormData({...formData, businessName: e.target.value})}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900 placeholder-gray-600 bg-white font-medium"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-600 bg-white font-medium"
                       placeholder="Auto Center Silva"
                     />
                   </div>
@@ -435,7 +435,7 @@ export default function AuthOficinaPage() {
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900 placeholder-gray-600 bg-white font-medium"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-600 bg-white font-medium"
                       placeholder="oficina@email.com"
                     />
                   </div>
@@ -447,7 +447,7 @@ export default function AuthOficinaPage() {
                         required
                         value={formData.password}
                         onChange={(e) => setFormData({...formData, password: e.target.value})}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 pr-12 text-gray-900 placeholder-gray-600 bg-white font-medium"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-12 text-gray-900 placeholder-gray-600 bg-white font-medium"
                         placeholder="Mínimo 6 caracteres"
                       />
                       <button
@@ -466,7 +466,7 @@ export default function AuthOficinaPage() {
                       required
                       value={formData.confirmPassword}
                       onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900 placeholder-gray-600 bg-white font-medium"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-600 bg-white font-medium"
                       placeholder="Confirme sua senha"
                     />
                   </div>
@@ -506,7 +506,7 @@ export default function AuthOficinaPage() {
                   <button
                     type="submit"
                     disabled={loading || !isSupabaseConfigured()}
-                    className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 px-4 rounded-lg transition-all disabled:opacity-50 text-lg"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-lg transition-all disabled:opacity-50 text-lg"
                   >
                     {loading ? '🔄 Criando conta...' : '🔧 Criar conta da oficina'}
                   </button>
@@ -527,7 +527,7 @@ export default function AuthOficinaPage() {
                         required
                         value={formData.email}
                         onChange={(e) => setFormData({...formData, email: e.target.value})}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900 placeholder-gray-600 bg-white font-medium"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-600 bg-white font-medium"
                         placeholder="oficina@email.com"
                       />
                     </div>
@@ -539,7 +539,7 @@ export default function AuthOficinaPage() {
                           required
                           value={formData.password}
                           onChange={(e) => setFormData({...formData, password: e.target.value})}
-                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 pr-12 text-gray-900 placeholder-gray-600 bg-white font-medium"
+                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-12 text-gray-900 placeholder-gray-600 bg-white font-medium"
                           placeholder="Sua senha"
                         />
                         <button
@@ -552,14 +552,14 @@ export default function AuthOficinaPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <Link href="/auth/recuperar-senha" className="text-sm text-orange-600 hover:text-orange-800 font-bold">
+                      <Link href="/auth/recuperar-senha" className="text-sm text-blue-600 hover:text-blue-800 font-bold">
                         Esqueci minha senha
                       </Link>
                     </div>
                     <button
                       type="submit"
                       disabled={loading || !isSupabaseConfigured()}
-                      className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 px-4 rounded-lg transition-all disabled:opacity-50 text-lg"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-lg transition-all disabled:opacity-50 text-lg"
                     >
                       {loading ? '🔄 Entrando...' : '✅ Entrar'}
                     </button>
@@ -569,7 +569,7 @@ export default function AuthOficinaPage() {
 
               <div className="mt-8 text-center">
                 <p className="text-sm text-gray-600 mb-2">É um motorista?</p>
-                <Link href="/auth/motorista" className="text-orange-600 hover:text-orange-800 font-bold">
+                <Link href="/auth/motorista" className="text-blue-600 hover:text-blue-800 font-bold">
                   Clique aqui para criar conta de motorista →
                 </Link>
               </div>

@@ -210,7 +210,7 @@ const Header = () => {
           
           {/* Botão CTA com efeito de brilho */}
           <Link 
-            href="/oficina-basica" 
+            href="/auth/oficina" 
             ref={ctaButtonRef}
             className="relative overflow-hidden !bg-yellow !hover:bg-yellow-dark text-text-base font-bold py-2.5 px-6 rounded-lg shadow-lg transition-all duration-300 group"
             style={{backgroundColor: '#FFDE59'}}
@@ -301,7 +301,7 @@ const Header = () => {
                   </Link>
                   
                   <Link 
-                    href="/oficina-basica" 
+                    href="/auth/oficina" 
                     className="block w-full text-center !bg-yellow !hover:bg-yellow-dark text-text-base font-bold py-3 px-4 rounded-lg shadow-lg transition-all"
                     style={{backgroundColor: '#FFDE59'}}
                     onClick={() => setMobileMenuOpen(false)}
