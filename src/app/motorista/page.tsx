@@ -39,17 +39,17 @@ export default function MotoristaDashboard() {
         animate={{ opacity: 1, y: 0 }}
         className="bg-gradient-to-r from-[#0047CC] to-[#0055EB] rounded-2xl p-6 text-white"
       >
-        <h2 className="text-2xl font-bold mb-2">Olá, {user?.name?.split(' ')[0]}! 👋</h2>
-        <p className="text-blue-100 mb-4">Gerencie seus veículos e acompanhe seus serviços em um só lugar.</p>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/motorista/garagem">
-            <button className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center">
+        <h2 className="text-xl md:text-2xl font-bold mb-2">Olá, {user?.name?.split(' ')[0]}! 👋</h2>
+        <p className="text-blue-100 mb-4 text-sm md:text-base">Gerencie seus veículos e acompanhe seus serviços em um só lugar.</p>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link href="/motorista/garagem" className="flex-1 sm:flex-none">
+            <button className="w-full sm:w-auto bg-white/20 hover:bg-white/30 text-white px-6 py-4 rounded-lg font-medium transition-colors flex items-center justify-center min-h-[48px]">
               <PlusIcon className="h-5 w-5 mr-2" />
               Novo Veículo
             </button>
           </Link>
-          <Link href="/oficinas/busca">
-            <button className="bg-[#FFDE59] hover:bg-[#FFDE59]/90 text-[#0047CC] px-4 py-2 rounded-lg font-medium transition-colors flex items-center">
+          <Link href="/oficinas/busca" className="flex-1 sm:flex-none">
+            <button className="w-full sm:w-auto bg-[#FFDE59] hover:bg-[#FFDE59]/90 text-[#0047CC] px-6 py-4 rounded-lg font-medium transition-colors flex items-center justify-center min-h-[48px]">
               <CalendarIcon className="h-5 w-5 mr-2" />
               Agendar Serviço
             </button>
@@ -57,9 +57,9 @@ export default function MotoristaDashboard() {
         </div>
       </motion.div>
 
-      {/* Stats Grid */}
+      {/* Stats Grid - Mobile Responsive */}
       <motion.div 
-        className="grid grid-cols-1 md:grid-cols-4 gap-6"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
@@ -70,15 +70,15 @@ export default function MotoristaDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
+            className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                <p className="text-sm text-gray-600">{stat.label}</p>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+              <div className="mb-2 md:mb-0">
+                <p className="text-xl md:text-2xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-xs md:text-sm text-gray-600">{stat.label}</p>
               </div>
-              <div className={`p-3 rounded-xl ${stat.color}/10`}>
-                <stat.icon className={`h-6 w-6 ${stat.color.replace('bg-', 'text-')}`} />
+              <div className={`p-2 md:p-3 rounded-lg md:rounded-xl ${stat.color}/10 w-fit`}>
+                <stat.icon className={`h-5 w-5 md:h-6 md:w-6 ${stat.color.replace('bg-', 'text-')}`} />
               </div>
             </div>
           </motion.div>
@@ -90,12 +90,12 @@ export default function MotoristaDashboard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100"
+        className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100"
       >
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Ações Rápidas</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
           <Link href="/motorista/notificacoes" className="group">
-            <div className="flex items-center p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors">
+            <div className="flex items-center p-4 md:p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors min-h-[72px] touch-manipulation">
               <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
                 <BellIcon className="h-5 w-5 text-blue-600" />
               </div>
@@ -107,7 +107,7 @@ export default function MotoristaDashboard() {
           </Link>
 
           <Link href="/motorista/localizacao" className="group">
-            <div className="flex items-center p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors">
+            <div className="flex items-center p-4 md:p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors min-h-[72px] touch-manipulation">
               <div className="p-2 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
                 <MapPinIcon className="h-5 w-5 text-green-600" />
               </div>
@@ -119,7 +119,7 @@ export default function MotoristaDashboard() {
           </Link>
 
           <Link href="/motorista/pagamentos" className="group">
-            <div className="flex items-center p-4 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors">
+            <div className="flex items-center p-4 md:p-4 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors min-h-[72px] touch-manipulation">
               <div className="p-2 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
                 <CreditCardIcon className="h-5 w-5 text-purple-600" />
               </div>
@@ -141,12 +141,12 @@ export default function MotoristaDashboard() {
       >
         {/* Veículos */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-            <div className="p-6 border-b border-gray-100">
-              <div className="flex items-center justify-between">
+          <div className="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100">
+            <div className="p-4 md:p-6 border-b border-gray-100">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <h3 className="text-lg font-semibold text-gray-900">Meus Veículos</h3>
                 <Link href="/motorista/garagem">
-                  <button className="bg-[#0047CC] hover:bg-[#0055EB] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
+                  <button className="bg-[#0047CC] hover:bg-[#0055EB] text-white px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center min-h-[44px] w-full sm:w-auto">
                     <PlusIcon className="h-4 w-4 mr-2" />
                     Adicionar
                   </button>
@@ -154,28 +154,28 @@ export default function MotoristaDashboard() {
               </div>
             </div>
             
-            <div className="p-6">
+            <div className="p-4 md:p-6">
               {user?.vehicles && user.vehicles.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-3 md:space-y-4">
                   {user.vehicles.map(vehicle => (
                     <motion.div
                       key={vehicle.id}
                       whileHover={{ scale: 1.01 }}
-                      className="p-4 border border-gray-200 rounded-xl hover:shadow-md transition-all cursor-pointer"
+                      className="p-4 border border-gray-200 rounded-xl hover:shadow-md transition-all cursor-pointer touch-manipulation"
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                            <TruckIcon className="h-6 w-6 text-gray-600" />
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center space-x-3 md:space-x-4">
+                          <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <TruckIcon className="h-5 w-5 md:h-6 md:w-6 text-gray-600" />
                           </div>
-                          <div>
-                            <h4 className="font-semibold text-gray-900">{vehicle.brand} {vehicle.model}</h4>
+                          <div className="min-w-0 flex-1">
+                            <h4 className="font-semibold text-gray-900 truncate">{vehicle.brand} {vehicle.model}</h4>
                             <p className="text-sm text-gray-600">{vehicle.year} • {vehicle.plate}</p>
                             <p className="text-xs text-gray-500">{vehicle.color}</p>
                           </div>
                         </div>
                         
-                        <div className="text-right">
+                        <div className="flex justify-end">
                           <span className="inline-block px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
                             Em dia
                           </span>
@@ -185,12 +185,12 @@ export default function MotoristaDashboard() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <TruckIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <div className="text-center py-8 md:py-12">
+                  <TruckIcon className="h-10 w-10 md:h-12 md:w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum veículo cadastrado</h3>
-                  <p className="text-gray-600 mb-4">Adicione seu primeiro veículo para começar a usar o Instauto.</p>
+                  <p className="text-gray-600 mb-4 text-sm md:text-base px-4">Adicione seu primeiro veículo para começar a usar o Instauto.</p>
                   <Link href="/motorista/garagem">
-                    <button className="bg-[#0047CC] hover:bg-[#0055EB] text-white px-6 py-3 rounded-xl font-medium transition-colors">
+                    <button className="bg-[#0047CC] hover:bg-[#0055EB] text-white px-6 py-4 rounded-xl font-medium transition-colors min-h-[48px] flex items-center justify-center mx-auto">
                       Adicionar Veículo
                     </button>
                   </Link>
@@ -202,13 +202,13 @@ export default function MotoristaDashboard() {
 
         {/* Atividades Recentes */}
         <div>
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-            <div className="p-6 border-b border-gray-100">
+          <div className="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100">
+            <div className="p-4 md:p-6 border-b border-gray-100">
               <h3 className="text-lg font-semibold text-gray-900">Atividades Recentes</h3>
             </div>
             
-            <div className="p-6">
-              <div className="space-y-4">
+            <div className="p-4 md:p-6">
+              <div className="space-y-3 md:space-y-4">
                 {recentActivities.map((activity, index) => (
                   <div key={index} className="flex items-start space-x-3">
                     <div className={`w-2 h-2 rounded-full mt-2 ${
