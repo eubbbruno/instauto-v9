@@ -26,27 +26,27 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-blue text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow-md active:scale-95;
+    @apply bg-blue-600 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow-md active:scale-95;
   }
 
   .btn-primary:hover {
-    @apply bg-blue-dark;
+    @apply bg-blue-700;
   }
 
   .btn-secondary {
-    @apply bg-yellow text-gray-900 py-3 px-6 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow-md active:scale-95;
+    @apply bg-yellow-400 text-gray-900 py-3 px-6 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow-md active:scale-95;
   }
 
   .btn-secondary:hover {
-    @apply bg-yellow-dark;
+    @apply bg-yellow-500;
   }
 
   .btn-outline {
-    @apply border-2 border-blue text-blue py-3 px-6 rounded-lg font-medium transition-all duration-300 hover:shadow-sm active:scale-95;
+    @apply border-2 border-blue-600 text-blue-600 py-3 px-6 rounded-lg font-medium transition-all duration-300 hover:shadow-sm active:scale-95;
   }
 
   .btn-outline:hover {
-    @apply bg-blue-light;
+    @apply bg-blue-50;
   }
 
   .container-custom {
@@ -79,12 +79,12 @@
   }
   
   .feature-icon-container {
-    @apply relative flex items-center justify-center h-12 w-12 rounded-xl bg-blue-light text-blue;
+    @apply relative flex items-center justify-center h-12 w-12 rounded-xl bg-blue-50 text-blue-600;
   }
   
   .feature-icon-container::before {
     content: '';
-    @apply absolute -inset-0.5 rounded-xl bg-gradient-to-r from-blue to-blue-dark opacity-30 blur;
+    @apply absolute -inset-0.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 opacity-30 blur;
   }
 
   /* Estilos customizados para Leaflet */
@@ -134,7 +134,7 @@
   .leaflet-control-zoom-in:hover,
   .leaflet-control-zoom-out:hover {
     background-color: #f9fafb !important;
-    color: #0047CC !important;
+    color: rgb(37 99 235) !important; /* blue-600 */
   }
 
   .leaflet-control-attribution {
@@ -179,7 +179,7 @@ p, span, a, button, input, textarea, select, li {
 }
 
 .pattern-grid {
-  background-image: linear-gradient(#0047CC 1.5px, transparent 1.5px, transparent calc(100% - 1.5px), #0047CC calc(100% - 1.5px)), linear-gradient(90deg, #0047CC 1.5px, transparent 1.5px, transparent calc(100% - 1.5px), #0047CC calc(100% - 1.5px));
+  background-image: linear-gradient(rgb(37 99 235) 1.5px, transparent 1.5px, transparent calc(100% - 1.5px), rgb(37 99 235) calc(100% - 1.5px)), linear-gradient(90deg, rgb(37 99 235) 1.5px, transparent 1.5px, transparent calc(100% - 1.5px), rgb(37 99 235) calc(100% - 1.5px));
   background-size: 30px 30px;
   background-position: -1px -1px;
   opacity: 0.07;
@@ -196,7 +196,7 @@ p, span, a, button, input, textarea, select, li {
 }
 
 .pattern-dots {
-  background-image: radial-gradient(#0047CC 2px, transparent 2px);
+  background-image: radial-gradient(rgb(37 99 235) 2px, transparent 2px);
   background-size: 24px 24px;
   opacity: 0.1;
 }
@@ -204,8 +204,8 @@ p, span, a, button, input, textarea, select, li {
 .pattern-stripes {
   background: repeating-linear-gradient(
     45deg,
-    #0047CC,
-    #0047CC 2px,
+    rgb(37 99 235),
+    rgb(37 99 235) 2px,
     transparent 2px,
     transparent 12px
   );
