@@ -30,6 +30,16 @@ export default function AuthOficinaPage() {
     if (!isSupabaseConfigured()) {
       setMessage('⚠️ Sistema em manutenção. Tente novamente em instantes.')
     }
+    
+    // Verificar se vem do OAuth e precisa completar perfil
+    const urlParams = new URLSearchParams(window.location.search)
+    const stepParam = urlParams.get('step')
+    const oauthParam = urlParams.get('oauth')
+    
+    if (stepParam === 'profile' && oauthParam === 'true') {
+      setStep('profile')
+      setMessage('🎉 Login realizado! Complete os dados da oficina para continuar.')
+    }
   }, [])
 
   const signInWithEmail = async (e: React.FormEvent) => {

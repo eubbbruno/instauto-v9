@@ -28,6 +28,16 @@ export default function AuthMotoristaPage() {
     if (!isSupabaseConfigured()) {
       setMessage('⚠️ Sistema em manutenção. Tente novamente em instantes.')
     }
+    
+    // Verificar se vem do OAuth e precisa completar perfil
+    const urlParams = new URLSearchParams(window.location.search)
+    const stepParam = urlParams.get('step')
+    const oauthParam = urlParams.get('oauth')
+    
+    if (stepParam === 'profile' && oauthParam === 'true') {
+      setStep('profile')
+      setMessage('🎉 Login realizado! Complete seu perfil para continuar.')
+    }
   }, [])
 
   const signInWithEmail = async (e: React.FormEvent) => {

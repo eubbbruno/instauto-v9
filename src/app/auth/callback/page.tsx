@@ -10,7 +10,18 @@ function AuthCallbackContent() {
   const searchParams = useSearchParams()
 
   // Função para redirecionar baseado no tipo de usuário - igual à página de auth
-  const redirectUserByType = (userType: string, planType?: string) => {
+  const redirectUserByType = (userType: string, planType?: string, needsProfileCompletion?: boolean) => {
+    // Se precisa completar perfil após OAuth, redireciona para página de perfil
+    if (needsProfileCompletion) {
+      if (userType === 'motorista') {
+        router.push('/auth/motorista?step=profile&oauth=true')
+      } else if (userType === 'oficina') {
+        router.push('/auth/oficina?step=profile&oauth=true')
+      }
+      return
+    }
+
+    // Fluxo normal após perfil completo
     if (userType === 'motorista') {
       router.push('/motorista')
     } else if (userType === 'oficina') {
@@ -64,17 +75,28 @@ function AuthCallbackContent() {
               .single()
 
             if (profileError) {
-              console.warn('Erro ao buscar perfil:', profileError)
-              // Se não encontrar perfil, usar dados do metadata do usuário ou perguntar tipo
+              console.warn('Perfil não encontrado, precisa completar:', profileError)
               const userType = sessionData.session.user.user_metadata?.type || 'motorista'
               
               setTimeout(() => {
-                redirectUserByType(userType)
+                redirectUserByType(userType, undefined, true) // needsProfileCompletion = true
               }, 2000)
             } else {
-              setTimeout(() => {
-                redirectUserByType(profile.type, profile.plan_type)
-              }, 2000)
+              // Verificar se perfil está completo
+              const isProfileComplete = profile.type && (
+                profile.type === 'motorista' ? true : // Motorista: só precisa de type
+                (profile.type === 'oficina' && profile.plan_type) // Oficina: precisa de type e plan_type
+              )
+              
+              if (!isProfileComplete) {
+                setTimeout(() => {
+                  redirectUserByType(profile.type, profile.plan_type, true) // needsProfileCompletion = true
+                }, 2000)
+              } else {
+                setTimeout(() => {
+                  redirectUserByType(profile.type, profile.plan_type, false) // Profile completo
+                }, 2000)
+              }
             }
             return
           }
@@ -103,16 +125,28 @@ function AuthCallbackContent() {
             .single()
 
           if (profileError) {
-            console.warn('Erro ao buscar perfil:', profileError)
+            console.warn('Perfil não encontrado, precisa completar:', profileError)
             const userType = data.session.user.user_metadata?.type || 'motorista'
             
             setTimeout(() => {
-              redirectUserByType(userType)
+              redirectUserByType(userType, undefined, true) // needsProfileCompletion = true
             }, 2000)
           } else {
-            setTimeout(() => {
-              redirectUserByType(profile.type, profile.plan_type)
-            }, 2000)
+            // Verificar se perfil está completo
+            const isProfileComplete = profile.type && (
+              profile.type === 'motorista' ? true : // Motorista: só precisa de type
+              (profile.type === 'oficina' && profile.plan_type) // Oficina: precisa de type e plan_type
+            )
+            
+            if (!isProfileComplete) {
+              setTimeout(() => {
+                redirectUserByType(profile.type, profile.plan_type, true) // needsProfileCompletion = true
+              }, 2000)
+            } else {
+              setTimeout(() => {
+                redirectUserByType(profile.type, profile.plan_type, false) // Profile completo
+              }, 2000)
+            }
           }
           return
         }
