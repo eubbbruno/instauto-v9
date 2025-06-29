@@ -194,21 +194,21 @@ export default function AuthOficinaPage() {
   if (step === 'profile') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-          <div className="p-8">
+        <div className="bg-yellow-400 rounded-2xl shadow-2xl w-full max-w-md">
+          <div className="p-8 bg-white rounded-2xl m-4">
             <div className="text-center mb-8">
-              <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <BuildingOfficeIcon className="w-8 h-8 text-blue-600" />
+              <div className="mx-auto w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+                <BuildingOfficeIcon className="w-8 h-8 text-yellow-600" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900">Complete os dados da oficina</h2>
-              <p className="text-gray-600 mt-2">Últimos detalhes para começar!</p>
+              <p className="text-gray-600 mt-2">Só faltam alguns detalhes!</p>
             </div>
 
             {message && (
               <div className={`mb-6 p-4 rounded-lg text-sm font-semibold ${
                 message.includes('❌') ? 'bg-red-100 text-red-800 border-2 border-red-300' 
                 : message.includes('✅') ? 'bg-green-100 text-green-800 border-2 border-green-300'
-                : 'bg-blue-100 text-blue-800 border-2 border-blue-300'
+                : 'bg-yellow-100 text-yellow-800 border-2 border-yellow-300'
               }`}>
                 {message}
               </div>
@@ -216,13 +216,13 @@ export default function AuthOficinaPage() {
 
             <form onSubmit={completeProfile} className="space-y-4">
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-2">CNPJ *</label>
+                <label className="block text-sm font-bold text-gray-900 mb-2">CNPJ</label>
                 <input
                   type="text"
                   required
                   value={formData.cnpj}
                   onChange={(e) => setFormData({...formData, cnpj: e.target.value})}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white font-medium"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 text-gray-900 bg-white font-medium"
                   placeholder="00.000.000/0001-00"
                 />
               </div>
@@ -233,7 +233,7 @@ export default function AuthOficinaPage() {
                   required
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white font-medium"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 text-gray-900 bg-white font-medium"
                   placeholder="(11) 99999-9999"
                 />
               </div>
@@ -273,7 +273,7 @@ export default function AuthOficinaPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-lg transition-all disabled:opacity-50 text-lg"
+                className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-4 px-4 rounded-lg transition-all disabled:opacity-50 text-lg"
               >
                 {loading ? '🔄 Finalizando...' : '✅ Finalizar Cadastro'}
               </button>
@@ -297,7 +297,7 @@ export default function AuthOficinaPage() {
       </div>
 
       <div className="flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden">
+        <div className="bg-yellow-400 rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden">
           <div className="grid md:grid-cols-2 gap-0">
             {/* Coluna da esquerda - Informações */}
             <div className="p-8 bg-gradient-to-br from-blue-600 to-indigo-800 text-white">
@@ -352,7 +352,7 @@ export default function AuthOficinaPage() {
                 <div className={`mb-6 p-4 rounded-lg text-sm font-semibold ${
                   message.includes('❌') ? 'bg-red-100 text-red-800 border-2 border-red-300' 
                   : message.includes('✅') ? 'bg-green-100 text-green-800 border-2 border-green-300'
-                  : 'bg-blue-100 text-blue-800 border-2 border-blue-300'
+                  : 'bg-yellow-100 text-yellow-800 border-2 border-yellow-300'
                 }`}>
                   {message}
                 </div>
@@ -363,7 +363,7 @@ export default function AuthOficinaPage() {
                 <button
                   onClick={() => setActiveTab('register')}
                   className={`flex-1 py-3 px-4 text-center font-bold transition-colors ${
-                    activeTab === 'register' ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50' : 'text-gray-600 hover:text-gray-900'
+                    activeTab === 'register' ? 'text-yellow-600 border-b-2 border-yellow-600 bg-yellow-50' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
                   Cadastrar Oficina
@@ -371,7 +371,7 @@ export default function AuthOficinaPage() {
                 <button
                   onClick={() => setActiveTab('login')}
                   className={`flex-1 py-3 px-4 text-center font-bold transition-colors ${
-                    activeTab === 'login' ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50' : 'text-gray-600 hover:text-gray-900'
+                    activeTab === 'login' ? 'text-yellow-600 border-b-2 border-yellow-600 bg-yellow-50' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
                   Já tenho conta

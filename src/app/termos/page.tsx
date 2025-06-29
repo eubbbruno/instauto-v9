@@ -1,219 +1,156 @@
 import Link from 'next/link'
-import { ChevronLeftIcon } from '@heroicons/react/24/outline'
 
 export default function TermosPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800">
       {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <Link 
-            href="/" 
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors"
-          >
-            <ChevronLeftIcon className="w-5 h-5 mr-2" />
-            Voltar para início
-          </Link>
-        </div>
+      <div className="p-4">
+        <Link href="/" className="inline-flex items-center text-blue-200 hover:text-white font-semibold transition-colors">
+          ← Voltar para início
+        </Link>
       </div>
 
       {/* Conteúdo */}
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="bg-white rounded-xl shadow-sm p-8">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Termos de Uso
-            </h1>
-            <p className="text-lg text-gray-600">
-              Última atualização: {new Date().toLocaleDateString('pt-BR')}
-            </p>
-          </div>
+      <div className="flex items-center justify-center p-4">
+        <div className="bg-yellow-400 rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden">
+          <div className="p-8 bg-white rounded-2xl m-4">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">Termos de Serviço</h1>
+              <p className="text-gray-600">Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>
+            </div>
 
-          <div className="prose prose-lg max-w-none">
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">1. Aceitação dos Termos</h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Bem-vindo ao <strong>Instauto</strong>! Estes Termos de Uso regulam o uso de nossa plataforma 
-                que conecta motoristas e oficinas mecânicas. Ao acessar ou usar nossos serviços, você concorda 
-                em cumprir estes termos.
+            <div className="prose max-w-none text-gray-800 space-y-6">
+              <section>
+                <h2 className="text-xl font-bold text-gray-900 mb-3">1. Aceite dos Termos</h2>
+                <p>
+                  Ao acessar e usar o Instauto (&quot;Plataforma&quot;), você concorda em ficar vinculado a estes 
+                  Termos de Serviço e nossa Política de Privacidade. Se você não concordar com qualquer 
+                  parte destes termos, não use nossa plataforma.
+                </p>
+              </section>
+
+              <section>
+                <h2 className="text-xl font-bold text-gray-900 mb-3">2. Descrição do Serviço</h2>
+                <p>
+                  O Instauto é uma plataforma digital que conecta motoristas com oficinas mecânicas, 
+                  facilitando o agendamento de serviços, orçamentos e acompanhamento de manutenções 
+                  veiculares.
+                </p>
+                <h3 className="text-lg font-semibold text-gray-900 mt-4 mb-2">Para Motoristas:</h3>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>Busca e comparação de oficinas</li>
+                  <li>Solicitação de orçamentos</li>
+                  <li>Agendamento de serviços</li>
+                  <li>Histórico de manutenções</li>
+                </ul>
+                <h3 className="text-lg font-semibold text-gray-900 mt-4 mb-2">Para Oficinas:</h3>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>Gestão de clientes e agendamentos</li>
+                  <li>Sistema de orçamentos</li>
+                  <li>Dashboard de controle</li>
+                  <li>Ferramentas de marketing</li>
+                </ul>
+              </section>
+
+              <section>
+                <h2 className="text-xl font-bold text-gray-900 mb-3">3. Registro e Conta de Usuário</h2>
+                <p>
+                  Para usar nossa plataforma, você deve criar uma conta fornecendo informações precisas, 
+                  atuais e completas. Você é responsável por manter a confidencialidade de sua conta 
+                  e senha.
+                </p>
+                <h3 className="text-lg font-semibold text-gray-900 mt-4 mb-2">Requisitos:</h3>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>Ser maior de 18 anos</li>
+                  <li>Fornecer informações verdadeiras</li>
+                  <li>Manter dados atualizados</li>
+                  <li>Não compartilhar credenciais</li>
+                </ul>
+              </section>
+
+              <section>
+                <h2 className="text-xl font-bold text-gray-900 mb-3">4. Responsabilidades</h2>
+                <h3 className="text-lg font-semibold text-gray-900 mt-4 mb-2">Do Instauto:</h3>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>Manter a plataforma funcionando</li>
+                  <li>Proteger dados dos usuários</li>
+                  <li>Facilitar a comunicação entre as partes</li>
+                  <li>Fornecer suporte técnico</li>
+                </ul>
+                <h3 className="text-lg font-semibold text-gray-900 mt-4 mb-2">Dos Usuários:</h3>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>Usar a plataforma de forma adequada</li>
+                  <li>Fornecer informações verdadeiras</li>
+                  <li>Respeitar outros usuários</li>
+                  <li>Cumprir acordos feitos através da plataforma</li>
+                </ul>
+              </section>
+
+              <section>
+                <h2 className="text-xl font-bold text-gray-900 mb-3">5. Pagamentos e Taxas</h2>
+                <p>
+                  O Instauto pode cobrar taxas pelos serviços premium. Todas as taxas são claramente 
+                  informadas antes da contratação. Os pagamentos são processados através de parceiros 
+                  seguros como Mercado Pago.
+                </p>
+              </section>
+
+              <section>
+                <h2 className="text-xl font-bold text-gray-900 mb-3">6. Privacidade e Dados</h2>
+                <p>
+                  Respeitamos sua privacidade. Nossa coleta e uso de dados pessoais está descrita 
+                  em nossa Política de Privacidade, que faz parte integrante destes termos.
+                </p>
+              </section>
+
+              <section>
+                <h2 className="text-xl font-bold text-gray-900 mb-3">7. Proibições</h2>
+                <p>É proibido:</p>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>Usar a plataforma para atividades ilegais</li>
+                  <li>Tentar hackear ou comprometer a segurança</li>
+                  <li>Criar múltiplas contas falsas</li>
+                  <li>Spam ou comportamento abusivo</li>
+                  <li>Violar direitos de terceiros</li>
+                </ul>
+              </section>
+
+              <section>
+                <h2 className="text-xl font-bold text-gray-900 mb-3">8. Limitação de Responsabilidade</h2>
+                <p>
+                  O Instauto atua como intermediário. Não somos responsáveis pela qualidade dos 
+                  serviços prestados pelas oficinas ou pelo comportamento dos usuários. Nossa 
+                  responsabilidade limita-se ao funcionamento da plataforma.
+                </p>
+              </section>
+
+              <section>
+                <h2 className="text-xl font-bold text-gray-900 mb-3">9. Modificações</h2>
+                <p>
+                  Reservamos o direito de modificar estes termos a qualquer momento. Mudanças 
+                  significativas serão comunicadas com antecedência de 30 dias.
+                </p>
+              </section>
+
+              <section>
+                <h2 className="text-xl font-bold text-gray-900 mb-3">10. Contato</h2>
+                <p>
+                  Para dúvidas sobre estes termos, entre em contato conosco:
+                </p>
+                <ul className="list-none space-y-1">
+                  <li><strong>Email:</strong> suporte@instauto.com.br</li>
+                  <li><strong>Telefone:</strong> (11) 99999-9999</li>
+                  <li><strong>Endereço:</strong> São Paulo, SP</li>
+                </ul>
+              </section>
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+              <p className="text-sm text-gray-600">
+                Estes termos são válidos a partir de {new Date().toLocaleDateString('pt-BR')} e 
+                substituem todos os acordos anteriores.
               </p>
-              <p className="text-gray-700 leading-relaxed">
-                Se você não concorda com qualquer parte destes termos, não deve usar nossa plataforma.
-              </p>
-            </section>
-
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">2. Definições</h2>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
-                <li><strong>&quot;Plataforma&quot;</strong>: O site e aplicativo Instauto</li>
-                <li><strong>&quot;Usuário&quot;</strong>: Qualquer pessoa que acesse ou use a plataforma</li>
-                <li><strong>&quot;Motorista&quot;</strong>: Usuário que procura serviços automotivos</li>
-                <li><strong>&quot;Oficina&quot;</strong>: Prestador de serviços automotivos cadastrado</li>
-                <li><strong>&quot;Serviços&quot;</strong>: Funcionalidades oferecidas pela plataforma</li>
-              </ul>
-            </section>
-
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">3. Elegibilidade</h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Para usar nossa plataforma, você deve:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
-                <li>Ter pelo menos 18 anos de idade</li>
-                <li>Fornecer informações verdadeiras e atualizadas</li>
-                <li>Ter capacidade legal para celebrar contratos</li>
-                <li>Não estar suspenso ou banido da plataforma</li>
-                <li>Cumprir todas as leis aplicáveis</li>
-              </ul>
-            </section>
-
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">4. Cadastro e Conta</h2>
-              
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">4.1 Responsabilidades do Usuário</h3>
-              <ul className="list-disc list-inside text-gray-700 space-y-2 mb-6">
-                <li>Manter informações de conta atualizadas e precisas</li>
-                <li>Proteger credenciais de acesso</li>
-                <li>Notificar imediatamente sobre uso não autorizado</li>
-                <li>Ser responsável por todas as atividades em sua conta</li>
-              </ul>
-
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">4.2 Verificação</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Reservamo-nos o direito de verificar informações fornecidas e solicitar documentos 
-                adicionais quando necessário para garantir a segurança da plataforma.
-              </p>
-            </section>
-
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">5. Uso da Plataforma</h2>
-              
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">5.1 Uso Permitido</h3>
-              <ul className="list-disc list-inside text-gray-700 space-y-2 mb-6">
-                <li>Encontrar e agendar serviços automotivos</li>
-                <li>Gerenciar veículos e histórico de manutenções</li>
-                <li>Comunicar-se com oficinas através da plataforma</li>
-                <li>Avaliar e comentar sobre serviços recebidos</li>
-              </ul>
-
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">5.2 Uso Proibido</h3>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
-                <li>Fornecer informações falsas ou enganosas</li>
-                <li>Usar a plataforma para atividades ilegais</li>
-                <li>Interferir no funcionamento da plataforma</li>
-                <li>Tentar acessar contas de outros usuários</li>
-                <li>Spam, assédio ou comportamento abusivo</li>
-                <li>Violar direitos de propriedade intelectual</li>
-              </ul>
-            </section>
-
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">6. Pagamentos e Tarifas</h2>
-              
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">6.1 Para Motoristas</h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                O uso básico da plataforma é gratuito para motoristas. Alguns serviços premium 
-                podem estar sujeitos a taxas que serão claramente informadas.
-              </p>
-
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">6.2 Para Oficinas</h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Oficinas podem escolher entre planos gratuitos (com limitações) ou pagos. 
-                As taxas são cobradas conforme o plano selecionado.
-              </p>
-
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">6.3 Processamento de Pagamentos</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Utilizamos processadores terceirizados para pagamentos. Ao fazer um pagamento, 
-                você concorda com os termos do processador de pagamento.
-              </p>
-            </section>
-
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">7. Relacionamento com Oficinas</h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                <strong>IMPORTANTE:</strong> O Instauto atua apenas como intermediário, facilitando 
-                a conexão entre motoristas e oficinas. Não somos responsáveis por:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
-                <li>Qualidade dos serviços prestados pelas oficinas</li>
-                <li>Disputas entre motoristas e oficinas</li>
-                <li>Danos ou prejuízos resultantes dos serviços</li>
-                <li>Cumprimento de garantias oferecidas pelas oficinas</li>
-              </ul>
-            </section>
-
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">8. Propriedade Intelectual</h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Todo conteúdo da plataforma (textos, imagens, logos, software) é protegido por 
-                direitos autorais e outras leis de propriedade intelectual.
-              </p>
-              <p className="text-gray-700 leading-relaxed">
-                Você pode usar o conteúdo apenas para fins pessoais e não comerciais, conforme 
-                permitido por estes termos.
-              </p>
-            </section>
-
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">9. Limitação de Responsabilidade</h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                A plataforma é fornecida &quot;como está&quot;. Na máxima extensão permitida por lei, 
-                não garantimos que a plataforma será:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2 mb-6">
-                <li>Livre de erros ou interrupções</li>
-                <li>Segura contra acesso não autorizado</li>
-                <li>Compatível com todos os dispositivos</li>
-                <li>Disponível 24/7 sem manutenção</li>
-              </ul>
-              <p className="text-gray-700 leading-relaxed">
-                Nossa responsabilidade total não excederá o valor pago por você nos últimos 12 meses.
-              </p>
-            </section>
-
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">10. Suspensão e Encerramento</h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Podemos suspender ou encerrar sua conta a qualquer momento se:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
-                <li>Violar estes termos de uso</li>
-                <li>Fornecer informações falsas</li>
-                <li>Usar a plataforma de forma inadequada</li>
-                <li>Não pagar taxas devidas</li>
-                <li>Por motivos de segurança</li>
-              </ul>
-            </section>
-
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">11. Lei Aplicável</h2>
-              <p className="text-gray-700 leading-relaxed">
-                Estes termos são regidos pelas leis brasileiras. Disputas serão resolvidas 
-                nos tribunais de São Paulo/SP, salvo quando a lei exigir foro diferente.
-              </p>
-            </section>
-
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">12. Alterações dos Termos</h2>
-              <p className="text-gray-700 leading-relaxed">
-                Podemos modificar estes termos a qualquer momento. Alterações significativas 
-                serão notificadas com 30 dias de antecedência. O uso continuado da plataforma 
-                após as alterações constitui aceitação dos novos termos.
-              </p>
-            </section>
-
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">13. Contato</h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Para questões sobre estes termos, entre em contato:
-              </p>
-              <div className="bg-gray-50 p-6 rounded-lg">
-                <p className="text-gray-700 mb-2"><strong>Email:</strong> juridico@instauto.com.br</p>
-                <p className="text-gray-700 mb-2"><strong>Telefone:</strong> (11) 4000-0000</p>
-                <p className="text-gray-700"><strong>Endereço:</strong> Avenida Paulista, 1000 - São Paulo/SP</p>
-              </div>
-            </section>
+            </div>
           </div>
         </div>
       </div>

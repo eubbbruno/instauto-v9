@@ -164,12 +164,12 @@ export default function AuthMotoristaPage() {
 
   if (step === 'profile') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-600 via-red-700 to-orange-800 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-          <div className="p-8">
+      <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 flex items-center justify-center p-4">
+        <div className="bg-yellow-400 rounded-2xl shadow-2xl w-full max-w-md">
+          <div className="p-8 bg-white rounded-2xl m-4">
             <div className="text-center mb-8">
-              <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                <UserIcon className="w-8 h-8 text-red-600" />
+              <div className="mx-auto w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+                <UserIcon className="w-8 h-8 text-yellow-600" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900">Complete seu perfil</h2>
               <p className="text-gray-600 mt-2">Falta pouco para começar!</p>
@@ -179,7 +179,7 @@ export default function AuthMotoristaPage() {
               <div className={`mb-6 p-4 rounded-lg text-sm font-semibold ${
                 message.includes('❌') ? 'bg-red-100 text-red-800 border-2 border-red-300' 
                 : message.includes('✅') ? 'bg-green-100 text-green-800 border-2 border-green-300'
-                : 'bg-red-100 text-red-800 border-2 border-red-300'
+                : 'bg-yellow-100 text-yellow-800 border-2 border-yellow-300'
               }`}>
                 {message}
               </div>
@@ -193,7 +193,7 @@ export default function AuthMotoristaPage() {
                   required
                   value={formData.cpf}
                   onChange={(e) => setFormData({...formData, cpf: e.target.value})}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900 bg-white font-medium"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 text-gray-900 bg-white font-medium"
                   placeholder="000.000.000-00"
                 />
               </div>
@@ -204,14 +204,14 @@ export default function AuthMotoristaPage() {
                   required
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900 bg-white font-medium"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 text-gray-900 bg-white font-medium"
                   placeholder="(11) 99999-9999"
                 />
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-4 rounded-lg transition-all disabled:opacity-50 text-lg"
+                className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-4 px-4 rounded-lg transition-all disabled:opacity-50 text-lg"
               >
                 {loading ? '🔄 Finalizando...' : '✅ Finalizar Cadastro'}
               </button>
@@ -223,44 +223,44 @@ export default function AuthMotoristaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-600 via-red-700 to-orange-800">
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800">
       <div className="p-4">
-        <Link href="/" className="inline-flex items-center text-red-200 hover:text-white font-semibold transition-colors">
+        <Link href="/" className="inline-flex items-center text-blue-200 hover:text-white font-semibold transition-colors">
           ← Voltar para início
         </Link>
       </div>
 
       <div className="flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden">
+        <div className="bg-yellow-400 rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden">
           <div className="grid md:grid-cols-2 gap-0">
-            <div className="p-8 bg-gradient-to-br from-red-600 to-orange-800 text-white">
+            <div className="p-8 bg-gradient-to-br from-blue-600 to-indigo-800 text-white">
               <div className="flex items-center gap-3 mb-6">
                 <div className="text-4xl">🚗</div>
                 <h1 className="text-3xl font-bold">Motoristas</h1>
               </div>
               <h2 className="text-xl font-semibold mb-4">Gerencie seus veículos com facilidade</h2>
-              <p className="text-red-100 mb-8 leading-relaxed">
+              <p className="text-blue-100 mb-8 leading-relaxed">
                 Encontre as melhores oficinas, acompanhe manutenções e mantenha seus veículos sempre em perfeito estado.
               </p>
               <div className="space-y-4 mb-8">
                 <div className="flex items-start gap-3">
-                  <CheckCircleIcon className="w-6 h-6 text-red-300 mt-1 flex-shrink-0" />
-                  <span className="text-red-100">Encontre oficinas próximas e confiáveis</span>
+                  <CheckCircleIcon className="w-6 h-6 text-blue-300 mt-1 flex-shrink-0" />
+                  <span className="text-blue-100">Encontre oficinas próximas e confiáveis</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircleIcon className="w-6 h-6 text-red-300 mt-1 flex-shrink-0" />
-                  <span className="text-red-100">Histórico completo de manutenções</span>
+                  <CheckCircleIcon className="w-6 h-6 text-blue-300 mt-1 flex-shrink-0" />
+                  <span className="text-blue-100">Histórico completo de manutenções</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <CheckCircleIcon className="w-6 h-6 text-red-300 mt-1 flex-shrink-0" />
-                  <span className="text-red-100">Lembretes inteligentes de revisões</span>
+                  <CheckCircleIcon className="w-6 h-6 text-blue-300 mt-1 flex-shrink-0" />
+                  <span className="text-blue-100">Lembretes inteligentes de revisões</span>
                 </div>
               </div>
-              <div className="p-4 bg-red-700/60 rounded-lg">
+              <div className="p-4 bg-blue-700/60 rounded-lg">
                 <h4 className="font-semibold text-sm mb-2">Status:</h4>
                 <div className="flex items-center gap-2 text-sm">
                   <span>{isSupabaseConfigured() ? '✅' : '❌'}</span>
-                  <span className="text-red-200">{isSupabaseConfigured() ? 'Sistema Online' : 'Sistema Offline'}</span>
+                  <span className="text-blue-200">{isSupabaseConfigured() ? 'Sistema Online' : 'Sistema Offline'}</span>
                 </div>
               </div>
             </div>
@@ -280,7 +280,7 @@ export default function AuthMotoristaPage() {
                 <div className={`mb-6 p-4 rounded-lg text-sm font-semibold ${
                   message.includes('❌') ? 'bg-red-100 text-red-800 border-2 border-red-300' 
                   : message.includes('✅') ? 'bg-green-100 text-green-800 border-2 border-green-300'
-                  : 'bg-orange-100 text-orange-800 border-2 border-orange-300'
+                  : 'bg-yellow-100 text-yellow-800 border-2 border-yellow-300'
                 }`}>
                   {message}
                 </div>
@@ -290,7 +290,7 @@ export default function AuthMotoristaPage() {
                 <button
                   onClick={() => setActiveTab('login')}
                   className={`flex-1 py-3 px-4 text-center font-bold transition-colors ${
-                    activeTab === 'login' ? 'text-red-600 border-b-2 border-red-600 bg-red-50' : 'text-gray-600 hover:text-gray-900'
+                    activeTab === 'login' ? 'text-yellow-600 border-b-2 border-yellow-600 bg-yellow-50' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
                   Entrar
@@ -298,7 +298,7 @@ export default function AuthMotoristaPage() {
                 <button
                   onClick={() => setActiveTab('register')}
                   className={`flex-1 py-3 px-4 text-center font-bold transition-colors ${
-                    activeTab === 'register' ? 'text-red-600 border-b-2 border-red-600 bg-red-50' : 'text-gray-600 hover:text-gray-900'
+                    activeTab === 'register' ? 'text-yellow-600 border-b-2 border-yellow-600 bg-yellow-50' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
                   Cadastrar
@@ -351,7 +351,7 @@ export default function AuthMotoristaPage() {
                         required
                         value={formData.email}
                         onChange={(e) => setFormData({...formData, email: e.target.value})}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900 placeholder-gray-600 bg-white font-medium"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 text-gray-900 placeholder-gray-600 bg-white font-medium"
                         placeholder="seu@email.com"
                       />
                     </div>
@@ -363,7 +363,7 @@ export default function AuthMotoristaPage() {
                           required
                           value={formData.password}
                           onChange={(e) => setFormData({...formData, password: e.target.value})}
-                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 pr-12 text-gray-900 placeholder-gray-600 bg-white font-medium"
+                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 pr-12 text-gray-900 placeholder-gray-600 bg-white font-medium"
                           placeholder="Sua senha"
                         />
                         <button
@@ -376,21 +376,21 @@ export default function AuthMotoristaPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <Link href="/auth/recuperar-senha" className="text-sm text-red-600 hover:text-red-800 font-bold">
+                      <Link href="/auth/recuperar-senha" className="text-sm text-yellow-600 hover:text-yellow-800 font-bold">
                         Esqueci minha senha
                       </Link>
                     </div>
                     <button
                       type="submit"
                       disabled={loading || !isSupabaseConfigured()}
-                      className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-4 rounded-lg transition-all disabled:opacity-50 text-lg"
+                      className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-4 px-4 rounded-lg transition-all disabled:opacity-50 text-lg"
                     >
                       {loading ? '🔄 Entrando...' : '✅ Entrar'}
                     </button>
                   </form>
                   <div className="mt-6 text-center text-sm text-gray-700">
                     Não tem uma conta? {' '}
-                    <button onClick={() => setActiveTab('register')} className="text-red-600 hover:text-red-800 font-bold">
+                    <button onClick={() => setActiveTab('register')} className="text-yellow-600 hover:text-yellow-800 font-bold">
                       Cadastre-se grátis
                     </button>
                   </div>
@@ -406,7 +406,7 @@ export default function AuthMotoristaPage() {
                       required
                       value={formData.fullName}
                       onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900 placeholder-gray-600 bg-white font-medium"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 text-gray-900 placeholder-gray-600 bg-white font-medium"
                       placeholder="Seu nome completo"
                     />
                   </div>
@@ -417,7 +417,7 @@ export default function AuthMotoristaPage() {
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900 placeholder-gray-600 bg-white font-medium"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 text-gray-900 placeholder-gray-600 bg-white font-medium"
                       placeholder="seu@email.com"
                     />
                   </div>
@@ -429,7 +429,7 @@ export default function AuthMotoristaPage() {
                         required
                         value={formData.password}
                         onChange={(e) => setFormData({...formData, password: e.target.value})}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 pr-12 text-gray-900 placeholder-gray-600 bg-white font-medium"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 pr-12 text-gray-900 placeholder-gray-600 bg-white font-medium"
                         placeholder="Mínimo 6 caracteres"
                       />
                       <button
@@ -448,20 +448,20 @@ export default function AuthMotoristaPage() {
                       required
                       value={formData.confirmPassword}
                       onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900 placeholder-gray-600 bg-white font-medium"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 text-gray-900 placeholder-gray-600 bg-white font-medium"
                       placeholder="Confirme sua senha"
                     />
                   </div>
                   <button
                     type="submit"
                     disabled={loading || !isSupabaseConfigured()}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-4 rounded-lg transition-all disabled:opacity-50 text-lg"
+                    className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-4 px-4 rounded-lg transition-all disabled:opacity-50 text-lg"
                   >
                     {loading ? '🔄 Criando conta...' : '🚗 Criar conta grátis'}
                   </button>
                   <div className="text-center text-sm text-gray-700">
                     Já tem uma conta? {' '}
-                    <button type="button" onClick={() => setActiveTab('login')} className="text-red-600 hover:text-red-800 font-bold">
+                    <button type="button" onClick={() => setActiveTab('login')} className="text-yellow-600 hover:text-yellow-800 font-bold">
                       Faça login
                     </button>
                   </div>
@@ -470,7 +470,7 @@ export default function AuthMotoristaPage() {
 
               <div className="mt-8 text-center">
                 <p className="text-sm text-gray-600 mb-2">É uma oficina mecânica?</p>
-                <Link href="/auth/oficina" className="text-red-600 hover:text-red-800 font-bold">
+                <Link href="/auth/oficina" className="text-yellow-600 hover:text-yellow-800 font-bold">
                   Clique aqui para cadastrar sua oficina →
                 </Link>
               </div>
