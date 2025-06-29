@@ -195,7 +195,7 @@ type FilterValue = string | boolean | number;
 
 export default function AgendamentosPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<AppointmentStatus | 'all'>('all');
+  const [statusFilter] = useState<AppointmentStatus | 'all'>('all');
   const [dateFilter, setDateFilter] = useState<'today' | 'tomorrow' | 'week' | 'all'>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -390,16 +390,16 @@ export default function AgendamentosPage() {
   };
   
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="mb-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">Agendamentos</h1>
+    <div className="p-4 md:p-6 bg-gray-50 min-h-screen">
+      <div className="mb-4 md:mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-800">Agendamentos</h1>
             <p className="text-gray-500 text-sm mt-1">Gerencie os agendamentos da sua oficina</p>
           </div>
           
           <button
-            className="px-4 py-2 bg-[#0047CC] text-white rounded-lg text-sm font-medium hover:bg-[#003CAD] transition-colors inline-flex items-center"
+            className="px-6 py-3 bg-[#0047CC] text-white rounded-lg text-sm font-medium hover:bg-[#003CAD] transition-colors flex items-center justify-center min-h-[48px] w-full sm:w-auto"
           >
             <PlusIcon className="h-5 w-5 mr-2" />
             Novo Agendamento
@@ -407,28 +407,28 @@ export default function AgendamentosPage() {
         </div>
       </div>
       
-      {/* Filtros e busca */}
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-          <div className="md:col-span-6">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Buscar por cliente, placa, serviço..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0047CC] focus:border-transparent"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+      {/* Filtros e busca - Mobile Optimized */}
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-4 md:mb-6">
+        <div className="space-y-4">
+          {/* Barra de busca */}
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
             </div>
+            <input
+              type="text"
+              placeholder="Buscar por cliente, placa, serviço..."
+              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0047CC] focus:border-transparent text-sm md:text-base min-h-[48px]"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
           
-          <div className="md:col-span-4 flex flex-wrap gap-2">
+          {/* Filtros rápidos - Mobile Scroll */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
             <button
               onClick={() => setDateFilter('all')}
-              className={`px-3 py-2 rounded-lg text-sm ${
+              className={`px-4 py-2 rounded-lg text-sm whitespace-nowrap min-h-[40px] ${
                 dateFilter === "all"
                   ? "bg-[#0047CC] text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -438,7 +438,7 @@ export default function AgendamentosPage() {
             </button>
             <button
               onClick={() => setDateFilter('today')}
-              className={`px-3 py-2 rounded-lg text-sm ${
+              className={`px-4 py-2 rounded-lg text-sm whitespace-nowrap min-h-[40px] ${
                 dateFilter === "today"
                   ? "bg-green-500 text-white"
                   : "bg-green-50 text-green-600 hover:bg-green-100"
@@ -448,7 +448,7 @@ export default function AgendamentosPage() {
             </button>
             <button
               onClick={() => setDateFilter('tomorrow')}
-              className={`px-3 py-2 rounded-lg text-sm ${
+              className={`px-4 py-2 rounded-lg text-sm whitespace-nowrap min-h-[40px] ${
                 dateFilter === "tomorrow"
                   ? "bg-blue-500 text-white"
                   : "bg-blue-50 text-blue-600 hover:bg-blue-100"
@@ -458,7 +458,7 @@ export default function AgendamentosPage() {
             </button>
             <button
               onClick={() => setDateFilter('week')}
-              className={`px-3 py-2 rounded-lg text-sm ${
+              className={`px-4 py-2 rounded-lg text-sm whitespace-nowrap min-h-[40px] ${
                 dateFilter === "week"
                   ? "bg-purple-500 text-white"
                   : "bg-purple-50 text-purple-600 hover:bg-purple-100"
@@ -468,13 +468,14 @@ export default function AgendamentosPage() {
             </button>
           </div>
           
-          <div className="md:col-span-2 flex justify-end">
+          {/* Botão de filtros avançados */}
+          <div className="flex justify-center sm:justify-end">
             <button 
               onClick={() => setShowFilters(!showFilters)}
-              className="px-3 py-2 rounded-lg text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center"
+              className="px-4 py-2 rounded-lg text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center min-h-[44px]"
             >
               <FunnelIcon className="h-4 w-4 mr-1" />
-              Filtros
+              Filtros Avançados
               <ChevronDownIcon className={`h-4 w-4 ml-1 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
             </button>
           </div>
@@ -510,8 +511,8 @@ export default function AgendamentosPage() {
         )}
       </div>
       
-      {/* Lista de agendamentos */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Lista de agendamentos - Mobile Responsive */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
         {isLoading ? (
           // Skeleton loading
           Array.from({ length: 6 }).map((_, index) => (
@@ -546,18 +547,19 @@ export default function AgendamentosPage() {
           filteredAppointments.map((appointment, index) => (
             <motion.div
               key={appointment.id}
-              className="bg-white rounded-xl shadow-sm overflow-hidden"
+              className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
             >
-              <div className="p-4">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-medium text-gray-800 truncate">{appointment.customer.name}</h3>
-                    <div className="flex items-center text-sm text-gray-500 mt-1">
-                      <TruckIcon className="h-4 w-4 mr-1" />
-                      <span>
+              <div className="p-4 md:p-5">
+                {/* Header do card - Mobile Optimized */}
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 gap-2">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-gray-800 text-base md:text-lg mb-1">{appointment.customer.name}</h3>
+                    <div className="flex items-center text-sm text-gray-500">
+                      <TruckIcon className="h-4 w-4 mr-1 flex-shrink-0" />
+                      <span className="truncate">
                         {appointment.vehicle.make} {appointment.vehicle.model} ({appointment.vehicle.year})
                       </span>
                     </div>
@@ -565,7 +567,7 @@ export default function AgendamentosPage() {
                       Placa: {appointment.vehicle.plate}
                     </div>
                   </div>
-                  <div className={`px-2.5 py-1 rounded-full text-xs font-medium border flex items-center ${getStatusColor(appointment.status)}`}>
+                  <div className={`px-2.5 py-1.5 rounded-full text-xs font-medium border flex items-center self-start flex-shrink-0 ${getStatusColor(appointment.status)}`}>
                     {getStatusIcon(appointment.status)}
                     <span className="ml-1">{getStatusText(appointment.status)}</span>
                   </div>
@@ -591,9 +593,9 @@ export default function AgendamentosPage() {
                 </div>
                 
                 <div className="border-t border-gray-100 pt-3 mt-3">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center">
-                      <CalendarDaysIcon className="h-4 w-4 text-gray-500 mr-1" />
+                      <CalendarDaysIcon className="h-4 w-4 text-gray-500 mr-1 flex-shrink-0" />
                       <span className="text-sm font-medium">
                         {formatDate(appointment.scheduledFor)}
                       </span>

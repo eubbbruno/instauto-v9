@@ -468,22 +468,6 @@ export default function GaragemPage() {
                     </Link>
                   </div>
                 </div>
-              </div>
-                    className="bg-[#0047CC] hover:bg-[#0055EB] text-white px-4 py-2.5 rounded-lg text-sm font-medium text-center transition-colors flex items-center justify-center"
-                  >
-                    <DocumentTextIcon className="h-4 w-4 mr-1" />
-                    Ver Detalhes
-                  </Link>
-                  
-                  <Link
-                    href={`/motorista/buscar`}
-                    className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-lg text-sm font-medium text-center transition-colors flex items-center justify-center"
-                  >
-                    <WrenchScrewdriverIcon className="h-4 w-4 mr-1" />
-                    Agendar Serviço
-                  </Link>
-                </div>
-              </div>
             </motion.div>
           ))}
         </motion.div>
