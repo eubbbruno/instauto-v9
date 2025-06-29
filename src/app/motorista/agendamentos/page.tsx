@@ -8,23 +8,11 @@ import {
   ClockIcon, 
   ArrowPathIcon, 
   XCircleIcon,
-  BuildingStorefrontIcon,
-  FunnelIcon,
-  MagnifyingGlassIcon,
-  PlusIcon,
-  BellIcon,
   MapPinIcon,
-  PhoneIcon,
-  ChatBubbleLeftRightIcon,
-  EyeIcon,
-  PencilIcon,
-  CreditCardIcon,
-  StarIcon as StarIconOutline,
-  SparklesIcon,
-  WrenchIcon
+  WrenchIcon,
+  TruckIcon
 } from "@heroicons/react/24/outline";
-import { StarIcon } from "@heroicons/react/24/solid";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import GlobalHeader from "@/components/GlobalHeader";
 import Footer from "@/components/Footer";
 
@@ -73,11 +61,7 @@ interface Agendamento {
 export default function AgendamentosPage() {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [filtroStatus, setFiltroStatus] = useState<string>("todos");
-  const [filtroPeriodo, setFiltroPeriodo] = useState<string>("todos");
-  const [termoBusca, setTermoBusca] = useState<string>("");
   const [carregando, setCarregando] = useState(true);
-  const [viewMode, setViewMode] = useState<"grid" | "timeline">("grid");
-  const [showQuickSchedule, setShowQuickSchedule] = useState(false);
 
   // Carregar dados dos agendamentos expandidos
   useEffect(() => {
@@ -389,49 +373,49 @@ export default function AgendamentosPage() {
 
   const getStatusActions = (agendamento: Agendamento) => {
     switch (agendamento.status) {
-      case "agendado":
-        return (
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => {
-                // Lógica para cancelar agendamento
-                console.log('Cancelar agendamento:', agendamento.id);
-              }}
-              className="px-3 py-1 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={() => {
-                // Lógica para remarcar agendamento
-                console.log('Remarcar agendamento:', agendamento.id);
-              }}
-              className="px-3 py-1 text-sm text-[#0047CC] hover:text-[#003DA6] hover:bg-blue-50 rounded-lg transition-colors"
-            >
-              Remarcar
-            </button>
-          </div>
-        );
-      case "confirmado":
-        return (
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => {
-                // Lógica para cancelar agendamento
-                console.log('Cancelar agendamento:', agendamento.id);
-              }}
-              className="px-3 py-1 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-            >
-              Cancelar
-            </button>
-            <Link
-              href={`/motorista/agendamentos/${agendamento.id}/acompanhar`}
-              className="px-3 py-1 text-sm text-[#0047CC] hover:text-[#003DA6] hover:bg-blue-50 rounded-lg transition-colors"
-            >
-              Acompanhar
-            </Link>
-          </div>
-        );
+          case "agendado":
+      return (
+        <div className="flex flex-col sm:flex-row gap-2">
+          <button
+            onClick={() => {
+              // Lógica para cancelar agendamento
+              console.log('Cancelar agendamento:', agendamento.id);
+            }}
+            className="px-4 py-3 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors min-h-[44px] border border-red-200"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={() => {
+              // Lógica para remarcar agendamento
+              console.log('Remarcar agendamento:', agendamento.id);
+            }}
+            className="px-4 py-3 text-sm font-medium text-[#0047CC] hover:text-[#003DA6] hover:bg-blue-50 rounded-lg transition-colors min-h-[44px] border border-blue-200"
+          >
+            Remarcar
+          </button>
+        </div>
+      );
+          case "confirmado":
+      return (
+        <div className="flex flex-col sm:flex-row gap-2">
+          <button
+            onClick={() => {
+              // Lógica para cancelar agendamento
+              console.log('Cancelar agendamento:', agendamento.id);
+            }}
+            className="px-4 py-3 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors min-h-[44px] border border-red-200"
+          >
+            Cancelar
+          </button>
+          <Link
+            href={`/motorista/agendamentos/${agendamento.id}/acompanhar`}
+            className="px-4 py-3 text-sm font-medium text-[#0047CC] hover:text-[#003DA6] hover:bg-blue-50 rounded-lg transition-colors min-h-[44px] border border-blue-200 text-center flex items-center justify-center"
+          >
+            Acompanhar
+          </Link>
+        </div>
+      );
       case "em_andamento":
         return (
           <div className="flex items-center space-x-2">
@@ -551,12 +535,12 @@ export default function AgendamentosPage() {
         {/* Lista de Agendamentos */}
         <div className="space-y-4">
           {agendamentosFiltrados().length === 0 ? (
-            <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+            <div className="bg-white rounded-xl border border-gray-200 p-8 md:p-12 text-center">
               <WrenchIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
                 Nenhum agendamento encontrado
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 mb-6 text-sm md:text-base">
                 {filtroStatus === "todos" 
                   ? "Você ainda não tem agendamentos."
                   : `Não há agendamentos com status "${getStatusText(filtroStatus as Agendamento['status']).toLowerCase()}".`
@@ -564,7 +548,7 @@ export default function AgendamentosPage() {
               </p>
               <Link 
                 href="/oficinas/busca"
-                className="bg-[#0047CC] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#003DA6] transition-colors inline-block"
+                className="bg-[#0047CC] text-white px-6 py-4 rounded-lg font-medium hover:bg-[#003DA6] transition-colors inline-block min-h-[48px] flex items-center justify-center"
               >
                 Agendar serviço
               </Link>
@@ -581,101 +565,75 @@ export default function AgendamentosPage() {
                   transition={{ delay: index * 0.1 }}
                   className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <div className="p-6">
-                    {/* Header do agendamento */}
-                    <div className="flex items-start justify-between mb-4">
+                  <div className="p-4 md:p-6">
+                    {/* Header do agendamento - Responsivo */}
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 space-y-3 sm:space-y-0">
                       <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-2">
                           <h3 className="text-lg font-semibold text-gray-900">
                             {agendamento.oficina.nome}
                           </h3>
-                          <div className={`inline-flex items-center space-x-1 px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(agendamento.status)}`}>
+                          <div className={`inline-flex items-center space-x-1 px-2 py-1 text-xs font-medium rounded-full w-fit ${getStatusColor(agendamento.status)}`}>
                             <StatusIcon className="h-3 w-3" />
                             <span>{getStatusText(agendamento.status)}</span>
                           </div>
                         </div>
                         
-                        <div className="flex items-center space-x-4 text-sm text-gray-600">
+                        {/* Info mobile-friendly */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-sm text-gray-600">
                           <div className="flex items-center space-x-1">
-                            <CalendarIcon className="h-4 w-4" />
-                            <span>{formatarData(agendamento.data)} às {agendamento.horario}</span>
+                            <CalendarIcon className="h-4 w-4 flex-shrink-0" />
+                            <span>{formatarData(agendamento.data)}</span>
                           </div>
                           <div className="flex items-center space-x-1">
-                            <ClockIcon className="h-4 w-4" />
-                            <span>{agendamento.duracaoEstimada}</span>
+                            <ClockIcon className="h-4 w-4 flex-shrink-0" />
+                            <span>{agendamento.horario}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <TruckIcon className="h-4 w-4 flex-shrink-0" />
+                            <span>{agendamento.veiculo.marca} {agendamento.veiculo.modelo}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <MapPinIcon className="h-4 w-4 flex-shrink-0" />
+                            <span>{agendamento.oficina.distancia}</span>
                           </div>
                         </div>
                       </div>
                       
-                      <div className="text-right">
-                        <p className="text-lg font-semibold text-[#0047CC]">
-                          R$ {agendamento.precoTotal.toFixed(2).replace('.', ',')}
-                        </p>
-                        <p className="text-sm text-gray-500">Total estimado</p>
+                      {/* Botões de ação - Mobile-friendly */}
+                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 w-full sm:w-auto">
+                        {getStatusActions(agendamento)}
                       </div>
                     </div>
 
-                    {/* Detalhes */}
-                    <div className="grid md:grid-cols-2 gap-6 mb-4">
-                      {/* Serviços */}
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-2">Serviços</h4>
-                        <div className="space-y-1">
-                          {agendamento.servicos.map((servico, idx) => (
-                            <div key={idx} className="flex items-center space-x-2 text-sm text-gray-600">
-                              <WrenchIcon className="h-3 w-3" />
-                              <span>{servico.nome}</span>
-                            </div>
-                          ))}
-                        </div>
+                    {/* Serviços */}
+                    <div className="border-t pt-4">
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">Serviços:</h4>
+                      <div className="space-y-1">
+                        {agendamento.servicos.map((servico, idx) => (
+                          <div key={idx} className="flex justify-between items-center text-sm">
+                            <span className="text-gray-700">{servico.nome}</span>
+                            <span className="font-medium text-gray-900">R$ {servico.preco}</span>
+                          </div>
+                        ))}
                       </div>
                       
-                      {/* Veículo */}
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-2">Veículo</h4>
-                        <div className="text-sm text-gray-600">
-                          <p>{agendamento.veiculo.marca} {agendamento.veiculo.modelo} {agendamento.veiculo.ano}</p>
-                          <p>Placa: {agendamento.veiculo.placa}</p>
-                        </div>
+                      {/* Total - Destacado */}
+                      <div className="border-t mt-3 pt-3 flex justify-between items-center">
+                        <span className="font-semibold text-gray-900">Total:</span>
+                        <span className="text-lg font-bold text-[#0047CC]">
+                          R$ {calcularTotal(agendamento.servicos).toFixed(2)}
+                        </span>
                       </div>
                     </div>
 
-                    {/* Localização */}
-                    <div className="flex items-center space-x-2 text-sm text-gray-600 mb-4">
-                      <MapPinIcon className="h-4 w-4" />
-                      <span>{agendamento.oficina.endereco}</span>
-                    </div>
-
-                    {/* Observações */}
+                    {/* Observações se houver */}
                     {agendamento.observacoes && (
-                      <div className="bg-gray-50 rounded-lg p-3 mb-4">
-                        <h4 className="font-medium text-gray-900 text-sm mb-1">Observações</h4>
-                        <p className="text-sm text-gray-600">{agendamento.observacoes}</p>
+                      <div className="border-t pt-4 mt-4">
+                        <h4 className="text-sm font-medium text-gray-900 mb-1">Observações:</h4>
+                        <p className="text-sm text-gray-600 italic">{agendamento.observacoes}</p>
                       </div>
                     )}
-
-                    {/* Ações */}
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                      <div className="flex items-center space-x-4">
-                        <a
-                          href={`tel:${agendamento.oficina.telefone}`}
-                          className="flex items-center space-x-1 text-sm text-gray-600 hover:text-[#0047CC] transition-colors"
-                        >
-                          <PhoneIcon className="h-4 w-4" />
-                          <span>{agendamento.oficina.telefone}</span>
-                        </a>
-                        
-                        <a
-                          href={`https://wa.me/${agendamento.oficina.telefone.replace(/\D/g, '')}`}
-                          className="flex items-center space-x-1 text-sm text-gray-600 hover:text-green-600 transition-colors"
-                        >
-                          <ChatBubbleLeftRightIcon className="h-4 w-4" />
-                          <span>WhatsApp</span>
-                        </a>
-                      </div>
-                      
-                      {getStatusActions(agendamento)}
-                    </div>
                   </div>
                 </motion.div>
               );
