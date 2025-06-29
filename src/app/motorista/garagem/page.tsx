@@ -5,14 +5,11 @@ import {
   PencilIcon, 
   TrashIcon,
   DocumentTextIcon,
-  ArrowPathIcon,
-  ShieldCheckIcon,
   TruckIcon,
   BellIcon,
   CalendarDaysIcon,
   ExclamationTriangleIcon,
   WrenchScrewdriverIcon,
-  BeakerIcon,
   XMarkIcon
 } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
@@ -468,6 +465,7 @@ export default function GaragemPage() {
                     </Link>
                   </div>
                 </div>
+              </div>
             </motion.div>
           ))}
         </motion.div>
