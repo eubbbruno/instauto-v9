@@ -284,18 +284,18 @@ export default function BuscarOficinasPage() {
   };
   
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Buscar Oficinas</h1>
-          <p className="text-gray-600">Encontre as melhores oficinas para o serviço que você precisa.</p>
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
+      {/* Header - Mobile Responsive */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex-1">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Buscar Oficinas</h1>
+          <p className="text-sm md:text-base text-gray-600">Encontre as melhores oficinas para o serviço que você precisa.</p>
         </div>
         
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-2 md:gap-3">
           <button
             onClick={() => setShowMap(!showMap)}
-            className={`p-2 rounded-lg transition-colors ${
+            className={`p-3 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
               showMap 
                 ? 'bg-[#0047CC] text-white' 
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -307,7 +307,7 @@ export default function BuscarOficinasPage() {
           
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`p-2 rounded-lg transition-colors ${
+            className={`p-3 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
               showFilters 
                 ? 'bg-[#0047CC] text-white' 
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -319,49 +319,53 @@ export default function BuscarOficinasPage() {
         </div>
       </div>
       
-      {/* Barra de pesquisa aprimorada */}
+      {/* Barra de pesquisa - Mobile Optimized */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="p-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1 relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+        <div className="p-4 md:p-6">
+          <div className="flex flex-col gap-3 md:gap-4">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Digite o serviço, nome da oficina..."
+                  className="block w-full pl-10 pr-3 py-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0047CC] focus:border-transparent text-sm md:text-base min-h-[48px]"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
-              <input
-                type="text"
-                placeholder="Digite o serviço, nome da oficina ou localização..."
-                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0047CC] focus:border-transparent text-sm"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+              
+              <div className="flex-shrink-0">
+                <button className="flex items-center justify-center w-full sm:w-auto px-6 py-4 bg-[#0047CC] text-white rounded-lg hover:bg-[#0055EB] transition-colors font-medium min-h-[48px]">
+                  <MagnifyingGlassIcon className="h-5 w-5 mr-2" />
+                  Buscar
+                </button>
+              </div>
             </div>
-            
-            <div className="flex-shrink-0">
-              <button className="flex items-center justify-center w-full lg:w-auto px-6 py-3 bg-[#0047CC] text-white rounded-lg hover:bg-[#0055EB] transition-colors font-medium">
-                <MagnifyingGlassIcon className="h-5 w-5 mr-2" />
-                Buscar
-              </button>
-            </div>
-          </div>
           
-          {/* Filtros rápidos */}
-          <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-100">
-            <span className="text-sm text-gray-500 mr-2 flex items-center font-medium">
-              <AdjustmentsHorizontalIcon className="h-4 w-4 mr-1" /> Filtros Rápidos:
-            </span>
-            {["todos", "mecânica", "elétrica", "funilaria", "pneus", "revisão", "24h"].map((filter) => (
-              <button
-                key={filter}
-                onClick={() => setSelectedFilter(filter)}
-                className={`px-3 py-1.5 text-sm rounded-full capitalize transition-colors ${
-                  selectedFilter === filter
-                    ? "bg-[#0047CC] text-white shadow-md"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                {filter === "24h" ? "24 Horas" : filter}
-              </button>
-            ))}
+            {/* Filtros rápidos - Mobile Scroll */}
+            <div className="border-t border-gray-100 pt-3 md:pt-4">
+              <span className="text-xs md:text-sm text-gray-500 flex items-center font-medium mb-2">
+                <AdjustmentsHorizontalIcon className="h-4 w-4 mr-1" /> Filtros Rápidos:
+              </span>
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                {["todos", "mecânica", "elétrica", "funilaria", "pneus", "revisão", "24h"].map((filter) => (
+                  <button
+                    key={filter}
+                    onClick={() => setSelectedFilter(filter)}
+                    className={`px-4 py-2 text-sm rounded-full capitalize transition-colors whitespace-nowrap min-h-[40px] ${
+                      selectedFilter === filter
+                        ? "bg-[#0047CC] text-white shadow-md"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    {filter === "24h" ? "24 Horas" : filter}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -378,7 +382,7 @@ export default function BuscarOficinasPage() {
             <div className="p-6 space-y-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Filtros Avançados</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {/* Distância */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -390,7 +394,7 @@ export default function BuscarOficinasPage() {
                     max="20"
                     value={filters.maxDistancia}
                     onChange={(e) => setFilters({...filters, maxDistancia: parseInt(e.target.value)})}
-                    className="w-full"
+                    className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-200"
                   />
                 </div>
                 
@@ -400,7 +404,7 @@ export default function BuscarOficinasPage() {
                   <select
                     value={filters.precoRange}
                     onChange={(e) => setFilters({...filters, precoRange: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0047CC]"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#0047CC] min-h-[44px] text-sm md:text-base"
                   >
                     <option value="todos">Todos os preços</option>
                     <option value="baixo">$ - Econômico</option>
@@ -415,7 +419,7 @@ export default function BuscarOficinasPage() {
                   <select
                     value={filters.horario}
                     onChange={(e) => setFilters({...filters, horario: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0047CC]"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#0047CC] min-h-[44px] text-sm md:text-base"
                   >
                     <option value="todos">Qualquer horário</option>
                     <option value="agora">Aberto agora</option>
@@ -435,7 +439,7 @@ export default function BuscarOficinasPage() {
                     step="0.5"
                     value={filters.avaliacao}
                     onChange={(e) => setFilters({...filters, avaliacao: parseFloat(e.target.value)})}
-                    className="w-full"
+                    className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-200"
                   />
                 </div>
               </div>
@@ -491,12 +495,12 @@ export default function BuscarOficinasPage() {
         )}
       </AnimatePresence>
       
-      {/* Botão para enviar solicitação para oficinas selecionadas */}
+      {/* Botão para enviar solicitação - Mobile Optimized */}
       {selectedOfficinas.length > 0 && (
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-[#0047CC] to-[#0055EB] text-white p-6 rounded-xl shadow-lg"
+          className="bg-gradient-to-r from-[#0047CC] to-[#0055EB] text-white p-4 md:p-6 rounded-xl shadow-lg"
         >
           <div className="flex items-center justify-between">
             <div>
@@ -631,12 +635,12 @@ export default function BuscarOficinasPage() {
         </motion.div>
       )}
       
-      {/* Lista de oficinas aprimorada */}
+      {/* Lista de oficinas - Mobile Responsive */}
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6"
       >
         {filteredOfficinas.length > 0 ? (
           filteredOfficinas.map((oficina) => (
@@ -650,7 +654,7 @@ export default function BuscarOficinasPage() {
               {/* Header do Card */}
               <div className="relative">
                 {/* Imagem da oficina */}
-                <div className="h-48 relative bg-gradient-to-br from-blue-50 to-blue-100">
+                <div className="h-40 md:h-48 relative bg-gradient-to-br from-blue-50 to-blue-100">
                   <div className="w-full h-full flex items-center justify-center">
                     <BuildingStorefrontIcon className="h-16 w-16 text-[#0047CC]/20" />
                   </div>
@@ -711,27 +715,27 @@ export default function BuscarOficinasPage() {
                 </div>
               </div>
               
-              {/* Conteúdo do Card */}
-              <div className="p-5">
+              {/* Conteúdo do Card - Mobile Optimized */}
+              <div className="p-4 md:p-5">
                 {/* Nome e preço */}
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="font-bold text-lg text-gray-900 mb-1 line-clamp-1">{oficina.nome}</h3>
-                    <p className="text-gray-500 text-sm line-clamp-1">{oficina.endereco}</p>
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-3 gap-2">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-lg text-gray-900 mb-1 line-clamp-2">{oficina.nome}</h3>
+                    <p className="text-gray-500 text-sm line-clamp-2">{oficina.endereco}</p>
                   </div>
-                  <div className="text-right ml-3">
+                  <div className="text-left sm:text-right flex-shrink-0">
                     <div className="text-lg font-bold text-[#0047CC]">{oficina.preco}</div>
                     <div className="text-xs text-gray-500">Preço médio</div>
                   </div>
                 </div>
                 
                 {/* Horário e tempo de resposta */}
-                <div className="flex items-center justify-between mb-3 text-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-1 text-sm">
                   <div className="flex items-center text-gray-600">
-                    <ClockIcon className="h-4 w-4 mr-1" />
-                    <span>{oficina.horarioFuncionamento}</span>
+                    <ClockIcon className="h-4 w-4 mr-1 flex-shrink-0" />
+                    <span className="truncate">{oficina.horarioFuncionamento}</span>
                   </div>
-                  <div className="text-green-600 font-medium">
+                  <div className="text-green-600 font-medium text-xs sm:text-sm">
                     ⚡ Responde em {oficina.tempoResposta}
                   </div>
                 </div>
@@ -767,13 +771,13 @@ export default function BuscarOficinasPage() {
                   </div>
                 </div>
                 
-                {/* Ações do card */}
+                {/* Ações do card - Mobile Optimized */}
                 <div className="space-y-3">
-                  {/* Botões de ação */}
-                  <div className="flex space-x-2">
+                  {/* Botões de ação - Touch Friendly */}
+                  <div className="flex gap-2">
                     <a
                       href={`tel:${oficina.telefone}`}
-                      className="flex-1 bg-green-50 hover:bg-green-100 text-green-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center"
+                      className="flex-1 bg-green-50 hover:bg-green-100 text-green-700 px-3 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center min-h-[44px] touch-manipulation"
                     >
                       <PhoneIcon className="h-4 w-4 mr-1" />
                       Ligar
@@ -783,17 +787,17 @@ export default function BuscarOficinasPage() {
                       href={`https://wa.me/55${oficina.telefone.replace(/\D/g, '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center"
+                      className="flex-1 bg-green-500 hover:bg-green-600 text-white px-3 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center min-h-[44px] touch-manipulation"
                     >
                       <ChatBubbleLeftRightIcon className="h-4 w-4 mr-1" />
                       WhatsApp
                     </a>
                   </div>
                   
-                  {/* Botão de seleção */}
+                  {/* Botão de seleção - Touch Friendly */}
                   <button 
                     onClick={() => toggleOfficina(oficina.id)}
-                    className={`w-full py-3 rounded-lg flex items-center justify-center transition-all font-medium ${
+                    className={`w-full py-4 rounded-lg flex items-center justify-center transition-all font-medium min-h-[48px] touch-manipulation ${
                       selectedOfficinas.includes(oficina.id)
                         ? "bg-[#0047CC] text-white shadow-md"
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
