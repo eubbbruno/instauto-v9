@@ -97,11 +97,11 @@ export default function DashboardPage() {
                 Bem-vindo ao seu painel de controle. Aqui está o resumo do seu negócio hoje.
               </p>
               <div className="mt-4 flex gap-2">
-                <button className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 border border-white/30 backdrop-blur-sm flex items-center">
+                <button className="bg-white/10 hover:bg-white/20 text-white px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 border border-white/30 backdrop-blur-sm flex items-center justify-center min-h-[44px] w-full sm:w-auto">
                   <ClockIcon className="h-4 w-4 mr-2" />
                   Atividade Recente
                 </button>
-                <button className="bg-[#FFDE59] hover:bg-[#FFD327] text-[#0047CC] px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center shadow-md">
+                <button className="bg-[#FFDE59] hover:bg-[#FFD327] text-[#0047CC] px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center shadow-md min-h-[44px] w-full sm:w-auto">
                   <PlusIcon className="h-4 w-4 mr-2" />
                   Nova Ordem
                 </button>
@@ -134,13 +134,13 @@ export default function DashboardPage() {
           </div>
         </motion.div>
         
-        {/* Filtro de Período */}
-        <div className="flex justify-between items-center mb-4">
+        {/* Filtro de Período - Mobile Responsive */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
           <h3 className="text-lg font-bold text-gray-800">Resumo do desempenho</h3>
-          <div className="bg-white shadow-sm rounded-lg p-1 flex">
+          <div className="bg-white shadow-sm rounded-lg p-1 flex w-full sm:w-auto">
             <button 
               onClick={() => setCurrentPeriod("today")}
-              className={`px-3 py-1.5 text-sm rounded-md transition-all ${
+              className={`px-3 py-2 text-sm rounded-md transition-all flex-1 sm:flex-none min-h-[40px] ${
                 currentPeriod === "today" 
                   ? "bg-[#0047CC] text-white" 
                   : "text-gray-600 hover:bg-gray-100"
@@ -150,7 +150,7 @@ export default function DashboardPage() {
             </button>
             <button 
               onClick={() => setCurrentPeriod("thisWeek")}
-              className={`px-3 py-1.5 text-sm rounded-md transition-all ${
+              className={`px-3 py-2 text-sm rounded-md transition-all flex-1 sm:flex-none min-h-[40px] ${
                 currentPeriod === "thisWeek" 
                   ? "bg-[#0047CC] text-white" 
                   : "text-gray-600 hover:bg-gray-100"
@@ -160,7 +160,7 @@ export default function DashboardPage() {
             </button>
             <button 
               onClick={() => setCurrentPeriod("thisMonth")}
-              className={`px-3 py-1.5 text-sm rounded-md transition-all ${
+              className={`px-3 py-2 text-sm rounded-md transition-all flex-1 sm:flex-none min-h-[40px] ${
                 currentPeriod === "thisMonth" 
                   ? "bg-[#0047CC] text-white" 
                   : "text-gray-600 hover:bg-gray-100"
@@ -171,9 +171,9 @@ export default function DashboardPage() {
           </div>
         </div>
         
-        {/* Stats Cards */}
+        {/* Stats Cards - Mobile Optimized */}
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6"
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
@@ -221,20 +221,20 @@ export default function DashboardPage() {
               variants={fadeInUp}
               className="bg-white rounded-xl shadow-sm overflow-hidden"
             >
-              <div className="px-6 py-5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-500">{stat.label}</p>
-                    <h4 className="text-2xl font-bold mt-1 text-gray-800">{stat.value}</h4>
+              <div className="px-4 md:px-6 py-4 md:py-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex-1">
+                    <p className="text-xs md:text-sm text-gray-500">{stat.label}</p>
+                    <h4 className="text-xl md:text-2xl font-bold mt-1 text-gray-800">{stat.value}</h4>
                   </div>
-                  <div className={`p-3 rounded-full ${stat.iconColor}`}>
+                  <div className={`p-2 md:p-3 rounded-full ${stat.iconColor} w-fit`}>
                     {stat.icon}
                   </div>
                 </div>
                 
-                <div className="mt-4 flex items-center text-sm">
-                  {stat.trend === "up" && <ArrowUpIcon className="h-4 w-4 text-green-500 mr-1" />}
-                  {stat.trend === "down" && <ArrowDownIcon className="h-4 w-4 text-red-500 mr-1" />}
+                <div className="mt-3 md:mt-4 flex items-center text-xs md:text-sm">
+                  {stat.trend === "up" && <ArrowUpIcon className="h-3 w-3 md:h-4 md:w-4 text-green-500 mr-1" />}
+                  {stat.trend === "down" && <ArrowDownIcon className="h-3 w-3 md:h-4 md:w-4 text-red-500 mr-1" />}
                   <span className={`${
                     stat.trend === "up" ? "text-green-600" : 
                     stat.trend === "down" ? "text-red-600" : 
@@ -249,10 +249,10 @@ export default function DashboardPage() {
           ))}
         </motion.div>
         
-        {/* Layout principal de 3 colunas */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Layout principal de 3 colunas - Mobile Responsive */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
           {/* Coluna 1: Gráfico de Faturamento e Diagnóstico AI */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 md:space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -282,7 +282,7 @@ export default function DashboardPage() {
           </div>
           
           {/* Coluna 2: Calendário e Oportunidades */}
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -302,29 +302,29 @@ export default function DashboardPage() {
               <OpportunitiesPanel limit={3} />
             </motion.div>
             
-            {/* Ratings Summary */}
+            {/* Ratings Summary - Mobile Optimized */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.6 }}
               className="bg-white rounded-xl shadow-sm overflow-hidden"
             >
-              <div className="px-6 pt-5 pb-3 border-b border-gray-100">
+              <div className="px-4 md:px-6 pt-4 md:pt-5 pb-3 border-b border-gray-100">
                 <h3 className="text-lg font-bold text-gray-800">Avaliações Recentes</h3>
               </div>
-              <div className="p-6">
-                <div className="flex items-center mb-4">
-                  <div className="text-3xl font-bold text-gray-800 mr-4">4.8</div>
-                    <div>
-                    <div className="flex">
+              <div className="p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center mb-4 gap-3">
+                  <div className="text-2xl md:text-3xl font-bold text-gray-800 text-center sm:text-left">4.8</div>
+                    <div className="text-center sm:text-left">
+                    <div className="flex justify-center sm:justify-start">
                       {[...Array(5)].map((_, i) => (
-                        <StarIconSolid key={i} className={`h-5 w-5 ${i < 4 ? 'text-yellow-400' : 'text-gray-300'}`} />
+                        <StarIconSolid key={i} className={`h-4 w-4 md:h-5 md:w-5 ${i < 4 ? 'text-yellow-400' : 'text-gray-300'}`} />
                       ))}
                     </div>
-                    <div className="text-sm text-gray-500 mt-1">Baseado em 48 avaliações</div>
+                    <div className="text-xs md:text-sm text-gray-500 mt-1">Baseado em 48 avaliações</div>
                   </div>
               </div>
-                <div className="space-y-2">
+                <div className="space-y-2 md:space-y-3">
                   {[
                     { stars: 5, percentage: 80 },
                     { stars: 4, percentage: 15 },
@@ -332,19 +332,19 @@ export default function DashboardPage() {
                     { stars: 2, percentage: 1 },
                     { stars: 1, percentage: 1 }
                   ].map((rating) => (
-                    <div key={rating.stars} className="flex items-center">
-                      <div className="flex w-20">
-                        <span className="text-sm text-gray-600">{rating.stars}</span>
-                        <StarIconSolid className="h-4 w-4 text-yellow-400 ml-1" />
+                    <div key={rating.stars} className="flex items-center gap-2 md:gap-3">
+                      <div className="flex w-16 md:w-20 items-center">
+                        <span className="text-xs md:text-sm text-gray-600">{rating.stars}</span>
+                        <StarIconSolid className="h-3 w-3 md:h-4 md:w-4 text-yellow-400 ml-1" />
             </div>
-                      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="flex-1 h-1.5 md:h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-[#0047CC] rounded-full"
                           style={{ width: `${rating.percentage}%` }}
                         ></div>
               </div>
-                      <div className="w-12 text-right">
-                        <span className="text-sm text-gray-600">{rating.percentage}%</span>
+                      <div className="w-10 md:w-12 text-right">
+                        <span className="text-xs md:text-sm text-gray-600">{rating.percentage}%</span>
                       </div>
                     </div>
                       ))}
