@@ -2,12 +2,13 @@
 
 ## ✅ IMPLEMENTAÇÕES REALIZADAS
 
-### **1. FLUXO OAUTH CORRIGIDO**
+### **1. FLUXO OAUTH CORRIGIDO** ✅
 - ✅ Após login FB/Google → Redireciona para completar perfil
 - ✅ Fluxo: OAuth → `/auth/motorista?step=profile&oauth=true` → Dashboard
 - ✅ Validação se perfil está completo antes de entrar no sistema
+- ✅ Deploy: Commit `29c0bde`
 
-### **2. COMPONENTES MOBILE-FIRST CRIADOS**
+### **2. COMPONENTES MOBILE-FIRST CRIADOS** ✅
 
 #### **MobileResponsiveTable.tsx**
 - ✅ Tabela que vira cards no mobile
