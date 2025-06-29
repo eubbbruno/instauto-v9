@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { 
   MagnifyingGlassIcon, 
   PlusIcon,
@@ -10,7 +9,6 @@ import {
   ChevronDownIcon,
   PhoneIcon,
   EnvelopeIcon,
-  MapPinIcon,
   TagIcon,
   DocumentDuplicateIcon,
   ArrowUpTrayIcon,
@@ -19,6 +17,7 @@ import {
   ArrowPathIcon,
   CalendarDaysIcon
 } from "@heroicons/react/24/outline";
+import MobileResponsiveTable from "@/components/MobileResponsiveTable";
 
 // Tipos para clientes
 type ClientStatus = 'ativo' | 'inativo' | 'potencial' | 'vip';
@@ -198,55 +197,31 @@ const mockClients: Client[] = [
 const clientStats = {
   totalClients: 124,
   activeClients: 98,
-  inactiveClients: 18,
-  potentialClients: 8,
   vipClients: 12,
-  newClientsThisMonth: 4,
-  retentionRate: 87
+  newClientsThisMonth: 8,
+  retentionRate: 89
 };
 
 export default function ClientesPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<ClientStatus | 'all'>('all');
-  const [vehicleFilter, setVehicleFilter] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>('name');
-  const [isLoading, setIsLoading] = useState(false);
-  const [clients, setClients] = useState<Client[]>(mockClients);
-  const [showFilters, setShowFilters] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  
-  // Filtrar clientes
-  const filteredClients = clients
+  const [statusFilter, setStatusFilter] = useState<ClientStatus | "all">("all");
+  const [sortBy, setSortBy] = useState<"name" | "lastVisit" | "totalSpent">("name");
+  const [isLoading] = useState(false);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+
+  // Filtrar clientes baseado na busca e filtros
+  const filteredClients = mockClients
     .filter(client => {
-      // Filtro por termo de busca
-      if (searchTerm && 
-          !client.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
-          !client.email?.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          !client.phone.includes(searchTerm)) {
-        return false;
-      }
+      const matchesSearch = 
+        client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.phone.includes(searchTerm);
       
-      // Filtro por status
-      if (statusFilter !== 'all' && client.status !== statusFilter) {
-        return false;
-      }
+      const matchesStatus = statusFilter === "all" || client.status === statusFilter;
       
-      // Filtro por veículo
-      if (vehicleFilter) {
-        const hasMatchingVehicle = client.vehicles.some(vehicle => 
-          vehicle.make.toLowerCase().includes(vehicleFilter.toLowerCase()) ||
-          vehicle.model.toLowerCase().includes(vehicleFilter.toLowerCase()) ||
-          vehicle.plate.toLowerCase().includes(vehicleFilter.toLowerCase())
-        );
-        
-        if (!hasMatchingVehicle) return false;
-      }
-      
-      return true;
+      return matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
-      // Ordenação
       switch (sortBy) {
         case 'name':
           return a.name.localeCompare(b.name);
@@ -331,27 +306,150 @@ export default function ClientesPage() {
       return `${years} ${years === 1 ? 'ano' : 'anos'} atrás`;
     }
   };
+
+  // Configuração da tabela mobile-responsive
+  const tableColumns = [
+    {
+      key: 'cliente' as keyof Client,
+      label: 'Cliente',
+      render: (client: Client) => (
+        <div className="flex items-center">
+          <div className="flex-shrink-0 h-10 w-10 md:h-8 md:w-8">
+            {client.photo ? (
+              <img 
+                src={client.photo} 
+                alt={client.name}
+                className="h-10 w-10 md:h-8 md:w-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="h-10 w-10 md:h-8 md:w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                <UserCircleIcon className="h-6 w-6 md:h-5 md:w-5 text-blue-600" />
+              </div>
+            )}
+          </div>
+          <div className="ml-3">
+            <div className="text-sm md:text-sm font-medium text-gray-900">{client.name}</div>
+            <div className="text-xs text-gray-500">Cliente desde {formatDate(client.createdAt)}</div>
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'contato' as keyof Client,
+      label: 'Contato',
+      render: (client: Client) => (
+        <div>
+          <div className="text-sm text-gray-900 flex items-center">
+            <PhoneIcon className="h-4 w-4 text-gray-400 mr-1" />
+            {client.phone}
+          </div>
+          {client.email && (
+            <div className="text-xs text-gray-500 flex items-center mt-1">
+              <EnvelopeIcon className="h-3 w-3 text-gray-400 mr-1" />
+              {client.email}
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      key: 'vehicles' as keyof Client,
+      label: 'Veículos',
+      render: (client: Client) => (
+        client.vehicles.length > 0 ? (
+          <div>
+            <div className="text-sm text-gray-900">
+              {client.vehicles[0].make} {client.vehicles[0].model} ({client.vehicles[0].year})
+            </div>
+            {client.vehicles.length > 1 && (
+              <div className="text-xs text-blue-600 mt-1">
+                +{client.vehicles.length - 1} veículo(s)
+              </div>
+            )}
+          </div>
+        ) : (
+          <span className="text-xs text-gray-500">Sem veículos</span>
+        )
+      )
+    },
+    {
+      key: 'status' as keyof Client,
+      label: 'Status',
+      render: (client: Client) => (
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusClass(client.status)}`}>
+          {getStatusText(client.status)}
+        </span>
+      )
+    },
+    {
+      key: 'lastVisit' as keyof Client,
+      label: 'Última Visita',
+      render: (client: Client) => (
+        client.lastVisit ? (
+          <div>
+            <div className="text-sm text-gray-900">{formatDate(client.lastVisit)}</div>
+            <div className="text-xs text-gray-500">{getTimeAgo(client.lastVisit)}</div>
+          </div>
+        ) : (
+          <span className="text-xs text-gray-500">Nunca visitou</span>
+        )
+      )
+    },
+    {
+      key: 'totalSpent' as keyof Client,
+      label: 'Total Gasto',
+      render: (client: Client) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900">{formatCurrency(client.totalSpent)}</div>
+          <div className="text-xs text-gray-500">{client.totalServices} serviços</div>
+        </div>
+      )
+    }
+  ];
+
+  const tableActions = (_client: Client) => (
+    <div className="flex flex-col md:flex-row gap-2 md:gap-1 md:space-x-2">
+      <button 
+        className="flex items-center justify-center md:justify-start px-3 py-2 md:p-1 text-gray-500 hover:text-gray-700 bg-gray-100 md:bg-transparent rounded-lg md:rounded-none transition-colors touch-manipulation" 
+        title="Ver detalhes"
+      >
+        <DocumentDuplicateIcon className="h-5 w-5 md:h-4 md:w-4" />
+        <span className="ml-2 md:hidden text-sm">Ver detalhes</span>
+      </button>
+      <button 
+        className="flex items-center justify-center md:justify-start px-3 py-2 md:p-1 text-blue-500 hover:text-blue-700 bg-blue-50 md:bg-transparent rounded-lg md:rounded-none transition-colors touch-manipulation" 
+        title="Enviar mensagem"
+      >
+        <ChatBubbleLeftIcon className="h-5 w-5 md:h-4 md:w-4" />
+        <span className="ml-2 md:hidden text-sm">Mensagem</span>
+      </button>
+      <button 
+        className="flex items-center justify-center md:justify-start px-3 py-2 md:p-1 text-green-500 hover:text-green-700 bg-green-50 md:bg-transparent rounded-lg md:rounded-none transition-colors touch-manipulation" 
+        title="Agendar serviço"
+      >
+        <CalendarDaysIcon className="h-5 w-5 md:h-4 md:w-4" />
+        <span className="ml-2 md:hidden text-sm">Agendar</span>
+      </button>
+    </div>
+  );
   
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="mb-6">
+    <div className="p-4 md:p-6 bg-gray-50 min-h-screen">
+      {/* Header responsivo */}
+      <div className="mb-4 md:mb-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Clientes</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-800">Clientes</h1>
             <p className="text-gray-500 text-sm mt-1">Gerencie seus clientes e veículos</p>
           </div>
           
-          <div className="flex flex-wrap gap-2">
-            <button
-              className="px-4 py-2 bg-[#0047CC] text-white rounded-lg text-sm font-medium hover:bg-[#003CAD] transition-colors inline-flex items-center"
-            >
+          <div className="flex flex-col sm:flex-row gap-2">
+            <button className="px-4 py-3 md:py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors inline-flex items-center justify-center touch-manipulation">
               <PlusIcon className="h-5 w-5 mr-2" />
               Adicionar Cliente
             </button>
             
-            <button
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors inline-flex items-center"
-            >
+            <button className="px-4 py-3 md:py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors inline-flex items-center justify-center touch-manipulation">
               <ArrowUpTrayIcon className="h-5 w-5 mr-2" />
               Importar
             </button>
@@ -359,347 +457,174 @@ export default function ClientesPage() {
         </div>
       </div>
       
-      {/* Estatísticas de clientes */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl shadow-sm p-4">
+      {/* Estatísticas de clientes - responsivas */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
+        <div className="bg-white rounded-xl shadow-sm p-3 md:p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-500">Total de Clientes</h3>
-            <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
-              <UserCircleIcon className="h-4 w-4" />
+            <h3 className="text-xs md:text-sm font-medium text-gray-500">Total</h3>
+            <div className="p-1 md:p-2 bg-blue-100 text-blue-600 rounded-lg">
+              <UserCircleIcon className="h-3 w-3 md:h-4 md:w-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-gray-800">{clientStats.totalClients}</p>
-          <div className="mt-2 text-xs text-green-600 flex items-center">
+          <p className="text-lg md:text-2xl font-bold text-gray-800">{clientStats.totalClients}</p>
+          <div className="mt-1 md:mt-2 text-xs text-green-600 flex items-center">
             <ArrowPathIcon className="h-3 w-3 mr-1" />
-            <span>+{clientStats.newClientsThisMonth} este mês</span>
+            <span>+{clientStats.newClientsThisMonth} mês</span>
           </div>
         </div>
         
-        <div className="bg-white rounded-xl shadow-sm p-4">
+        <div className="bg-white rounded-xl shadow-sm p-3 md:p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-500">Clientes Ativos</h3>
-            <div className="p-2 bg-green-100 text-green-600 rounded-lg">
-              <UserCircleIcon className="h-4 w-4" />
+            <h3 className="text-xs md:text-sm font-medium text-gray-500">Ativos</h3>
+            <div className="p-1 md:p-2 bg-green-100 text-green-600 rounded-lg">
+              <UserCircleIcon className="h-3 w-3 md:h-4 md:w-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-gray-800">{clientStats.activeClients}</p>
-          <div className="mt-2 text-xs text-gray-500">
-            {Math.round((clientStats.activeClients / clientStats.totalClients) * 100)}% do total
+          <p className="text-lg md:text-2xl font-bold text-gray-800">{clientStats.activeClients}</p>
+          <div className="mt-1 md:mt-2 text-xs text-gray-500">
+            {Math.round((clientStats.activeClients / clientStats.totalClients) * 100)}% total
           </div>
         </div>
         
-        <div className="bg-white rounded-xl shadow-sm p-4">
+        <div className="bg-white rounded-xl shadow-sm p-3 md:p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-500">Clientes VIP</h3>
-            <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
-              <TagIcon className="h-4 w-4" />
+            <h3 className="text-xs md:text-sm font-medium text-gray-500">VIP</h3>
+            <div className="p-1 md:p-2 bg-purple-100 text-purple-600 rounded-lg">
+              <TagIcon className="h-3 w-3 md:h-4 md:w-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-gray-800">{clientStats.vipClients}</p>
-          <div className="mt-2 text-xs text-gray-500">
-            {Math.round((clientStats.vipClients / clientStats.totalClients) * 100)}% do total
+          <p className="text-lg md:text-2xl font-bold text-gray-800">{clientStats.vipClients}</p>
+          <div className="mt-1 md:mt-2 text-xs text-gray-500">
+            {Math.round((clientStats.vipClients / clientStats.totalClients) * 100)}% total
           </div>
         </div>
         
-        <div className="bg-white rounded-xl shadow-sm p-4">
+        <div className="bg-white rounded-xl shadow-sm p-3 md:p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-500">Taxa de Retenção</h3>
-            <div className="p-2 bg-amber-100 text-amber-600 rounded-lg">
-              <ChartBarIcon className="h-4 w-4" />
+            <h3 className="text-xs md:text-sm font-medium text-gray-500">Retenção</h3>
+            <div className="p-1 md:p-2 bg-amber-100 text-amber-600 rounded-lg">
+              <ChartBarIcon className="h-3 w-3 md:h-4 md:w-4" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-gray-800">{clientStats.retentionRate}%</p>
-          <div className="mt-2 text-xs text-gray-500">
-            Clientes que retornam
+          <p className="text-lg md:text-2xl font-bold text-gray-800">{clientStats.retentionRate}%</p>
+          <div className="mt-1 md:mt-2 text-xs text-gray-500">
+            Retornam
           </div>
         </div>
       </div>
       
-      {/* Filtros e busca */}
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-          {/* Campo de busca */}
-          <div className="md:col-span-5">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Buscar por nome, email ou telefone..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0047CC] focus:border-transparent"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+      {/* Filtros e busca - mobile-first */}
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-4 md:mb-6">
+        {/* Busca principal */}
+        <div className="mb-4">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
             </div>
+            <input
+              type="text"
+              placeholder="Buscar por nome, email ou telefone..."
+              className="w-full pl-10 pr-4 py-3 md:py-2 text-base md:text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent touch-manipulation"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
-          
-          {/* Filtros rápidos */}
-          <div className="md:col-span-5 flex flex-wrap gap-2">
-            {/* Filtro por status */}
+        </div>
+        
+        {/* Filtros rápidos - scroll horizontal no mobile */}
+        <div className="flex flex-col md:flex-row gap-3 md:gap-4">
+          <div className="flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide">
             <select
-              className="px-3 py-2 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0047CC]"
+              className="flex-shrink-0 px-3 py-3 md:py-2 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 min-w-[140px] touch-manipulation"
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
+              onChange={(e) => setStatusFilter(e.target.value as ClientStatus | "all")}
             >
-              <option value="all">Todos os status</option>
+              <option value="all">Todos status</option>
               <option value="ativo">Ativos</option>
               <option value="inativo">Inativos</option>
               <option value="potencial">Potenciais</option>
               <option value="vip">VIP</option>
             </select>
-            
-            {/* Filtro por veículo */}
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Filtrar por veículo..."
-                className="px-3 py-2 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0047CC]"
-                value={vehicleFilter}
-                onChange={(e) => setVehicleFilter(e.target.value)}
-              />
-            </div>
-          </div>
-          
-          {/* Ordenação e filtros avançados */}
-          <div className="md:col-span-2 flex justify-end gap-2">
+
             <select
-              className="px-3 py-2 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0047CC]"
+              className="flex-shrink-0 px-3 py-3 md:py-2 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 min-w-[120px] touch-manipulation"
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
+              onChange={(e) => setSortBy(e.target.value as "name" | "lastVisit" | "totalSpent")}
             >
               <option value="name">Nome</option>
               <option value="lastVisit">Última visita</option>
               <option value="totalSpent">Valor gasto</option>
             </select>
-            
-            <button 
-              onClick={() => setShowFilters(!showFilters)}
-              className="px-3 py-2 rounded-lg text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center"
-            >
-              <FunnelIcon className="h-4 w-4 mr-1" />
-              <ChevronDownIcon className={`h-4 w-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
-            </button>
           </div>
+
+          <button
+            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            className="flex items-center justify-center px-4 py-3 md:py-2 text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors touch-manipulation md:flex-shrink-0"
+          >
+            <FunnelIcon className="h-5 w-5 mr-2" />
+            <span className="text-sm">Filtros</span>
+            <ChevronDownIcon className={`h-4 w-4 ml-2 transition-transform ${showAdvancedFilters ? 'rotate-180' : ''}`} />
+          </button>
         </div>
-        
-        {/* Filtros avançados (expandíveis) */}
-        {showFilters && (
-          <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Período de cadastro</label>
-              <select className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0047CC]">
-                <option>Todos os períodos</option>
-                <option>Últimos 7 dias</option>
-                <option>Últimos 30 dias</option>
-                <option>Últimos 3 meses</option>
-                <option>Últimos 6 meses</option>
-                <option>Este ano</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de veículo</label>
-              <select className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0047CC]">
-                <option>Todos os veículos</option>
-                <option>Carros</option>
-                <option>Motos</option>
-                <option>Caminhões</option>
-                <option>Utilitários</option>
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Localização</label>
-              <select className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0047CC]">
-                <option>Todas as localidades</option>
-                <option>São Paulo - SP</option>
-                <option>Campinas - SP</option>
-                <option>Rio de Janeiro - RJ</option>
-                <option>Outras localidades</option>
-              </select>
+
+        {/* Filtros avançados */}
+        {showAdvancedFilters && (
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de veículo</label>
+                <select className="w-full px-3 py-3 md:py-2 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 touch-manipulation">
+                  <option>Todos os veículos</option>
+                  <option>Carros</option>
+                  <option>Motos</option>
+                  <option>Caminhões</option>
+                  <option>Utilitários</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Localização</label>
+                <select className="w-full px-3 py-3 md:py-2 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 touch-manipulation">
+                  <option>Todas as localidades</option>
+                  <option>São Paulo - SP</option>
+                  <option>Campinas - SP</option>
+                  <option>Rio de Janeiro - RJ</option>
+                  <option>Outras localidades</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Período</label>
+                <select className="w-full px-3 py-3 md:py-2 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 touch-manipulation">
+                  <option>Último mês</option>
+                  <option>Últimos 3 meses</option>
+                  <option>Último ano</option>
+                  <option>Todos os períodos</option>
+                </select>
+              </div>
             </div>
           </div>
         )}
       </div>
       
-      {/* Lista de clientes */}
+      {/* Lista de clientes - usando MobileResponsiveTable */}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 text-left">
-              <tr>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Cliente
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Contato
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Veículos
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Última Visita
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total Gasto
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Ações
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {isLoading ? (
-                // Loading skeleton
-                Array.from({ length: 5 }).map((_, index) => (
-                  <tr key={index}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse"></div>
-                        <div className="ml-4">
-                          <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
-                          <div className="h-3 bg-gray-200 rounded w-16 mt-2 animate-pulse"></div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="h-6 bg-gray-200 rounded w-16 animate-pulse"></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="h-8 bg-gray-200 rounded w-20 animate-pulse"></div>
-                    </td>
-                  </tr>
-                ))
-              ) : filteredClients.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center">
-                    <div className="flex flex-col items-center justify-center">
-                      <div className="bg-gray-100 p-4 rounded-full mb-4">
-                        <UserCircleIcon className="h-10 w-10 text-gray-400" />
-                      </div>
-                      <h3 className="text-lg font-medium text-gray-800 mb-1">Nenhum cliente encontrado</h3>
-                      <p className="text-gray-500 mb-4">Tente ajustar seus filtros ou adicione um novo cliente</p>
-                      <button
-                        className="px-4 py-2 bg-[#0047CC] text-white rounded-lg text-sm font-medium hover:bg-[#003CAD] transition-colors inline-flex items-center"
-                      >
-                        <PlusIcon className="h-5 w-5 mr-2" />
-                        Adicionar Cliente
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                filteredClients.map((client, index) => (
-                  <motion.tr 
-                    key={client.id} 
-                    className="hover:bg-gray-50 transition-colors"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          {client.photo ? (
-                            <img 
-                              src={client.photo} 
-                              alt={client.name}
-                              className="h-10 w-10 rounded-full object-cover"
-                            />
-                          ) : (
-                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                              <UserCircleIcon className="h-6 w-6 text-blue-600" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">{client.name}</div>
-                          <div className="text-xs text-gray-500">Cliente desde {formatDate(client.createdAt)}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 flex items-center">
-                        <PhoneIcon className="h-4 w-4 text-gray-400 mr-1" />
-                        {client.phone}
-                      </div>
-                      {client.email && (
-                        <div className="text-sm text-gray-500 flex items-center mt-1">
-                          <EnvelopeIcon className="h-4 w-4 text-gray-400 mr-1" />
-                          {client.email}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {client.vehicles.length > 0 ? (
-                        <div>
-                          <div className="text-sm text-gray-900">
-                            {client.vehicles[0].make} {client.vehicles[0].model} ({client.vehicles[0].year})
-                          </div>
-                          {client.vehicles.length > 1 && (
-                            <div className="text-xs text-blue-600 mt-1">
-                              +{client.vehicles.length - 1} veículo(s)
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-xs text-gray-500">Sem veículos</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusClass(client.status)}`}>
-                        {getStatusText(client.status)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {client.lastVisit ? (
-                        <div>
-                          <div className="text-sm text-gray-900">{formatDate(client.lastVisit)}</div>
-                          <div className="text-xs text-gray-500">{getTimeAgo(client.lastVisit)}</div>
-                        </div>
-                      ) : (
-                        <span className="text-xs text-gray-500">Nunca visitou</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{formatCurrency(client.totalSpent)}</div>
-                      <div className="text-xs text-gray-500">{client.totalServices} serviços</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <div className="flex space-x-2">
-                        <button className="text-gray-500 hover:text-gray-700" title="Ver detalhes">
-                          <DocumentDuplicateIcon className="h-5 w-5" />
-                        </button>
-                        <button className="text-blue-500 hover:text-blue-700" title="Enviar mensagem">
-                          <ChatBubbleLeftIcon className="h-5 w-5" />
-                        </button>
-                        <button className="text-green-500 hover:text-green-700" title="Agendar serviço">
-                          <CalendarDaysIcon className="h-5 w-5" />
-                        </button>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        <MobileResponsiveTable
+          data={filteredClients}
+          columns={tableColumns}
+          actions={tableActions}
+          isLoading={isLoading}
+          emptyMessage={{
+            title: "Nenhum cliente encontrado",
+            description: "Tente ajustar seus filtros ou adicione um novo cliente",
+            action: {
+              label: "Adicionar Cliente",
+              icon: <PlusIcon className="h-5 w-5 mr-2" />,
+              onClick: () => console.log('Adicionar cliente')
+            }
+          }}
+          loadingRows={5}
+        />
       </div>
     </div>
   );

@@ -133,19 +133,25 @@ export default function AuthOficinaPage() {
       if (!supabase) throw new Error('Sistema indisponível')
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        const { error } = await supabase.from('profiles').upsert({
+        // 1. Atualizar perfil básico
+        const { error: profileError } = await supabase.from('profiles').upsert({
           id: user.id,
           email: user.email,
           name: formData.businessName,
           type: 'oficina',
-          business_name: formData.businessName,
-          cnpj: formData.cnpj,
           phone: formData.phone,
-          plan_type: formData.planType,
-          created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
-        if (error) throw error
+        if (profileError) throw profileError
+
+        // 2. Criar/atualizar dados específicos da oficina
+        const { error: workshopError } = await supabase.from('workshops').upsert({
+          profile_id: user.id,
+          business_name: formData.businessName,
+          cnpj: formData.cnpj,
+          updated_at: new Date().toISOString()
+        })
+        if (workshopError) throw workshopError
       }
       setMessage('✅ Oficina cadastrada com sucesso!')
       const redirect = formData.planType === 'pro' ? '/dashboard' : '/oficina-basica'

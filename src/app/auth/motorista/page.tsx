@@ -108,17 +108,24 @@ export default function AuthMotoristaPage() {
       if (!supabase) throw new Error('Sistema indisponível')
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        const { error } = await supabase.from('profiles').upsert({
+        // 1. Atualizar perfil básico
+        const { error: profileError } = await supabase.from('profiles').upsert({
           id: user.id,
           email: user.email,
           name: formData.fullName,
           type: 'motorista',
-          cpf: formData.cpf,
           phone: formData.phone,
-          created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
-        if (error) throw error
+        if (profileError) throw profileError
+
+        // 2. Criar/atualizar dados específicos do motorista
+        const { error: driverError } = await supabase.from('drivers').upsert({
+          profile_id: user.id,
+          cpf: formData.cpf,
+          updated_at: new Date().toISOString()
+        })
+        if (driverError) throw driverError
       }
       setMessage('✅ Perfil completado com sucesso!')
       setTimeout(() => router.push('/motorista'), 1000)
