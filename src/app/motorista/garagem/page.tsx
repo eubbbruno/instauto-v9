@@ -236,22 +236,22 @@ export default function GaragemPage() {
   };
   
   return (
-    <div className="p-6 space-y-6">
-      {/* Header aprimorado */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Minha Garagem</h1>
-          <p className="text-gray-600">Gerencie seus veículos, acompanhe manutenções e documentos.</p>
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
+      {/* Header - Mobile Responsive */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex-1">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Minha Garagem</h1>
+          <p className="text-sm md:text-base text-gray-600">Gerencie seus veículos, acompanhe manutenções e documentos.</p>
         </div>
         
-        <div className="flex items-center space-x-3">
-          <button className="p-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <button className="p-3 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
             <BellIcon className="h-5 w-5" />
           </button>
           
           <button
             onClick={handleAddVeiculo}
-            className="bg-[#0047CC] hover:bg-[#0055EB] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center shadow-md hover:shadow-lg"
+            className="bg-[#0047CC] hover:bg-[#0055EB] text-white px-6 py-4 rounded-lg font-semibold transition-all duration-300 flex items-center shadow-md hover:shadow-lg flex-1 sm:flex-none justify-center min-h-[48px]"
           >
             <PlusIcon className="h-5 w-5 mr-2" />
             Adicionar Veículo
@@ -259,9 +259,9 @@ export default function GaragemPage() {
         </div>
       </div>
 
-      {/* Dashboard de estatísticas */}
+      {/* Dashboard de estatísticas - Mobile Optimized */}
       <motion.div 
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6"
+        className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-4 md:mb-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
@@ -270,28 +270,28 @@ export default function GaragemPage() {
           {
             label: "Total de Veículos",
             value: stats.totalVeiculos,
-            icon: <TruckIcon className="h-5 w-5" />,
+            icon: <TruckIcon className="h-4 w-4 md:h-5 md:w-5" />,
             bgColor: "bg-blue-50",
             textColor: "text-blue-600"
           },
           {
             label: "Revisões Próximas", 
             value: stats.proximasRevisoes,
-            icon: <CalendarDaysIcon className="h-5 w-5" />,
+            icon: <CalendarDaysIcon className="h-4 w-4 md:h-5 md:w-5" />,
             bgColor: "bg-orange-50",
             textColor: "text-orange-600"
           },
           {
             label: "Sem Seguro",
             value: stats.semSeguro,
-            icon: <ExclamationTriangleIcon className="h-5 w-5" />,
+            icon: <ExclamationTriangleIcon className="h-4 w-4 md:h-5 md:w-5" />,
             bgColor: "bg-red-50",
             textColor: "text-red-600"
           },
           {
             label: "Gasto Total",
             value: `R$ ${stats.gastoTotal.toLocaleString()}`,
-            icon: <WrenchScrewdriverIcon className="h-5 w-5" />,
+            icon: <WrenchScrewdriverIcon className="h-4 w-4 md:h-5 md:w-5" />,
             bgColor: "bg-green-50",
             textColor: "text-green-600"
           }
@@ -301,14 +301,14 @@ export default function GaragemPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1, duration: 0.4 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 hover:shadow-md transition-shadow"
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                <p className={`text-2xl font-bold ${stat.textColor}`}>{stat.value}</p>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+              <div className="flex-1">
+                <p className="text-xs md:text-sm font-medium text-gray-600 line-clamp-2">{stat.label}</p>
+                <p className={`text-lg md:text-2xl font-bold ${stat.textColor}`}>{stat.value}</p>
               </div>
-              <div className={`w-12 h-12 ${stat.bgColor} rounded-lg flex items-center justify-center`}>
+              <div className={`w-10 h-10 md:w-12 md:h-12 ${stat.bgColor} rounded-lg flex items-center justify-center flex-shrink-0`}>
                 <span className={stat.textColor}>{stat.icon}</span>
               </div>
             </div>
@@ -316,12 +316,12 @@ export default function GaragemPage() {
         ))}
       </motion.div>
       
-      {/* Alertas e lembretes inteligentes */}
+      {/* Alertas e lembretes - Mobile Optimized */}
       {veiculos.some(v => needsAttention(v)) && (
-        <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl p-6 mb-6">
+        <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl p-4 md:p-6 mb-4 md:mb-6">
           <div className="flex items-center mb-4">
-            <ExclamationTriangleIcon className="h-6 w-6 text-orange-600 mr-3" />
-            <h3 className="text-lg font-semibold text-gray-900">Atenção Necessária</h3>
+            <ExclamationTriangleIcon className="h-5 w-5 md:h-6 md:w-6 text-orange-600 mr-2 md:mr-3" />
+            <h3 className="text-base md:text-lg font-semibold text-gray-900">Atenção Necessária</h3>
           </div>
           
           <div className="space-y-3">
@@ -331,13 +331,13 @@ export default function GaragemPage() {
               const diffDays = Math.ceil((proxima.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
               
               return (
-                <div key={veiculo.id} className="flex items-center justify-between bg-white rounded-lg p-4">
-                  <div className="flex items-center">
-                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                <div key={veiculo.id} className="flex flex-col sm:flex-row sm:items-center justify-between bg-white rounded-lg p-4 gap-3">
+                  <div className="flex items-center flex-1">
+                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
                       <TruckIcon className="h-5 w-5 text-gray-600" />
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-900">{veiculo.marca} {veiculo.modelo}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-gray-900 truncate">{veiculo.marca} {veiculo.modelo}</p>
                       <p className="text-sm text-gray-600">
                         {diffDays <= 30 && diffDays > 0 && `Revisão em ${diffDays} dias`}
                         {diffDays <= 0 && "Revisão vencida"}
@@ -346,10 +346,10 @@ export default function GaragemPage() {
                     </div>
                   </div>
                   
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center">
                     <Link
                       href={`/motorista/buscar`}
-                      className="text-sm bg-[#0047CC] text-white px-3 py-1.5 rounded-lg hover:bg-[#0055EB] transition-colors"
+                      className="text-sm bg-[#0047CC] text-white px-4 py-3 rounded-lg hover:bg-[#0055EB] transition-colors w-full sm:w-auto text-center min-h-[44px] flex items-center justify-center"
                     >
                       Agendar
                     </Link>
@@ -361,13 +361,13 @@ export default function GaragemPage() {
         </div>
       )}
 
-      {/* Lista de veículos aprimorada */}
+      {/* Lista de veículos - Mobile Responsive */}
       {veiculos.length > 0 ? (
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6"
         >
           {veiculos.map((veiculo) => (
             <motion.div
@@ -375,116 +375,100 @@ export default function GaragemPage() {
               variants={fadeInUp}
               className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300"
             >
-              {/* Header do card com foto do veículo */}
+              {/* Header do card - Mobile Optimized */}
               <div className="relative">
-                <div className="h-48 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+                <div className="h-40 md:h-48 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
                   {veiculo.foto ? (
                     <img src={veiculo.foto} alt={`${veiculo.marca} ${veiculo.modelo}`} className="w-full h-full object-cover" />
                   ) : (
-                    <TruckIcon className="h-16 w-16 text-gray-400" />
+                    <TruckIcon className="h-12 w-12 md:h-16 md:w-16 text-gray-400" />
                   )}
                 </div>
                 
                 {/* Badge de atenção */}
                 {needsAttention(veiculo) && (
-                  <div className="absolute top-3 left-3 bg-orange-500 text-white px-2 py-1 rounded-lg text-xs font-medium flex items-center">
+                  <div className="absolute top-2 left-2 md:top-3 md:left-3 bg-orange-500 text-white px-2 py-1 rounded-lg text-xs font-medium flex items-center">
                     <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
                     Atenção
                   </div>
                 )}
                 
-                {/* Ações do card */}
-                <div className="absolute top-3 right-3 flex space-x-2">
+                {/* Ações do card - Touch Friendly */}
+                <div className="absolute top-2 right-2 md:top-3 md:right-3 flex gap-2">
                   <button 
                     onClick={() => handleEditVeiculo(veiculo)}
-                    className="w-8 h-8 bg-white/80 backdrop-blur-sm text-gray-600 rounded-lg flex items-center justify-center hover:bg-white transition-all"
-                    title="Editar veículo"
+                    className="w-8 h-8 md:w-10 md:h-10 bg-white/90 hover:bg-white text-gray-700 rounded-lg transition-all flex items-center justify-center min-h-[40px] min-w-[40px] touch-manipulation"
                   >
                     <PencilIcon className="h-4 w-4" />
                   </button>
                   
                   <button 
                     onClick={() => handleRemoveVeiculo(veiculo.id)}
-                    className="w-8 h-8 bg-white/80 backdrop-blur-sm text-red-600 rounded-lg flex items-center justify-center hover:bg-white transition-all"
-                    title="Remover veículo"
+                    className="w-8 h-8 md:w-10 md:h-10 bg-white/90 hover:bg-white text-red-600 rounded-lg transition-all flex items-center justify-center min-h-[40px] min-w-[40px] touch-manipulation"
                   >
                     <TrashIcon className="h-4 w-4" />
                   </button>
                 </div>
               </div>
-
-              {/* Conteúdo do card */}
-              <div className="p-6">
+              
+              {/* Conteúdo do Card - Mobile Optimized */}
+              <div className="p-4 md:p-6">
                 {/* Informações principais */}
                 <div className="mb-4">
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">
+                  <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1 line-clamp-1">
                     {veiculo.marca} {veiculo.modelo}
                   </h3>
-                  <div className="flex items-center justify-between text-sm text-gray-600">
-                    <span>{veiculo.ano} • {veiculo.cor}</span>
-                    <span className="font-medium">{veiculo.placa}</span>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+                    <span>{veiculo.ano}</span>
+                    <span>{veiculo.placa}</span>
+                    <span>{veiculo.cor}</span>
+                    <span>{veiculo.km} km</span>
                   </div>
                 </div>
-
-                {/* Métricas do veículo */}
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="text-center bg-gray-50 rounded-lg p-3">
-                    <p className="text-2xl font-bold text-gray-900">{veiculo.km}</p>
-                    <p className="text-xs text-gray-600">Quilometragem</p>
+                
+                {/* Status cards mini */}
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-500 mb-1">Última Revisão</p>
+                    <p className="text-sm font-medium text-gray-900">{veiculo.ultimaRevisao}</p>
                   </div>
-                  
-                  <div className="text-center bg-gray-50 rounded-lg p-3">
-                    <div className="flex items-center justify-center mb-1">
-                      <BeakerIcon className="h-4 w-4 text-gray-600 mr-1" />
-                      <span className="text-sm font-medium text-gray-900">{veiculo.combustivel}</span>
-                    </div>
-                    <p className="text-xs text-gray-600">Combustível</p>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-500 mb-1">Próxima Revisão</p>
+                    <p className="text-sm font-medium text-gray-900">{veiculo.proximaRevisao}</p>
                   </div>
                 </div>
-
-                {/* Status de manutenção */}
-                <div className="space-y-3 mb-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center">
-                      <ArrowPathIcon className="h-4 w-4 text-[#0047CC] mr-2" />
-                      <span className="text-gray-600">Última Revisão:</span>
-                    </div>
-                    <span className="font-medium text-gray-900">{veiculo.ultimaRevisao}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center">
-                      <CalendarDaysIcon className="h-4 w-4 text-orange-600 mr-2" />
-                      <span className="text-gray-600">Próxima Revisão:</span>
-                    </div>
-                    <span className="font-medium text-gray-900">{veiculo.proximaRevisao}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center">
-                      <ShieldCheckIcon className={`h-4 w-4 mr-2 ${veiculo.seguro.possui ? 'text-green-500' : 'text-red-500'}`} />
-                      <span className="text-gray-600">Seguro:</span>
-                    </div>
-                    <span className={`font-medium ${veiculo.seguro.possui ? 'text-green-700' : 'text-red-700'}`}>
-                      {veiculo.seguro.possui ? 'Ativo' : 'Inativo'}
-                    </span>
+                
+                {/* Seguro */}
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-sm text-gray-600">Seguro:</span>
+                  <span className={`text-sm font-medium ${
+                    veiculo.seguro.possui ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {veiculo.seguro.possui ? '✓ Ativo' : '✗ Inativo'}
+                  </span>
+                </div>
+                
+                {/* Botões de ação */}
+                <div className="space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <Link
+                      href={`/veiculo/${veiculo.id}`}
+                      className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center min-h-[44px] touch-manipulation"
+                    >
+                      <DocumentTextIcon className="h-4 w-4 mr-1" />
+                      Detalhes
+                    </Link>
+                    
+                    <Link
+                      href={`/veiculo/${veiculo.id}/manutencao/nova`}
+                      className="bg-[#0047CC] hover:bg-[#0055EB] text-white px-3 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center min-h-[44px] touch-manipulation"
+                    >
+                      <WrenchScrewdriverIcon className="h-4 w-4 mr-1" />
+                      Manutenção
+                    </Link>
                   </div>
                 </div>
-
-                {/* Resumo de gastos */}
-                <div className="bg-green-50 rounded-lg p-3 mb-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-green-700">Gastos em Manutenção:</span>
-                    <span className="font-bold text-green-800">
-                      R$ {veiculo.manutencoes.reduce((sum, m) => sum + m.valor, 0).toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Ações */}
-                <div className="grid grid-cols-2 gap-3">
-                  <Link
-                    href={`/motorista/garagem/${veiculo.id}`}
+              </div>
                     className="bg-[#0047CC] hover:bg-[#0055EB] text-white px-4 py-2.5 rounded-lg text-sm font-medium text-center transition-colors flex items-center justify-center"
                   >
                     <DocumentTextIcon className="h-4 w-4 mr-1" />
