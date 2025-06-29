@@ -134,24 +134,24 @@ export default function OficinaDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Header - Mobile Optimized */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Dashboard da Oficina</h1>
-              <p className="text-gray-600 capitalize">{formatDate(currentTime)}</p>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 gap-3">
+            <div className="flex-1">
+              <h1 className="text-xl md:text-2xl font-bold text-gray-900">Dashboard da Oficina</h1>
+              <p className="text-sm md:text-base text-gray-600 capitalize">{formatDate(currentTime)}</p>
             </div>
             
-            <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <p className="text-sm text-gray-500">Hora atual</p>
-                <p className="text-xl font-bold text-[#0047CC]">{formatTime(currentTime)}</p>
+            <div className="flex items-center space-x-3 md:space-x-4">
+              <div className="text-center sm:text-right">
+                <p className="text-xs md:text-sm text-gray-500">Hora atual</p>
+                <p className="text-lg md:text-xl font-bold text-[#0047CC]">{formatTime(currentTime)}</p>
               </div>
               
               <div className="relative">
-                <button className="p-2 text-gray-400 hover:text-gray-600 relative">
-                  <BellIcon className="h-6 w-6" />
+                <button className="p-3 text-gray-400 hover:text-gray-600 relative min-h-[44px] min-w-[44px] flex items-center justify-center">
+                  <BellIcon className="h-5 w-5 md:h-6 md:w-6" />
                   <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                     3
                   </span>
@@ -162,31 +162,31 @@ export default function OficinaDashboard() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Cards de Estatísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+        {/* Cards de Estatísticas - Mobile Optimized */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
           {/* Ordens Hoje */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white rounded-xl shadow-sm p-6 border"
+            className="bg-white rounded-xl shadow-sm p-4 md:p-6 border"
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Ordens Hoje</p>
-                <p className="text-3xl font-bold text-gray-900">{mockData.stats.ordensHoje.value}</p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex-1">
+                <p className="text-xs md:text-sm font-medium text-gray-600">Ordens Hoje</p>
+                <p className="text-2xl md:text-3xl font-bold text-gray-900">{mockData.stats.ordensHoje.value}</p>
               </div>
-              <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <ClipboardDocumentListIcon className="h-6 w-6 text-blue-600" />
+              <div className="h-10 w-10 md:h-12 md:w-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <ClipboardDocumentListIcon className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
               </div>
             </div>
-            <div className="mt-4 flex items-center">
-              <ArrowUpIcon className="h-4 w-4 text-green-500 mr-1" />
-              <span className="text-sm text-green-600 font-medium">
+            <div className="mt-3 md:mt-4 flex items-center">
+              <ArrowUpIcon className="h-3 w-3 md:h-4 md:w-4 text-green-500 mr-1" />
+              <span className="text-xs md:text-sm text-green-600 font-medium">
                 +{mockData.stats.ordensHoje.percentage}%
               </span>
-              <span className="text-sm text-gray-500 ml-1">vs ontem</span>
+              <span className="text-xs md:text-sm text-gray-500 ml-1">vs ontem</span>
             </div>
           </motion.div>
 
@@ -268,16 +268,16 @@ export default function OficinaDashboard() {
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Agendamentos de Hoje */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+          {/* Agendamentos de Hoje - Mobile Responsive */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
             className="lg:col-span-2 bg-white rounded-xl shadow-sm border"
           >
-            <div className="p-6 border-b">
-              <div className="flex items-center justify-between">
+            <div className="p-4 md:p-6 border-b">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                   <CalendarDaysIcon className="h-5 w-5 text-blue-600 mr-2" />
                   Agendamentos de Hoje
@@ -291,36 +291,38 @@ export default function OficinaDashboard() {
               </div>
             </div>
             
-            <div className="p-6">
-              <div className="space-y-4">
+            <div className="p-4 md:p-6">
+              <div className="space-y-3 md:space-y-4">
                 {mockData.agendamentosHoje.map((agendamento) => (
-                  <div key={agendamento.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <div className="flex items-center space-x-4">
+                  <div key={agendamento.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors gap-3 touch-manipulation">
+                    <div className="flex items-center space-x-3 md:space-x-4 flex-1">
                       <div className="flex-shrink-0">
-                        <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <ClockIcon className="h-5 w-5 text-blue-600" />
+                        <div className="h-8 w-8 md:h-10 md:w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                          <ClockIcon className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
                         </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">{agendamento.cliente}</h4>
-                        <p className="text-sm text-gray-600">{agendamento.servico}</p>
-                        <p className="text-xs text-gray-500">{agendamento.veiculo}</p>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-medium text-gray-900 truncate">{agendamento.cliente}</h4>
+                        <p className="text-sm text-gray-600 truncate">{agendamento.servico}</p>
+                        <p className="text-xs text-gray-500 truncate">{agendamento.veiculo}</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-[#0047CC]">{agendamento.horario}</p>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        agendamento.status === 'confirmado' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {agendamento.status === 'confirmado' ? 'Confirmado' : 'Pendente'}
-                      </span>
-                      <div className="flex items-center mt-1 space-x-2">
-                        <button className="text-gray-400 hover:text-blue-600">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                      <div className="text-center sm:text-right">
+                        <p className="font-bold text-[#0047CC]">{agendamento.horario}</p>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          agendamento.status === 'confirmado' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {agendamento.status === 'confirmado' ? 'Confirmado' : 'Pendente'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-center space-x-2">
+                        <button className="text-gray-400 hover:text-blue-600 p-2 min-h-[40px] min-w-[40px] flex items-center justify-center">
                           <PhoneIcon className="h-4 w-4" />
                         </button>
-                        <button className="text-gray-400 hover:text-green-600">
+                        <button className="text-gray-400 hover:text-green-600 p-2 min-h-[40px] min-w-[40px] flex items-center justify-center">
                           <ChatBubbleLeftIcon className="h-4 w-4" />
                         </button>
                       </div>
@@ -331,15 +333,15 @@ export default function OficinaDashboard() {
             </div>
           </motion.div>
 
-          {/* Mensagens Recentes */}
+          {/* Mensagens Recentes - Mobile Optimized */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
             className="bg-white rounded-xl shadow-sm border"
           >
-            <div className="p-6 border-b">
-              <div className="flex items-center justify-between">
+            <div className="p-4 md:p-6 border-b">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                   <ChatBubbleLeftIcon className="h-5 w-5 text-green-600 mr-2" />
                   Mensagens
@@ -353,10 +355,10 @@ export default function OficinaDashboard() {
               </div>
             </div>
             
-            <div className="p-6">
-              <div className="space-y-4">
+            <div className="p-4 md:p-6">
+              <div className="space-y-3 md:space-y-4">
                 {mockData.mensagensRecentes.map((mensagem) => (
-                  <div key={mensagem.id} className={`p-3 rounded-lg ${mensagem.naoLida ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'}`}>
+                  <div key={mensagem.id} className={`p-3 rounded-lg touch-manipulation ${mensagem.naoLida ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'}`}>
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
                         <p className={`text-sm font-medium ${mensagem.naoLida ? 'text-blue-900' : 'text-gray-900'}`}>
