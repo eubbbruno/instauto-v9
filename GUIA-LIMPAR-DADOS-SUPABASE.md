@@ -17,9 +17,17 @@ Este processo vai **DELETAR TODOS** os usuários e dados do seu projeto Supabase
 2. Clique em **"New query"** (nova consulta)
 
 ### **3️⃣ Execute o Script de Limpeza**
-1. Copie todo o conteúdo do arquivo `limpar-dados-teste.sql`
+
+**🛡️ OPÇÃO 1 - Script Seguro (RECOMENDADO):**
+1. Copie todo o conteúdo do arquivo `limpar-dados-teste-seguro.sql`
 2. Cole no SQL Editor
 3. Clique em **"Run"** (Executar) ou pressione `Ctrl+Enter`
+4. Este script verifica quais tabelas existem antes de tentar deletar
+
+**⚡ OPÇÃO 2 - Script Simples:**
+1. Copie o conteúdo de `limpar-dados-simples.sql`
+2. Execute uma linha por vez
+3. Descomente apenas as tabelas que existem no seu banco
 
 ### **4️⃣ Confirme os Resultados**
 Você deve ver uma tabela assim:
