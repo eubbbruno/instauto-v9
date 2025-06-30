@@ -9,13 +9,17 @@ function AuthCallbackContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  // Função para redirecionar baseado no tipo de usuário - igual à página de auth
+  // Função para redirecionar baseado no tipo de usuário - MELHORADA
   const redirectUserByType = (userType: string, planType?: string, needsProfileCompletion?: boolean) => {
+    console.log('🔄 Redirecionando usuário:', { userType, planType, needsProfileCompletion })
+    
     // Se precisa completar perfil após OAuth, redireciona para página de perfil
     if (needsProfileCompletion) {
       if (userType === 'motorista') {
+        console.log('→ Redirecionando para completar perfil motorista')
         router.push('/auth/motorista?step=profile&oauth=true')
       } else if (userType === 'oficina') {
+        console.log('→ Redirecionando para completar perfil oficina')
         router.push('/auth/oficina?step=profile&oauth=true')
       }
       return
@@ -23,17 +27,21 @@ function AuthCallbackContent() {
 
     // Fluxo normal após perfil completo
     if (userType === 'motorista') {
+      console.log('→ Redirecionando motorista para dashboard')
       router.push('/motorista')
     } else if (userType === 'oficina') {
       // Se tem plano PRO vai para dashboard completo, senão vai para básico
       if (planType === 'pro') {
+        console.log('→ Redirecionando oficina PRO para dashboard')
         router.push('/dashboard')
       } else {
+        console.log('→ Redirecionando oficina FREE para oficina-basica')
         router.push('/oficina-basica')
       }
     } else {
-      // Fallback: se não conseguir determinar o tipo, vai para motorista
-      router.push('/motorista')
+      // Fallback: se não conseguir determinar o tipo, vai para página de seleção
+      console.log('⚠️ Tipo não identificado, redirecionando para auth')
+      router.push('/auth')
     }
   }
 
@@ -70,31 +78,68 @@ function AuthCallbackContent() {
             // Buscar perfil do usuário para redirecionamento correto
             const { data: profile, error: profileError } = await supabase
               .from('profiles')
-              .select('type, plan_type')
+              .select('type')
               .eq('id', sessionData.session.user.id)
               .single()
 
             if (profileError) {
-              console.warn('Perfil não encontrado, precisa completar:', profileError)
-              const userType = sessionData.session.user.user_metadata?.type || 'motorista'
+              console.warn('Perfil não encontrado, criando baseado nos metadados:', profileError)
+              // Pegar tipo dos query params do OAuth ou metadata
+              const urlParams = new URLSearchParams(window.location.search)
+              const typeFromUrl = urlParams.get('type')
+              const userType = typeFromUrl || sessionData.session.user.user_metadata?.type || 'motorista'
+              
+              console.log('Criando perfil para tipo:', userType)
+              
+              // Criar perfil básico primeiro
+              const { error: createProfileError } = await supabase.from('profiles').upsert({
+                id: sessionData.session.user.id,
+                email: sessionData.session.user.email,
+                name: sessionData.session.user.user_metadata?.name || sessionData.session.user.user_metadata?.full_name || '',
+                type: userType,
+                updated_at: new Date().toISOString()
+              })
+              
+              if (createProfileError) {
+                console.error('Erro ao criar perfil:', createProfileError)
+              }
               
               setTimeout(() => {
                 redirectUserByType(userType, undefined, true) // needsProfileCompletion = true
               }, 2000)
             } else {
-              // Verificar se perfil está completo
-              const isProfileComplete = profile.type && (
-                profile.type === 'motorista' ? true : // Motorista: só precisa de type
-                (profile.type === 'oficina' && profile.plan_type) // Oficina: precisa de type e plan_type
-              )
+              let planType = undefined
+              let isProfileComplete = false
+              
+              // Verificar se os dados específicos estão completos
+              if (profile.type === 'motorista') {
+                // Para motorista: verificar se existe registro na tabela drivers com CPF
+                const { data: driver } = await supabase
+                  .from('drivers')
+                  .select('cpf')
+                  .eq('profile_id', sessionData.session.user.id)
+                  .single()
+                
+                isProfileComplete = !!(driver && driver.cpf && driver.cpf.trim())
+              } else if (profile.type === 'oficina') {
+                // Para oficina: verificar se existe registro na tabela workshops completo
+                const { data: workshop } = await supabase
+                  .from('workshops')
+                  .select('plan_type, business_name, cnpj')
+                  .eq('profile_id', sessionData.session.user.id)
+                  .single()
+                
+                planType = workshop?.plan_type
+                isProfileComplete = !!(workshop && workshop.plan_type && workshop.business_name && workshop.cnpj && workshop.cnpj.trim())
+              }
               
               if (!isProfileComplete) {
                 setTimeout(() => {
-                  redirectUserByType(profile.type, profile.plan_type, true) // needsProfileCompletion = true
+                  redirectUserByType(profile.type, planType, true) // needsProfileCompletion = true
                 }, 2000)
               } else {
                 setTimeout(() => {
-                  redirectUserByType(profile.type, profile.plan_type, false) // Profile completo
+                  redirectUserByType(profile.type, planType, false) // Profile completo
                 }, 2000)
               }
             }
@@ -120,31 +165,68 @@ function AuthCallbackContent() {
           // Buscar perfil do usuário
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('type, plan_type')
+            .select('type')
             .eq('id', data.session.user.id)
             .single()
 
           if (profileError) {
-            console.warn('Perfil não encontrado, precisa completar:', profileError)
-            const userType = data.session.user.user_metadata?.type || 'motorista'
+            console.warn('Perfil não encontrado, criando baseado nos metadados (segunda checagem):', profileError)
+            // Pegar tipo dos query params do OAuth ou metadata
+            const urlParams = new URLSearchParams(window.location.search)
+            const typeFromUrl = urlParams.get('type')
+            const userType = typeFromUrl || data.session.user.user_metadata?.type || 'motorista'
+            
+            console.log('Criando perfil para tipo (segunda checagem):', userType)
+            
+            // Criar perfil básico primeiro
+            const { error: createProfileError } = await supabase.from('profiles').upsert({
+              id: data.session.user.id,
+              email: data.session.user.email,
+              name: data.session.user.user_metadata?.name || data.session.user.user_metadata?.full_name || '',
+              type: userType,
+              updated_at: new Date().toISOString()
+            })
+            
+            if (createProfileError) {
+              console.error('Erro ao criar perfil (segunda checagem):', createProfileError)
+            }
             
             setTimeout(() => {
               redirectUserByType(userType, undefined, true) // needsProfileCompletion = true
             }, 2000)
           } else {
-            // Verificar se perfil está completo
-            const isProfileComplete = profile.type && (
-              profile.type === 'motorista' ? true : // Motorista: só precisa de type
-              (profile.type === 'oficina' && profile.plan_type) // Oficina: precisa de type e plan_type
-            )
+            let planType = undefined
+            let isProfileComplete = false
+            
+            // Verificar se os dados específicos estão completos
+            if (profile.type === 'motorista') {
+              // Para motorista: verificar se existe registro na tabela drivers com CPF
+              const { data: driver } = await supabase
+                .from('drivers')
+                .select('cpf')
+                .eq('profile_id', data.session.user.id)
+                .single()
+              
+              isProfileComplete = !!(driver && driver.cpf && driver.cpf.trim())
+            } else if (profile.type === 'oficina') {
+              // Para oficina: verificar se existe registro na tabela workshops completo
+              const { data: workshop } = await supabase
+                .from('workshops')
+                .select('plan_type, business_name, cnpj')
+                .eq('profile_id', data.session.user.id)
+                .single()
+              
+              planType = workshop?.plan_type
+              isProfileComplete = !!(workshop && workshop.plan_type && workshop.business_name && workshop.cnpj && workshop.cnpj.trim())
+            }
             
             if (!isProfileComplete) {
               setTimeout(() => {
-                redirectUserByType(profile.type, profile.plan_type, true) // needsProfileCompletion = true
+                redirectUserByType(profile.type, planType, true) // needsProfileCompletion = true
               }, 2000)
             } else {
               setTimeout(() => {
-                redirectUserByType(profile.type, profile.plan_type, false) // Profile completo
+                redirectUserByType(profile.type, planType, false) // Profile completo
               }, 2000)
             }
           }

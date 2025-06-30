@@ -57,18 +57,19 @@ export default function AuthOficinaPage() {
       })
       if (error) throw error
       
-      // Buscar perfil para redirecionamento correto
-      const { data: profile } = await supabase
-        .from('profiles')
+      // CORREÇÃO: Buscar plan_type da tabela workshops, não profiles
+      const { data: workshop } = await supabase
+        .from('workshops')
         .select('plan_type')
-        .eq('id', data.user.id)
+        .eq('profile_id', data.user.id)
         .single()
       
       setMessage('✅ Login realizado com sucesso!')
-      const redirect = profile?.plan_type === 'pro' ? '/dashboard' : '/oficina-basica'
+      // Redirecionamento correto baseado no plano da oficina
+      const redirect = workshop?.plan_type === 'pro' ? '/dashboard' : '/oficina-basica'
       setTimeout(() => router.push(redirect), 1000)
-    } catch (error: any) {
-      setMessage(`❌ Erro: ${error.message}`)
+    } catch (error: unknown) {
+      setMessage(`❌ Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
       setLoading(false)
     }
   }
@@ -111,8 +112,8 @@ export default function AuthOficinaPage() {
         setMessage('✅ Conta criada! Complete os dados da oficina...')
         setStep('profile')
       }
-    } catch (error: any) {
-      setMessage(`❌ Erro: ${error.message}`)
+    } catch (error: unknown) {
+      setMessage(`❌ Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
       setLoading(false)
     }
   }
@@ -133,7 +134,18 @@ export default function AuthOficinaPage() {
       if (!supabase) throw new Error('Sistema indisponível')
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        // 1. Atualizar perfil básico
+        // 1. Verificar se já existe dados da oficina
+        const { data: existingWorkshop } = await supabase
+          .from('workshops')
+          .select('id')
+          .eq('profile_id', user.id)
+          .single()
+
+        if (existingWorkshop) {
+          throw new Error('Oficina já cadastrada. Faça login diretamente.')
+        }
+
+        // 2. Atualizar perfil básico
         const { error: profileError } = await supabase.from('profiles').upsert({
           id: user.id,
           email: user.email,
@@ -144,20 +156,20 @@ export default function AuthOficinaPage() {
         })
         if (profileError) throw profileError
 
-        // 2. Criar/atualizar dados específicos da oficina
-        const { error: workshopError } = await supabase.from('workshops').upsert({
+        // 3. Criar dados específicos da oficina (INSERT, não UPSERT)
+        const { error: workshopError } = await supabase.from('workshops').insert({
           profile_id: user.id,
           business_name: formData.businessName,
           cnpj: formData.cnpj,
-          updated_at: new Date().toISOString()
+          plan_type: formData.planType
         })
         if (workshopError) throw workshopError
       }
       setMessage('✅ Oficina cadastrada com sucesso!')
       const redirect = formData.planType === 'pro' ? '/dashboard' : '/oficina-basica'
       setTimeout(() => router.push(redirect), 1000)
-    } catch (error: any) {
-      setMessage(`❌ Erro: ${error.message}`)
+    } catch (error: unknown) {
+      setMessage(`❌ Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
       setLoading(false)
     }
   }
@@ -178,8 +190,8 @@ export default function AuthOficinaPage() {
         }
       })
       if (error) throw error
-    } catch (error: any) {
-      setMessage(`❌ Erro: ${error.message}`)
+    } catch (error: unknown) {
+      setMessage(`❌ Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
       setLoading(false)
     }
   }
@@ -200,8 +212,8 @@ export default function AuthOficinaPage() {
         }
       })
       if (error) throw error
-    } catch (error: any) {
-      setMessage(`❌ Erro: ${error.message}`)
+    } catch (error: unknown) {
+      setMessage(`❌ Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
       setLoading(false)
     }
   }
@@ -382,7 +394,8 @@ export default function AuthOficinaPage() {
                     activeTab === 'register' ? 'text-yellow-600 border-b-2 border-yellow-600 bg-yellow-50' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  Cadastrar Oficina
+                  <div>📝 Cadastrar Oficina</div>
+                  <div className="text-xs font-normal text-gray-500">Nova oficina</div>
                 </button>
                 <button
                   onClick={() => setActiveTab('login')}
@@ -390,7 +403,8 @@ export default function AuthOficinaPage() {
                     activeTab === 'login' ? 'text-yellow-600 border-b-2 border-yellow-600 bg-yellow-50' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  Já tenho conta
+                  <div>🔐 Já tenho conta</div>
+                  <div className="text-xs font-normal text-gray-500">Oficina cadastrada</div>
                 </button>
               </div>
 

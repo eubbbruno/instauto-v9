@@ -49,15 +49,15 @@ export default function AuthMotoristaPage() {
     setLoading(true)
     setMessage('🔄 Fazendo login...')
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       })
       if (error) throw error
       setMessage('✅ Login realizado com sucesso!')
       setTimeout(() => router.push('/motorista'), 1000)
-    } catch (error: any) {
-      setMessage(`❌ Erro: ${error.message}`)
+    } catch (error: unknown) {
+      setMessage(`❌ Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
       setLoading(false)
     }
   }
@@ -94,8 +94,8 @@ export default function AuthMotoristaPage() {
         setMessage('✅ Conta criada! Complete seu perfil...')
         setStep('profile')
       }
-    } catch (error: any) {
-      setMessage(`❌ Erro: ${error.message}`)
+    } catch (error: unknown) {
+      setMessage(`❌ Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
       setLoading(false)
     }
   }
@@ -108,7 +108,18 @@ export default function AuthMotoristaPage() {
       if (!supabase) throw new Error('Sistema indisponível')
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        // 1. Atualizar perfil básico
+        // 1. Verificar se já existe dados do motorista
+        const { data: existingDriver } = await supabase
+          .from('drivers')
+          .select('id')
+          .eq('profile_id', user.id)
+          .single()
+
+        if (existingDriver) {
+          throw new Error('Dados já cadastrados. Faça login diretamente.')
+        }
+
+        // 2. Atualizar perfil básico
         const { error: profileError } = await supabase.from('profiles').upsert({
           id: user.id,
           email: user.email,
@@ -119,18 +130,17 @@ export default function AuthMotoristaPage() {
         })
         if (profileError) throw profileError
 
-        // 2. Criar/atualizar dados específicos do motorista
-        const { error: driverError } = await supabase.from('drivers').upsert({
+        // 3. Criar dados específicos do motorista (INSERT, não UPSERT)
+        const { error: driverError } = await supabase.from('drivers').insert({
           profile_id: user.id,
-          cpf: formData.cpf,
-          updated_at: new Date().toISOString()
+          cpf: formData.cpf
         })
         if (driverError) throw driverError
       }
       setMessage('✅ Perfil completado com sucesso!')
       setTimeout(() => router.push('/motorista'), 1000)
-    } catch (error: any) {
-      setMessage(`❌ Erro: ${error.message}`)
+    } catch (error: unknown) {
+      setMessage(`❌ Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
       setLoading(false)
     }
   }
@@ -151,8 +161,8 @@ export default function AuthMotoristaPage() {
         }
       })
       if (error) throw error
-    } catch (error: any) {
-      setMessage(`❌ Erro: ${error.message}`)
+    } catch (error: unknown) {
+      setMessage(`❌ Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
       setLoading(false)
     }
   }
@@ -173,8 +183,8 @@ export default function AuthMotoristaPage() {
         }
       })
       if (error) throw error
-    } catch (error: any) {
-      setMessage(`❌ Erro: ${error.message}`)
+    } catch (error: unknown) {
+      setMessage(`❌ Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
       setLoading(false)
     }
   }
@@ -310,7 +320,8 @@ export default function AuthMotoristaPage() {
                     activeTab === 'login' ? 'text-yellow-600 border-b-2 border-yellow-600 bg-yellow-50' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  Entrar
+                  <div>🔐 Entrar</div>
+                  <div className="text-xs font-normal text-gray-500">Já tenho conta</div>
                 </button>
                 <button
                   onClick={() => setActiveTab('register')}
@@ -318,7 +329,8 @@ export default function AuthMotoristaPage() {
                     activeTab === 'register' ? 'text-yellow-600 border-b-2 border-yellow-600 bg-yellow-50' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  Cadastrar
+                  <div>📝 Cadastrar</div>
+                  <div className="text-xs font-normal text-gray-500">Criar conta nova</div>
                 </button>
               </div>
 
