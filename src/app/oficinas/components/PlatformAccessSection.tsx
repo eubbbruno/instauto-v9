@@ -266,9 +266,9 @@ const PlatformAccessSection = () => {
                       </div>
                       
                       <div className="grid grid-cols-3 gap-2 mb-4">
-                        <div className="bg-blue/10 p-2 rounded-lg">
+                        <div className="bg-blue-600/10 p-2 rounded-lg">
                           <div className="text-xs text-gray-600 mb-1 font-sans">Orçamentos</div>
-                          <div className="text-blue font-bold flex items-baseline">
+                          <div className="text-blue-600 font-bold flex items-baseline">
                             4 <span className="text-green-500 text-xs ml-1">+2</span>
                           </div>
                         </div>
@@ -276,7 +276,7 @@ const PlatformAccessSection = () => {
                           <div className="text-xs text-gray-600 mb-1 font-sans">Agendados</div>
                           <div className="text-green-600 font-bold">7</div>
                         </div>
-                        <div className="bg-yellow/20 p-2 rounded-lg">
+                        <div className="bg-yellow-400/20 p-2 rounded-lg">
                           <div className="text-xs text-gray-600 mb-1 font-sans">Entregas</div>
                           <div className="text-yellow-700 font-bold">3</div>
                         </div>
@@ -285,11 +285,11 @@ const PlatformAccessSection = () => {
                       <div className="mb-1">
                         <div className="flex justify-between text-xs mb-1">
                           <span className="text-gray-500 font-sans">Ocupação do dia</span>
-                          <span className="text-blue font-medium font-sans">75%</span>
+                          <span className="text-blue-600 font-medium font-sans">75%</span>
                         </div>
                         <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                           <motion.div 
-                            className="h-full bg-blue rounded-full"
+                            className="h-full bg-blue-600 rounded-full"
                             initial={{ width: "0%" }}
                             animate={{ width: "75%" }}
                             transition={{ duration: 1, delay: 0.5 }}
@@ -307,7 +307,7 @@ const PlatformAccessSection = () => {
                     >
                       <div className="flex justify-between items-center mb-3">
                         <div className="text-sm font-bold text-text-base font-sans">Novos orçamentos</div>
-                        <div className="text-xs text-blue font-sans">Ver todos</div>
+                        <div className="text-xs text-blue-600 font-sans">Ver todos</div>
                       </div>
                       
                       <div className="relative h-[80px] overflow-hidden">
@@ -369,10 +369,10 @@ const PlatformAccessSection = () => {
                       transition={{ delay: 0.4 }}
                     >
                       {[
-                        { icon: <DevicePhoneMobileIcon className="h-5 w-5 text-blue" />, label: "Orçamentos" },
-                        { icon: <CalendarIcon className="h-5 w-5 text-blue" />, label: "Agenda" },
-                        { icon: <UserGroupIcon className="h-5 w-5 text-blue" />, label: "Clientes" },
-                        { icon: <ChartBarIcon className="h-5 w-5 text-blue" />, label: "Relatórios" }
+                        { icon: <DevicePhoneMobileIcon className="h-5 w-5 text-blue-600" />, label: "Orçamentos" },
+                        { icon: <CalendarIcon className="h-5 w-5 text-blue-600" />, label: "Agenda" },
+                        { icon: <UserGroupIcon className="h-5 w-5 text-blue-600" />, label: "Clientes" },
+                        { icon: <ChartBarIcon className="h-5 w-5 text-blue-600" />, label: "Relatórios" }
                       ].map((item, i) => (
                         <motion.div
                           key={i}
@@ -394,8 +394,8 @@ const PlatformAccessSection = () => {
               </div>
               
               {/* Efeitos de luz ao redor do telefone */}
-              <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue/20 rounded-full blur-3xl -z-10"></div>
-              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-yellow/30 rounded-full blur-3xl -z-10"></div>
+              <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-600/20 rounded-full blur-3xl -z-10"></div>
+              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-yellow-400/30 rounded-full blur-3xl -z-10"></div>
               
               {/* Reflexos na tela */}
               <div className="absolute top-10 left-10 w-20 h-[400px] bg-white/10 rounded-full blur-xl rotate-45 transform -translate-x-1/2 -z-5"></div>

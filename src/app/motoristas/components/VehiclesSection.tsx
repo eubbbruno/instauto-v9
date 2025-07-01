@@ -102,7 +102,7 @@ export default function VehiclesSection() {
         {/* Cabeçalho da seção */}
         <div className="text-center max-w-2xl mx-auto mb-16">
           <div 
-            className="inline-block bg-blue-light text-blue px-4 py-1 rounded-full text-sm font-medium mb-4"
+            className="inline-block bg-blue-100 text-blue-600 px-4 py-1 rounded-full text-sm font-medium mb-4"
             data-aos="fade-up"
           >
             Todos os veículos
@@ -134,7 +134,7 @@ export default function VehiclesSection() {
             >
               {/* Parte superior com imagem */}
               <div className="bg-gradient-to-br from-blue-light/30 to-blue-light/10 pt-8 pb-4 px-6 relative">
-                <div className="absolute top-4 left-4 bg-white w-14 h-14 rounded-lg flex items-center justify-center text-blue shadow-md">
+                <div className="absolute top-4 left-4 bg-white w-14 h-14 rounded-lg flex items-center justify-center text-blue-600 shadow-md">
                   {vehicle.icon}
                 </div>
                 <div className="flex justify-center h-48 relative">
@@ -146,7 +146,7 @@ export default function VehiclesSection() {
                     className="object-contain transform group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute -bottom-6 right-4 bg-white px-4 py-2 rounded-full shadow-md border border-gray-100">
-                    <span className="font-bold text-blue">{vehicle.title}</span>
+                    <span className="font-bold text-blue-600">{vehicle.title}</span>
                   </div>
                 </div>
               </div>
@@ -159,8 +159,8 @@ export default function VehiclesSection() {
                 <ul className="space-y-2">
                   {vehicle.features.map((feature, idx) => (
                     <li key={idx} className="flex items-center gap-2">
-                      <div className="w-5 h-5 rounded-full bg-blue-light flex items-center justify-center">
-                        <div className="w-2 h-2 rounded-full bg-blue"></div>
+                      <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center">
+                        <div className="w-2 h-2 rounded-full bg-blue-600"></div>
                       </div>
                       <span className="text-gray-700">{feature}</span>
                     </li>
@@ -174,14 +174,14 @@ export default function VehiclesSection() {
         {/* Seção de frotas para empresas */}
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 mt-16 relative">
           {/* Elementos decorativos na borda do card */}
-          <div className="absolute -top-5 -right-5 w-14 h-14 bg-blue/10 rounded-full blur-md"></div>
-          <div className="absolute -bottom-5 -left-5 w-14 h-14 bg-yellow/10 rounded-full blur-md"></div>
+          <div className="absolute -top-5 -right-5 w-14 h-14 bg-blue-600/10 rounded-full blur-md"></div>
+          <div className="absolute -bottom-5 -left-5 w-14 h-14 bg-yellow-400/10 rounded-full blur-md"></div>
           
           <div className="grid md:grid-cols-2 gap-8">
             {/* Coluna de conteúdo */}
             <div className="p-10 md:p-12">
               <div 
-                className="inline-block bg-yellow/20 text-gray-800 px-4 py-1 rounded-full text-sm font-medium mb-4"
+                className="inline-block bg-yellow-400/20 text-gray-800 px-4 py-1 rounded-full text-sm font-medium mb-4"
                 data-aos="fade-right"
               >
                 Solução para empresas
@@ -210,7 +210,7 @@ export default function VehiclesSection() {
                     data-aos-delay={100 * index}
                     className="flex gap-4"
                   >
-                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-light flex items-center justify-center text-blue">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">
                       {benefit.icon}
                     </div>
                     <div>
@@ -223,7 +223,7 @@ export default function VehiclesSection() {
               
               {/* CTA */}
               <div className="mt-10" data-aos="fade-up">
-                <button className="px-8 py-3 bg-blue text-white rounded-lg font-medium hover:bg-blue-600 transition-colors shadow-md flex items-center gap-2">
+                <button className="px-8 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-md flex items-center gap-2">
                   <Users className="w-5 h-5" />
                   Fale com um consultor
                 </button>
@@ -247,7 +247,7 @@ export default function VehiclesSection() {
               <div className="absolute bottom-10 right-10 z-10" data-aos="fade-up">
                 <div className="bg-white/95 backdrop-blur-sm p-4 rounded-2xl shadow-xl border border-gray-100">
                   <div className="flex items-center gap-3 mb-3">
-                    <Gauge className="w-6 h-6 text-blue" />
+                    <Gauge className="w-6 h-6 text-blue-600" />
                     <h4 className="font-bold text-gray-800">Estatísticas da frota</h4>
                   </div>
                   <div className="space-y-2">

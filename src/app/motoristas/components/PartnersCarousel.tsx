@@ -23,7 +23,7 @@ export default function PartnersCarousel() {
           <h3 className="text-gray-600 text-sm font-semibold uppercase tracking-wider mb-2">
             Empresas que confiam no Instauto
           </h3>
-          <div className="w-20 h-1 bg-blue/20 rounded-full mx-auto"></div>
+          <div className="w-20 h-1 bg-blue-600/20 rounded-full mx-auto"></div>
         </div>
         
         <div className="relative overflow-hidden mx-auto">

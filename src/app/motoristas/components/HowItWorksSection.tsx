@@ -80,8 +80,8 @@ export default function HowItWorksSection() {
       icon: <Search className="w-8 h-8" />,
       title: "Descreva seu problema",
       description: "Conte-nos o que seu veículo precisa: manutenção, reparo ou emergência. Nosso sistema inteligente identifica o serviço adequado.",
-      color: "bg-blue-light",
-      textColor: "text-blue",
+      color: "bg-yellow-400/20",
+      textColor: "text-blue-600",
       illustration: "/images/passo-01.png",
       benefits: ["Solicite qualquer tipo de serviço", "Diagnóstico preliminar inteligente", "Especifique detalhes do veículo"]
     },
@@ -89,8 +89,8 @@ export default function HowItWorksSection() {
       icon: <ListChecks className="w-8 h-8" />,
       title: "Compare orçamentos",
       description: "Receba propostas personalizadas de oficinas verificadas próximas a você, com valores transparentes, prazos e avaliações.",
-      color: "bg-yellow/20",
-      textColor: "text-yellow-dark",
+      color: "bg-yellow-400/20",
+      textColor: "text-blue-600",
       illustration: "/images/passo-02.png",
       benefits: ["Até 5 orçamentos em minutos", "Preços sem surpresas", "Filtros por proximidade e avaliações"]
     },
@@ -98,8 +98,8 @@ export default function HowItWorksSection() {
       icon: <Calendar className="w-8 h-8" />,
       title: "Agende com facilidade",
       description: "Escolha a melhor proposta e agende com apenas alguns cliques. Receba confirmação imediata e lembretes automáticos.",
-      color: "bg-blue-light",
-      textColor: "text-blue",
+      color: "bg-yellow-400/20",
+      textColor: "text-blue-600",
       illustration: "/images/passo-03.png",
       benefits: ["Confirmação em tempo real", "Escolha data e horário", "Serviço de leva e traz opcional"]
     },
@@ -107,8 +107,8 @@ export default function HowItWorksSection() {
       icon: <Star className="w-8 h-8" />,
       title: "Acompanhe todo o processo",
       description: "Monitore o progresso do serviço, receba fotos e atualizações em tempo real, e avalie a qualidade ao finalizar.",
-      color: "bg-yellow/20",
-      textColor: "text-yellow-dark",
+      color: "bg-yellow-400/20",
+      textColor: "text-blue-600",
       illustration: "/images/passo-04.png",
       benefits: ["Notificações em tempo real", "Fotos do antes e depois", "Histórico completo no seu perfil"]
     },
@@ -129,14 +129,14 @@ export default function HowItWorksSection() {
       </div>
       
       {/* Círculos decorativos */}
-      <div className="absolute top-20 left-10 w-64 h-64 bg-blue/5 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-20 right-10 w-64 h-64 bg-yellow/5 rounded-full blur-3xl"></div>
-      <div className="absolute top-1/3 right-1/4 w-32 h-32 bg-yellow/10 rounded-full blur-2xl"></div>
-      <div className="absolute bottom-1/3 left-1/4 w-40 h-40 bg-blue/10 rounded-full blur-2xl"></div>
+      <div className="absolute top-20 left-10 w-64 h-64 bg-blue-600/5 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-20 right-10 w-64 h-64 bg-yellow-400/5 rounded-full blur-3xl"></div>
+      <div className="absolute top-1/3 right-1/4 w-32 h-32 bg-yellow-400/10 rounded-full blur-2xl"></div>
+      <div className="absolute bottom-1/3 left-1/4 w-40 h-40 bg-blue-600/10 rounded-full blur-2xl"></div>
       
       <div className="container-custom relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-20">
-          <div className="inline-block bg-blue-light text-blue px-5 py-2 rounded-full text-sm font-medium mb-4">
+          <div className="inline-block bg-blue-100 text-blue-600 px-5 py-2 rounded-full text-sm font-medium mb-4">
             Processo simples em 4 passos
           </div>
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
@@ -152,7 +152,7 @@ export default function HowItWorksSection() {
           <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-gray-200 transform -translate-x-1/2 md:block hidden">
             <div 
               ref={timelineRef} 
-              className="absolute left-0 top-0 w-full bg-blue origin-top"
+              className="absolute left-0 top-0 w-full bg-blue-600 origin-top"
               style={{ height: '0%' }}
             ></div>
           </div>
@@ -189,7 +189,7 @@ export default function HowItWorksSection() {
                   <ul className={`space-y-2 text-sm ${index % 2 === 0 ? 'md:ml-auto' : ''}`}>
                     {step.benefits.map((benefit, i) => (
                       <li key={i} className="flex items-center gap-2">
-                        <CheckCircle className="flex-shrink-0 w-5 h-5 text-blue" />
+                        <CheckCircle className="flex-shrink-0 w-5 h-5 text-blue-600" />
                         <span>{benefit}</span>
                       </li>
                     ))}
@@ -203,8 +203,8 @@ export default function HowItWorksSection() {
                 >
                   {/* Círculo indicador na linha do tempo - visível apenas em desktop */}
                   <div className="absolute left-1/2 md:top-1/2 transform -translate-x-1/2 md:-translate-y-1/2 hidden md:block">
-                    <div className="w-12 h-12 rounded-full bg-white border-4 border-blue flex items-center justify-center shadow-lg">
-                      <span className="font-bold text-blue text-xl">{index + 1}</span>
+                    <div className="w-12 h-12 rounded-full bg-white border-4 border-blue-600 flex items-center justify-center shadow-lg">
+                      <span className="font-bold text-blue-600 text-xl">{index + 1}</span>
                     </div>
                   </div>
                   
@@ -238,7 +238,7 @@ export default function HowItWorksSection() {
                     </div>
                     
                     {/* Efeito de brilho no hover */}
-                    <div className="absolute inset-0 bg-gradient-to-tr from-blue/20 to-yellow/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-yellow-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                   </div>
                 </div>
               </div>
@@ -255,7 +255,7 @@ export default function HowItWorksSection() {
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="text-center">
-              <div className="w-14 h-14 bg-blue-light rounded-full flex items-center justify-center text-blue mx-auto mb-3">
+              <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mx-auto mb-3">
                 <Clock className="w-7 h-7" />
               </div>
               <div className="text-3xl font-bold text-gray-800">80%</div>
@@ -263,7 +263,7 @@ export default function HowItWorksSection() {
             </div>
             
             <div className="text-center">
-              <div className="w-14 h-14 bg-blue-light rounded-full flex items-center justify-center text-blue mx-auto mb-3">
+              <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mx-auto mb-3">
                 <ThumbsUp className="w-7 h-7" />
               </div>
               <div className="text-3xl font-bold text-gray-800">95%</div>
@@ -271,7 +271,7 @@ export default function HowItWorksSection() {
             </div>
             
             <div className="text-center">
-              <div className="w-14 h-14 bg-blue-light rounded-full flex items-center justify-center text-blue mx-auto mb-3">
+              <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mx-auto mb-3">
                 <Wallet className="w-7 h-7" />
               </div>
               <div className="text-3xl font-bold text-gray-800">30%</div>
@@ -279,7 +279,7 @@ export default function HowItWorksSection() {
             </div>
             
             <div className="text-center">
-              <div className="w-14 h-14 bg-blue-light rounded-full flex items-center justify-center text-blue mx-auto mb-3">
+              <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mx-auto mb-3">
                 <Star className="w-7 h-7" />
               </div>
               <div className="text-3xl font-bold text-gray-800">4.8/5</div>
@@ -301,11 +301,11 @@ export default function HowItWorksSection() {
       
       {/* Círculos decorativos na parte inferior */}
       <div className="absolute -bottom-12 left-0 right-0 flex justify-around">
-        <div className="w-24 h-24 bg-blue/5 rounded-full"></div>
-        <div className="w-16 h-16 bg-yellow/5 rounded-full"></div>
-        <div className="w-32 h-32 bg-blue/5 rounded-full"></div>
-        <div className="w-20 h-20 bg-yellow/5 rounded-full"></div>
-        <div className="w-28 h-28 bg-blue/5 rounded-full"></div>
+        <div className="w-24 h-24 bg-blue-600/5 rounded-full"></div>
+        <div className="w-16 h-16 bg-yellow-400/5 rounded-full"></div>
+        <div className="w-32 h-32 bg-blue-600/5 rounded-full"></div>
+        <div className="w-20 h-20 bg-yellow-400/5 rounded-full"></div>
+        <div className="w-28 h-28 bg-blue-600/5 rounded-full"></div>
       </div>
     </section>
   );

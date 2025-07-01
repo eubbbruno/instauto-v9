@@ -82,7 +82,7 @@ export default function TestimonialsSection() {
     <section id="depoimentos" className="py-24 bg-gray-50">
       <div className="container-custom">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="inline-block bg-blue-light text-blue px-4 py-1 rounded-full text-sm font-medium mb-4">
+          <div className="inline-block bg-blue-100 text-blue-600 px-4 py-1 rounded-full text-sm font-medium mb-4">
             Experiências reais
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
@@ -97,7 +97,7 @@ export default function TestimonialsSection() {
           ref={carouselRef}
           className="relative max-w-4xl mx-auto overflow-hidden rounded-2xl shadow-xl bg-white"
         >
-          <div className="absolute top-4 right-4 z-10 bg-blue-light text-blue rounded-full p-2">
+          <div className="absolute top-4 right-4 z-10 bg-blue-100 text-blue-600 rounded-full p-2">
             <Quote className="w-6 h-6" />
           </div>
           
@@ -120,7 +120,7 @@ export default function TestimonialsSection() {
                 <div className="md:col-span-1">
                   <div className="w-32 h-32 mx-auto rounded-full overflow-hidden relative bg-gray-200 border-4 border-blue-light">
                     {/* Se tiver a imagem, use o componente Image, caso contrário, use um placeholder */}
-                    <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-blue">
+                    <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-blue-600">
                       {testimonials[current].name.charAt(0)}
                     </div>
                   </div>
@@ -133,7 +133,7 @@ export default function TestimonialsSection() {
                       {[...Array(5)].map((_, i) => (
                         <Star 
                           key={i} 
-                          className={`w-5 h-5 ${i < testimonials[current].rating ? 'text-yellow fill-yellow' : 'text-gray-300'}`} 
+                          className={`w-5 h-5 ${i < testimonials[current].rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
                         />
                       ))}
                     </div>
@@ -166,7 +166,7 @@ export default function TestimonialsSection() {
                     setCurrent(index);
                   }}
                   className={`w-3 h-3 rounded-full ${
-                    index === current ? 'bg-blue' : 'bg-gray-300'
+                    index === current ? 'bg-blue-600' : 'bg-gray-300'
                   }`}
                 />
               ))}
@@ -211,7 +211,7 @@ export default function TestimonialsSection() {
               data-aos="fade-up"
               data-aos-delay={index * 100}
             >
-              <div className="text-3xl font-bold text-blue mb-2">{stat.value}</div>
+              <div className="text-3xl font-bold text-blue-600 mb-2">{stat.value}</div>
               <div className="font-semibold mb-1">{stat.label}</div>
               <div className="text-sm text-gray-500">{stat.description}</div>
             </div>

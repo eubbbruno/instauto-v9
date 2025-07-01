@@ -162,16 +162,16 @@ export default function ServicesSection() {
       <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-blue/5 to-transparent"></div>
       
       {/* Elementos de destaque */}
-      <div className="absolute top-1/3 left-10 w-24 h-24 bg-blue/10 rounded-full blur-xl"></div>
-      <div className="absolute top-2/3 right-10 w-32 h-32 bg-yellow/10 rounded-full blur-xl"></div>
-      <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-blue/5 transform rotate-45 rounded-xl blur-lg"></div>
-      <div className="absolute bottom-1/3 right-1/4 w-20 h-20 bg-yellow/5 transform -rotate-12 rounded-xl blur-lg"></div>
+      <div className="absolute top-1/3 left-10 w-24 h-24 bg-blue-600/10 rounded-full blur-xl"></div>
+      <div className="absolute top-2/3 right-10 w-32 h-32 bg-yellow-400/10 rounded-full blur-xl"></div>
+      <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-blue-600/5 transform rotate-45 rounded-xl blur-lg"></div>
+      <div className="absolute bottom-1/3 right-1/4 w-20 h-20 bg-yellow-400/5 transform -rotate-12 rounded-xl blur-lg"></div>
       
       <div className="container-custom relative z-10">
         {/* Cabeçalho da seção */}
         <div className="text-center max-w-2xl mx-auto mb-16">
           <div 
-            className="inline-block bg-blue-light text-blue px-4 py-1 rounded-full text-sm font-medium mb-4"
+            className="inline-block bg-blue-100 text-blue-600 px-4 py-1 rounded-full text-sm font-medium mb-4"
             data-aos="fade-up"
           >
             Serviços Completos
@@ -200,20 +200,20 @@ export default function ServicesSection() {
               onClick={() => setActiveCategory(category.id)}
               className={`p-4 rounded-xl border text-left transition-all ${
                 activeCategory === category.id
-                  ? "border-blue bg-blue-light/30 shadow-md"
+                  ? "border-blue-600 bg-blue-100/30 shadow-md"
                   : "border-gray-200 bg-white hover:bg-gray-50"
               }`}
               data-aos="fade-up"
             >
               <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${
                 activeCategory === category.id
-                  ? "bg-blue text-white"
+                  ? "bg-blue-600 text-white"
                   : "bg-gray-100 text-gray-600"
               }`}>
                 {category.icon}
               </div>
               <h3 className={`font-bold mb-1 ${
-                activeCategory === category.id ? "text-blue" : "text-gray-800"
+                activeCategory === category.id ? "text-blue-600" : "text-gray-800"
               }`}>
                 {category.name}
               </h3>
@@ -227,8 +227,8 @@ export default function ServicesSection() {
         {/* Detalhes dos serviços */}
         <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm relative">
           {/* Elementos decorativos no card principal */}
-          <div className="absolute -top-3 -right-3 w-12 h-12 bg-yellow/10 rounded-full blur-md"></div>
-          <div className="absolute -bottom-3 -left-3 w-12 h-12 bg-blue/10 rounded-full blur-md"></div>
+          <div className="absolute -top-3 -right-3 w-12 h-12 bg-yellow-400/10 rounded-full blur-md"></div>
+          <div className="absolute -bottom-3 -left-3 w-12 h-12 bg-blue-600/10 rounded-full blur-md"></div>
 
           <div className="grid md:grid-cols-2 gap-10">
             {/* Coluna da esquerda - Lista de serviços */}
@@ -241,9 +241,9 @@ export default function ServicesSection() {
                 {servicesDetails[activeCategory as keyof typeof servicesDetails].map((service, index) => (
                   <div 
                     key={index}
-                    className="flex items-start gap-2 p-3 rounded-lg hover:bg-blue-light/10 hover:shadow-sm transition-all duration-200"
+                    className="flex items-start gap-2 p-3 rounded-lg hover:bg-blue-100 hover:shadow-sm transition-all duration-200"
                   >
-                    <div className="flex-shrink-0 bg-blue-light text-blue rounded-full p-1">
+                    <div className="flex-shrink-0 bg-blue-100 text-blue-600 rounded-full p-1">
                       <Check className="w-4 h-4" />
                     </div>
                     <span className="text-gray-700">{service}</span>
@@ -253,7 +253,7 @@ export default function ServicesSection() {
 
               {/* CTA */}
               <div className="mt-8">
-                <button className="inline-flex items-center gap-2 px-6 py-3 bg-blue text-white rounded-lg font-medium hover:bg-blue-600 transition-colors shadow-md group">
+                <button className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-md group">
                   Encontrar oficinas
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
@@ -263,7 +263,7 @@ export default function ServicesSection() {
             {/* Coluna da direita - Destaque e benefícios */}
             <div className="bg-gray-50 rounded-xl p-6 border border-gray-100 shadow-sm" data-aos="fade-left">
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-12 h-12 rounded-lg bg-blue flex items-center justify-center text-white">
+                <div className="w-12 h-12 rounded-lg bg-blue-600 flex items-center justify-center text-white">
                   {serviceCategories.find(cat => cat.id === activeCategory)?.icon}
                 </div>
                 <div>
@@ -291,7 +291,7 @@ export default function ServicesSection() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-light flex items-center justify-center text-blue">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">
                     <Lightbulb className="w-5 h-5" />
                   </div>
                   <div>
@@ -301,7 +301,7 @@ export default function ServicesSection() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-yellow/20 flex items-center justify-center text-yellow-800">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-yellow-400/20 flex items-center justify-center text-yellow-800">
                     <Headphones className="w-5 h-5" />
                   </div>
                   <div>
@@ -314,7 +314,7 @@ export default function ServicesSection() {
               {/* Badge de garantia */}
               <div className="mt-6 bg-white border border-gray-100 rounded-lg p-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue/10 flex items-center justify-center text-blue">
+                  <div className="w-10 h-10 rounded-full bg-blue-600/10 flex items-center justify-center text-blue-600">
                     <Shield className="w-5 h-5" />
                   </div>
                   <div>
@@ -339,9 +339,9 @@ export default function ServicesSection() {
               key={index}
               data-aos="fade-up"
               data-aos-delay={100 * index}
-              className="bg-white border border-gray-100 rounded-xl p-6 text-center hover:bg-blue-light/10 hover:shadow-md transition-all duration-300"
+              className="bg-white border border-gray-100 rounded-xl p-6 text-center hover:bg-blue-100 hover:shadow-md transition-all duration-300"
             >
-              <div className="text-3xl font-bold text-blue mb-2">{stat.value}</div>
+              <div className="text-3xl font-bold text-blue-600 mb-2">{stat.value}</div>
               <div className="text-gray-600">{stat.label}</div>
             </div>
           ))}
@@ -364,7 +364,7 @@ export default function ServicesSection() {
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-light/30 flex items-center justify-center text-blue">
+                  <div className="w-8 h-8 rounded-full bg-blue-100/30 flex items-center justify-center text-blue-600">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
                       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                     </svg>
@@ -376,7 +376,7 @@ export default function ServicesSection() {
                 </div>
                 
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-light/30 flex items-center justify-center text-blue">
+                  <div className="w-8 h-8 rounded-full bg-blue-100/30 flex items-center justify-center text-blue-600">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
                       <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
                     </svg>
@@ -389,10 +389,10 @@ export default function ServicesSection() {
               </div>
               
               <div className="flex flex-wrap gap-4">
-                <button className="px-4 py-2 bg-blue text-white text-sm rounded-lg hover:bg-blue-600 transition-colors shadow-sm flex items-center gap-2">
+                <button className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-2">
                   Solicitar assistência
                 </button>
-                <a href="#" className="px-4 py-2 text-blue text-sm hover:underline flex items-center gap-1">
+                <a href="#" className="px-4 py-2 text-blue-600 text-sm hover:underline flex items-center gap-1">
                   Saiba mais
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -403,7 +403,7 @@ export default function ServicesSection() {
               
               <div className="mt-6 bg-white/80 backdrop-blur-sm py-2 px-3 rounded-lg shadow-sm text-center sm:hidden w-fit">
                 <p className="text-gray-800 text-xs">Tempo médio de atendimento</p>
-                <p className="text-blue font-bold">30 minutos</p>
+                <p className="text-blue-600 font-bold">30 minutos</p>
               </div>
             </div>
           </div>

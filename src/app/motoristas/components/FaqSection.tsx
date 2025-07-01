@@ -49,8 +49,8 @@ export default function FaqSection() {
       className="py-20 bg-gray-100 relative overflow-hidden"
     >
       {/* Decorative elements */}
-      <div className="absolute top-0 right-0 w-72 h-72 bg-blue/5 rounded-full -translate-y-1/2 translate-x-1/4" />
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-yellow/10 rounded-full translate-y-1/3 -translate-x-1/4" />
+      <div className="absolute top-0 right-0 w-72 h-72 bg-blue-600/5 rounded-full -translate-y-1/2 translate-x-1/4" />
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-yellow-400/10 rounded-full translate-y-1/3 -translate-x-1/4" />
       <div className="absolute inset-0 pattern-dots opacity-30" />
       
       <div className="container-custom relative">
@@ -62,7 +62,7 @@ export default function FaqSection() {
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-6 relative inline-block">
             Perguntas Frequentes
-            <div className="absolute -bottom-2 left-0 right-0 h-1 bg-yellow rounded-full"></div>
+            <div className="absolute -bottom-2 left-0 right-0 h-1 bg-yellow-400 rounded-full"></div>
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Tire suas dúvidas sobre o Instauto e descubra como podemos facilitar a manutenção do seu veículo.
@@ -82,12 +82,12 @@ export default function FaqSection() {
                 onClick={() => toggleFaq(index)}
                 className={`flex justify-between items-center p-5 rounded-xl cursor-pointer transition-all ${
                   activeIndex === index 
-                    ? "bg-blue text-white shadow-lg" 
+                    ? "bg-blue-600 text-white shadow-lg" 
                     : "bg-white text-gray-800 hover:bg-blue-light"
                 }`}
               >
                 <h3 className="font-medium text-lg">{faq.pergunta}</h3>
-                <div className={`transition-all duration-300 ${activeIndex === index ? "bg-white text-blue" : "bg-blue-light text-blue"} p-2 rounded-full`}>
+                <div className={`transition-all duration-300 ${activeIndex === index ? "bg-white text-blue-600" : "bg-blue-100 text-blue-600"} p-2 rounded-full`}>
                   {activeIndex === index ? (
                     <Minus size={20} />
                   ) : (

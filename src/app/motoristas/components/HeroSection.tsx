@@ -63,8 +63,8 @@ export default function HeroSection() {
       <div className="absolute inset-0 pattern-dots opacity-5"></div>
       
       {/* Elementos decorativos */}
-      <div className="absolute top-20 right-20 w-64 h-64 bg-blue/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-20 left-20 w-64 h-64 bg-yellow/10 rounded-full blur-3xl"></div>
+      <div className="absolute top-20 right-20 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-20 left-20 w-64 h-64 bg-yellow-400/10 rounded-full blur-3xl"></div>
       
       {/* Conteúdo do Hero */}
       <div className="container-custom relative z-10 py-20 md:py-32">
@@ -94,7 +94,7 @@ export default function HeroSection() {
               >
                 Conectando o seu{" "}
                 <span className="relative inline-block min-w-32">
-                  <span className="text-blue opacity-0">automóvel</span>
+                  <span className="text-blue-600 opacity-0">automóvel</span>
                   <motion.span
                     className="text-[#0047CC] absolute left-0 w-full"
                     initial={{ opacity: 0, y: 10 }}
@@ -204,7 +204,7 @@ export default function HeroSection() {
                     variants={itemVariants}
                     className="flex items-center text-gray-700"
                   >
-                    <CheckCircle className="h-5 w-5 text-yellow mr-3 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5 text-yellow-400 mr-3 flex-shrink-0" />
                     <span>{feature.text}</span>
                   </motion.li>
                 ))}
@@ -270,12 +270,12 @@ export default function HeroSection() {
               </motion.div>
               
               {/* Halo de luz */}
-              <div className="absolute -inset-6 bg-blue/10 opacity-50 blur-xl rounded-full z-[-1]"></div>
+              <div className="absolute -inset-6 bg-blue-600/10 opacity-50 blur-xl rounded-full z-[-1]"></div>
             </div>
 
             {/* Elementos decorativos */}
-            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-yellow/20 rounded-full blur-3xl" />
-            <div className="absolute top-20 -left-10 w-32 h-32 bg-blue/20 rounded-full blur-2xl" />
+            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-yellow-400/20 rounded-full blur-3xl" />
+            <div className="absolute top-20 -left-10 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl" />
           </motion.div>
         </div>
         
@@ -294,7 +294,7 @@ export default function HeroSection() {
               { value: "4.8/5", label: "Avaliação dos clientes" }
             ].map((stat, i) => (
               <div key={i} className="text-gray-800">
-                <div className="text-3xl md:text-4xl font-bold mb-2 text-blue">{stat.value}</div>
+                <div className="text-3xl md:text-4xl font-bold mb-2 text-blue-600">{stat.value}</div>
                 <div className="text-gray-600">{stat.label}</div>
               </div>
             ))}
