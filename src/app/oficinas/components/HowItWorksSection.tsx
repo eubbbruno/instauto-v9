@@ -157,7 +157,7 @@ const HowItWorksSection = () => {
   // Componente de cartão de passo
   const StepCard = ({ step, index, isActive }: { step: typeof steps[0], index: number, isActive: boolean }) => {
     const bgClass = isActive ? "bg-brand-yellow" : "bg-white";
-    const borderClass = isActive ? "border-yellow/50" : "border-brand-light";
+    const borderClass = isActive ? "border-yellow-400/50" : "border-brand-light";
 
     return (
       <motion.div
@@ -177,7 +177,7 @@ const HowItWorksSection = () => {
               animate={{ rotate: 0, scale: 1 }}
               transition={{ duration: 0.6, type: "spring" }}
             >
-              <div className={`flex items-center justify-center w-10 h-10 rounded-full ${isActive ? "bg-yellow" : "bg-white"} shadow-md text-xl font-bold font-syne text-blue border-2 ${isActive ? "border-yellow-dark" : "border-blue-100"}`}>
+              <div className={`flex items-center justify-center w-10 h-10 rounded-full ${isActive ? "bg-yellow-400" : "bg-white"} shadow-md text-xl font-bold font-syne text-blue-600 border-2 ${isActive ? "border-yellow-500" : "border-blue-100"}`}>
                 {index + 1}
               </div>
             </motion.div>
@@ -190,7 +190,7 @@ const HowItWorksSection = () => {
         <div className="space-y-2 mb-4">
           {step.features.map((feature, j) => (
             <div key={j} className="flex items-center">
-              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue/10 flex items-center justify-center mr-3 text-blue">
+              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600/10 flex items-center justify-center mr-3 text-blue-600">
                 {feature.icon}
               </div>
               <span className="text-sm text-gray-700 font-sans">{feature.text}</span>
@@ -229,7 +229,7 @@ const HowItWorksSection = () => {
           }}
         />
         <motion.div 
-          className="absolute top-1/3 -left-20 w-72 h-72 bg-yellow/10 rounded-full blur-3xl"
+          className="absolute top-1/3 -left-20 w-72 h-72 bg-yellow-400/10 rounded-full blur-3xl"
           style={{ 
             y: useTransform(scrollYProgress, [0, 1], [0, 50]),
             x: useTransform(scrollYProgress, [0, 1], [0, -20])
@@ -238,22 +238,22 @@ const HowItWorksSection = () => {
         <div className="absolute -bottom-40 left-1/2 transform -translate-x-1/2 w-[120%] h-96 bg-gradient-to-b from-blue-50/80 to-white"></div>
         
         <motion.div 
-          className="absolute top-40 left-10 w-2 h-2 bg-blue rounded-full shadow-lg shadow-blue/30"
+          className="absolute top-40 left-10 w-2 h-2 bg-blue-600 rounded-full shadow-lg shadow-blue-600/30"
           animate={{ y: [0, 10, 0], opacity: [0.5, 1, 0.5] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute top-60 right-[10%] w-3 h-3 bg-yellow rounded-full shadow-lg shadow-yellow/30"
+          className="absolute top-60 right-[10%] w-3 h-3 bg-yellow-400 rounded-full shadow-lg shadow-yellow-400/30"
           animate={{ y: [0, -15, 0], opacity: [0.5, 1, 0.5] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         />
         <motion.div 
-          className="absolute bottom-20 left-[20%] w-2 h-2 bg-blue rounded-full shadow-lg shadow-blue/30"
+          className="absolute bottom-20 left-[20%] w-2 h-2 bg-blue-600 rounded-full shadow-lg shadow-blue-600/30"
           animate={{ y: [0, 12, 0], opacity: [0.5, 1, 0.5] }}
           transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
         />
         <motion.div 
-          className="absolute bottom-40 right-20 w-2 h-2 bg-yellow rounded-full shadow-lg shadow-yellow/30"
+          className="absolute bottom-40 right-20 w-2 h-2 bg-yellow-400 rounded-full shadow-lg shadow-yellow-400/30"
           animate={{ y: [0, -10, 0], opacity: [0.5, 1, 0.5] }}
           transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
         />
@@ -275,7 +275,7 @@ const HowItWorksSection = () => {
               transition={{ duration: 0.5 }}
               className="inline-block"
             >
-              <span className="bg-blue/10 text-blue px-5 py-1.5 rounded-full text-sm font-medium">
+              <span className="bg-blue-600/10 text-blue-600 px-5 py-1.5 rounded-full text-sm font-medium">
                 Processo simplificado
               </span>
             </motion.div>
@@ -363,7 +363,7 @@ const HowItWorksSection = () => {
               {[0, 1, 2].map((i) => (
                 <motion.button
                   key={i}
-                  className={`w-3 h-3 rounded-full ${i === activeStep ? 'bg-blue' : 'bg-gray-300'}`}
+                  className={`w-3 h-3 rounded-full ${i === activeStep ? 'bg-blue-600' : 'bg-gray-300'}`}
                   variants={dotVariants}
                   initial="inactive"
                   animate={i === activeStep ? "active" : "inactive"}

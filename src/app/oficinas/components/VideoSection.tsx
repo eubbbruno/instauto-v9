@@ -160,7 +160,7 @@ const VideoSection = () => {
               animate={isInView ? { opacity: 1 } : {}}
               transition={{ duration: 0.7, delay: 0.2 }}
             >
-              Veja o <span className="text-blue">Instauto</span> em ação
+              Veja o <span className="text-blue-600">Instauto</span> em ação
             </motion.h2>
             
             <motion.p 
@@ -248,7 +248,7 @@ const VideoSection = () => {
                 whileTap={{ scale: 0.95 }}
               >
                 <motion.div 
-                  className="w-20 h-20 rounded-full bg-blue absolute"
+                  className="w-20 h-20 rounded-full bg-blue-600 absolute"
                   animate={{ scale: [1, 1.5], opacity: [0.7, 0] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                 />

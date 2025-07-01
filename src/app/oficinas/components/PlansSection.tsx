@@ -155,8 +155,8 @@ const PlansSection = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-white to-gray-50"></div>
       
       {/* Círculos decorativos */}
-      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-yellow/5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
-      <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-blue/5 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
+      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-yellow-400/5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-blue-600/5 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
       
       <div className="container-custom relative z-10">
         <div className="text-center mb-16">
@@ -258,7 +258,7 @@ const PlansSection = () => {
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.5 }}
             >
-              <div className="bg-blue px-4 py-1.5 text-white text-sm font-bold rounded-bl-lg rounded-tr-xl shadow-sm flex items-center">
+              <div className="bg-blue-600 px-4 py-1.5 text-white text-sm font-bold rounded-bl-lg rounded-tr-xl shadow-sm flex items-center">
                 <SparklesIcon className="w-4 h-4 mr-1.5" />
                 Recomendado
               </div>
@@ -289,7 +289,7 @@ const PlansSection = () => {
             <div className="p-8">
               <div className="text-lg font-medium text-gray-600 mb-1">Plano Profissional</div>
               <div className="flex items-end mb-4">
-                <span className="text-4xl font-bold mr-2 font-syne text-blue">R$ 149</span>
+                <span className="text-4xl font-bold mr-2 font-syne text-blue-600">R$ 149</span>
                 <span className="text-gray-600 pb-1">/mês</span>
               </div>
               <p className="text-gray-700 mb-6">
@@ -359,7 +359,7 @@ const PlansSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.7 }}
-              className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-yellow/95 text-gray-800 text-[10px] sm:text-xs font-medium px-3 py-1 sm:px-4 sm:py-1.5 rounded-full border border-yellow-400/30 shadow-sm whitespace-nowrap"
+              className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-yellow-400/95 text-gray-800 text-[10px] sm:text-xs font-medium px-3 py-1 sm:px-4 sm:py-1.5 rounded-full border border-yellow-400/30 shadow-sm whitespace-nowrap"
             >
               Sem compromisso • Cancele quando quiser
             </motion.div>
@@ -371,7 +371,7 @@ const PlansSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="text-center mt-16 bg-blue/5 py-6 px-8 rounded-xl max-w-3xl mx-auto border border-blue/10"
+          className="text-center mt-16 bg-blue-600/5 py-6 px-8 rounded-xl max-w-3xl mx-auto border border-blue-600/10"
         >
           <p className="text-gray-700">
             Todos os planos incluem atualizações gratuitas e suporte por e-mail.
@@ -382,7 +382,7 @@ const PlansSection = () => {
             <motion.div 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
-              className="text-blue hover:text-blue-dark"
+              className="text-blue-600 hover:text-blue-700"
             >
               <Link href="/termos" className="text-sm underline">
                 Termos de serviço
@@ -394,7 +394,7 @@ const PlansSection = () => {
             <motion.div 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
-              className="text-blue hover:text-blue-dark"
+              className="text-blue-600 hover:text-blue-700"
             >
               <Link href="/perguntas" className="text-sm underline">
                 Perguntas frequentes

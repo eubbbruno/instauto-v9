@@ -103,14 +103,14 @@ const PlatformAccessSection = () => {
         
         {/* Círculos decorativos */}
         <motion.div 
-          className="absolute -right-32 top-1/3 w-96 h-96 rounded-full bg-blue/5 blur-3xl"
+          className="absolute -right-32 top-1/3 w-96 h-96 rounded-full bg-blue-600/5 blur-3xl"
           style={{ 
             y: useTransform(scrollYProgress, [0, 1], [0, 50]),
             opacity: useTransform(scrollYProgress, [0, 0.5, 1], [0.4, 0.7, 0.4])
           }}
         />
         <motion.div 
-          className="absolute -left-32 bottom-1/4 w-80 h-80 rounded-full bg-yellow/10 blur-3xl"
+          className="absolute -left-32 bottom-1/4 w-80 h-80 rounded-full bg-yellow-400/10 blur-3xl"
           style={{ 
             y: useTransform(scrollYProgress, [0, 1], [50, -50]),
             opacity: useTransform(scrollYProgress, [0, 0.5, 1], [0.3, 0.6, 0.3])
@@ -132,7 +132,7 @@ const PlatformAccessSection = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="bg-blue/10 text-blue px-5 py-1.5 rounded-full text-sm font-medium">
+                <span className="bg-blue-600/10 text-blue-600 px-5 py-1.5 rounded-full text-sm font-medium">
                   Mobilidade total
                 </span>
               </motion.div>

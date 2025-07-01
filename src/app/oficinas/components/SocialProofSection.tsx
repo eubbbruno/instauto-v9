@@ -204,7 +204,7 @@ const SocialProofSection = () => {
         
         {/* Efeitos de luz */}
         <div className="absolute top-0 right-0 w-1/3 h-1/2 bg-blue-light/30 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-0 left-0 w-1/4 h-1/3 bg-blue/20 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-0 left-0 w-1/4 h-1/3 bg-blue-600/20 rounded-full blur-[100px]"></div>
       </div>
       
       <div className="container-custom relative z-10">
@@ -216,7 +216,7 @@ const SocialProofSection = () => {
             transition={{ duration: 0.5 }}
             className="relative h-8 flex items-center justify-center mb-4"
           >
-            <span className="bg-yellow/20 text-yellow px-5 py-1.5 rounded-full text-sm font-medium backdrop-blur-sm">
+            <span className="bg-yellow-400/20 text-yellow-400 px-5 py-1.5 rounded-full text-sm font-medium backdrop-blur-sm">
               Comunidade em crescimento
             </span>
           </motion.div>
@@ -228,7 +228,7 @@ const SocialProofSection = () => {
             transition={{ duration: 0.5 }}
             className="text-4xl md:text-5xl font-bold mb-6 font-syne text-white"
           >
-            Oficinas por todo o <span className="text-yellow">Brasil</span> confiam no Instauto
+            Oficinas por todo o <span className="text-yellow-400">Brasil</span> confiam no Instauto
           </motion.h2>
           
           <motion.div 
@@ -242,7 +242,7 @@ const SocialProofSection = () => {
               {[1, 2, 3, 4, 5].map((num) => (
                 <div 
                   key={num} 
-                  className="w-10 h-10 rounded-full border-2 border-blue bg-gradient-to-br from-blue-light to-blue flex items-center justify-center text-xs font-bold text-white"
+                  className="w-10 h-10 rounded-full border-2 border-blue-600 bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-xs font-bold text-white"
                 >
                   {num}
                 </div>
@@ -258,7 +258,7 @@ const SocialProofSection = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="relative h-[400px] w-full max-w-2xl mx-auto mb-20 bg-blue/50 rounded-lg backdrop-blur-md border border-blue/50 overflow-hidden"
+            className="relative h-[400px] w-full max-w-2xl mx-auto mb-20 bg-blue-600/50 rounded-lg backdrop-blur-md border border-blue-600/50 overflow-hidden"
           >
             <div className="absolute inset-0 bg-[url('/images/brazil-map.png')] bg-no-repeat bg-center bg-contain opacity-30"></div>
             
@@ -318,9 +318,9 @@ const SocialProofSection = () => {
               whileInView="visible"
               viewport={{ once: true }}
               variants={counterVariants}
-              className="p-8 rounded-2xl bg-gradient-to-br from-blue/30 to-blue-dark/30 backdrop-blur-sm border border-blue/20 overflow-hidden relative"
+              className="p-8 rounded-2xl bg-gradient-to-br from-blue-600/30 to-blue-700/30 backdrop-blur-sm border border-blue-600/20 overflow-hidden relative"
             >
-              <div className="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-yellow/40 to-yellow-dark/20 rounded-full blur-xl"></div>
+              <div className="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-yellow-400 to-yellow-dark/20 rounded-full blur-xl"></div>
               <h3 className="text-5xl font-bold font-syne text-white mb-2">
                 <motion.span
                   initial={{ opacity: 0, y: 20 }}
@@ -338,7 +338,7 @@ const SocialProofSection = () => {
                   whileInView={{ width: "75%" }}
                   viewport={{ once: true }}
                   transition={{ duration: 1.5, delay: 0.7 }}
-                  className="h-full bg-gradient-to-r from-yellow to-yellow-dark"
+                  className="h-full bg-gradient-to-r from-yellow-400 to-yellow-dark"
                 ></motion.div>
               </div>
             </motion.div>
@@ -349,9 +349,9 @@ const SocialProofSection = () => {
               whileInView="visible"
               viewport={{ once: true }}
               variants={counterVariants}
-              className="p-8 rounded-2xl bg-gradient-to-br from-blue/30 to-blue-dark/30 backdrop-blur-sm border border-blue/20 overflow-hidden relative"
+              className="p-8 rounded-2xl bg-gradient-to-br from-blue-600/30 to-blue-700/30 backdrop-blur-sm border border-blue-600/20 overflow-hidden relative"
             >
-              <div className="absolute -left-6 -bottom-6 w-24 h-24 bg-gradient-to-tr from-blue-light/40 to-blue/20 rounded-full blur-xl"></div>
+              <div className="absolute -left-6 -bottom-6 w-24 h-24 bg-gradient-to-tr from-blue-500/40 to-blue-600/20 rounded-full blur-xl"></div>
               <h3 className="text-5xl font-bold font-syne text-white mb-2">
                 <motion.span
                   initial={{ opacity: 0, y: 20 }}
@@ -369,7 +369,7 @@ const SocialProofSection = () => {
                   whileInView={{ width: "85%" }}
                   viewport={{ once: true }}
                   transition={{ duration: 1.5, delay: 0.8 }}
-                  className="h-full bg-gradient-to-r from-blue-light to-blue"
+                  className="h-full bg-gradient-to-r from-blue-500 to-blue-600"
                 ></motion.div>
               </div>
             </motion.div>
@@ -380,9 +380,9 @@ const SocialProofSection = () => {
               whileInView="visible"
               viewport={{ once: true }}
               variants={counterVariants}
-              className="p-8 rounded-2xl bg-gradient-to-br from-blue/30 to-blue-dark/30 backdrop-blur-sm border border-blue/20 overflow-hidden relative"
+              className="p-8 rounded-2xl bg-gradient-to-br from-blue-600/30 to-blue-700/30 backdrop-blur-sm border border-blue-600/20 overflow-hidden relative"
             >
-              <div className="absolute -left-4 -top-4 w-20 h-20 bg-gradient-to-br from-yellow/40 to-yellow-dark/20 rounded-full blur-xl"></div>
+              <div className="absolute -left-4 -top-4 w-20 h-20 bg-gradient-to-br from-yellow-400 to-yellow-dark/20 rounded-full blur-xl"></div>
               <h3 className="text-5xl font-bold font-syne text-white mb-2 flex items-center">
                 <motion.span
                   initial={{ opacity: 0, y: 20 }}
@@ -412,7 +412,7 @@ const SocialProofSection = () => {
                   >
                     <StarIcon 
                       className={`w-5 h-5 ${
-                        star <= 4 ? 'text-yellow' : 'text-yellow/50'
+                        star <= 4 ? 'text-yellow-400' : 'text-yellow-400/50'
                       }`} 
                     />
                   </motion.div>
@@ -464,7 +464,7 @@ const SocialProofSection = () => {
                   <div className="p-8 md:p-10">
                     <div className="flex flex-col md:flex-row gap-8">
                       <div className="flex-shrink-0">
-                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-white/20 relative bg-gradient-to-br from-blue-light to-blue">
+                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-white/20 relative bg-gradient-to-br from-blue-500 to-blue-600">
                           {/* Placeholder para a imagem real */}
                           <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-xl">
                             {testimonials[activeTestimonial].name.charAt(0)}
@@ -475,15 +475,15 @@ const SocialProofSection = () => {
                       <div className="flex-1">
                         <div className="flex mb-3">
                           {[...Array(testimonials[activeTestimonial].rating)].map((_, i) => (
-                            <StarIcon key={i} className="w-5 h-5 text-yellow" />
+                            <StarIcon key={i} className="w-5 h-5 text-yellow-400" />
                           ))}
                         </div>
                         
-                        <div className="relative mb-6 pl-6 border-l-2 border-yellow/50">
+                        <div className="relative mb-6 pl-6 border-l-2 border-yellow-400/50">
                           <p className="text-white/90 text-lg italic mb-5">
                             &ldquo;{testimonials[activeTestimonial].content}&rdquo;
                           </p>
-                          <div className="text-yellow font-bold flex items-center text-sm mb-1">
+                          <div className="text-yellow-400 font-bold flex items-center text-sm mb-1">
                             <CheckBadgeIcon className="w-5 h-5 mr-2" />
                             {testimonials[activeTestimonial].highlight}
                           </div>
@@ -517,7 +517,7 @@ const SocialProofSection = () => {
                     setActiveTestimonial(index);
                   }}
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === activeTestimonial ? 'bg-yellow scale-110' : 'bg-white/30 hover:bg-white/50'
+                    index === activeTestimonial ? 'bg-yellow-400 scale-110' : 'bg-white/30 hover:bg-white/50'
                   }`}
                   aria-label={`Visualizar depoimento ${index + 1}`}
                 />
@@ -531,7 +531,7 @@ const SocialProofSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="max-w-3xl mx-auto bg-gradient-to-r from-blue/40 to-blue-dark/40 backdrop-blur-sm p-8 rounded-xl border border-blue/30"
+            className="max-w-3xl mx-auto bg-gradient-to-r from-blue-600/40 to-blue-700/40 backdrop-blur-sm p-8 rounded-xl border border-blue-600/30"
           >
             <h3 className="text-2xl font-bold font-syne text-white mb-3">
               Junte-se a milhares de oficinas de sucesso

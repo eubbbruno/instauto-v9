@@ -78,12 +78,12 @@ const FaqSection = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-blue/5 to-white/80"></div>
       
       {/* Círculos decorativos */}
-      <div className="absolute top-20 right-10 w-24 h-24 bg-yellow/10 rounded-full blur-xl"></div>
-      <div className="absolute bottom-20 left-10 w-32 h-32 bg-blue/10 rounded-full blur-xl"></div>
+      <div className="absolute top-20 right-10 w-24 h-24 bg-yellow-400/10 rounded-full blur-xl"></div>
+      <div className="absolute bottom-20 left-10 w-32 h-32 bg-blue-600/10 rounded-full blur-xl"></div>
       
       {/* Formas flutuantes */}
       <motion.div 
-        className="absolute top-1/4 right-[5%] w-12 h-12 rounded-full border-2 border-blue/20 hidden md:block"
+        className="absolute top-1/4 right-[5%] w-12 h-12 rounded-full border-2 border-blue-600/20 hidden md:block"
         animate={{ 
           y: [0, -15, 0],
           rotate: [0, 10, 0],
@@ -97,7 +97,7 @@ const FaqSection = () => {
       />
       
       <motion.div 
-        className="absolute bottom-1/4 left-[10%] w-8 h-8 rounded-lg border-2 border-yellow/40 hidden md:block"
+        className="absolute bottom-1/4 left-[10%] w-8 h-8 rounded-lg border-2 border-yellow-400/40 hidden md:block"
         animate={{ 
           y: [0, 15, 0],
           rotate: [0, -15, 0],
@@ -120,7 +120,7 @@ const FaqSection = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="inline-block bg-blue/10 text-blue px-4 py-2 rounded-full text-sm font-medium mb-6"
+              className="inline-block bg-blue-600/10 text-blue-600 px-4 py-2 rounded-full text-sm font-medium mb-6"
             >
               <span className="flex items-center justify-center">
                 <QuestionMarkCircleIcon className="w-4 h-4 mr-2" />
@@ -144,7 +144,7 @@ const FaqSection = () => {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.3 }}
                 >
-                  <SparklesIcon className="w-6 h-6 text-yellow" />
+                  <SparklesIcon className="w-6 h-6 text-yellow-400" />
                 </motion.div>
               </motion.h2>
               
@@ -161,7 +161,7 @@ const FaqSection = () => {
             
             {/* Linha decorativa */}
             <motion.div 
-              className="w-24 h-1 bg-yellow mx-auto mt-8"
+              className="w-24 h-1 bg-yellow-400 mx-auto mt-8"
               initial={{ width: 0 }}
               whileInView={{ width: 96 }}
               viewport={{ once: true }}
@@ -192,7 +192,7 @@ const FaqSection = () => {
                   className={`
                     bg-white rounded-xl overflow-hidden shadow-sm border border-neutral-100
                     transition-all duration-300 ease-in-out transform
-                    ${activeFaqIndex === index ? 'shadow-md border-blue/30 scale-[1.01] relative z-10' : 'hover:shadow-md'}
+                    ${activeFaqIndex === index ? 'shadow-md border-blue-600/30 scale-[1.01] relative z-10' : 'hover:shadow-md'}
                   `}
                 >
                   <button
@@ -200,13 +200,13 @@ const FaqSection = () => {
                     onClick={() => toggleFaq(index)}
                     aria-expanded={activeFaqIndex === index}
                   >
-                    <span className={`font-bold transition-colors duration-300 ${activeFaqIndex === index ? 'text-blue' : 'text-text-base'}`}>
+                    <span className={`font-bold transition-colors duration-300 ${activeFaqIndex === index ? 'text-blue-600' : 'text-text-base'}`}>
                       {item.question}
                     </span>
                     <motion.div
                       animate={{ rotate: activeFaqIndex === index ? 180 : 0 }}
                       transition={{ duration: 0.3 }}
-                      className={`flex-shrink-0 ml-4 rounded-full p-1 ${activeFaqIndex === index ? 'bg-blue/10 text-blue' : 'text-gray-500'}`}
+                      className={`flex-shrink-0 ml-4 rounded-full p-1 ${activeFaqIndex === index ? 'bg-blue-600/10 text-blue-600' : 'text-gray-500'}`}
                     >
                       <ChevronDownIcon className="h-5 w-5" />
                     </motion.div>
@@ -240,7 +240,7 @@ const FaqSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.6 }}
-            className="text-center mt-12 bg-blue/5 py-6 px-8 rounded-xl border border-blue/10"
+            className="text-center mt-12 bg-blue-600/5 py-6 px-8 rounded-xl border border-blue-600/10"
           >
             <p className="text-gray-600">
               Não encontrou o que procurava? Fale diretamente com nossa equipe.

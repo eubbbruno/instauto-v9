@@ -90,14 +90,14 @@ const BenefitsSection = () => {
         
         {/* Elementos decorativos */}
         <motion.div 
-          className="absolute right-0 top-[10%] w-96 h-96 rounded-full bg-blue/5 blur-3xl"
+          className="absolute right-0 top-[10%] w-96 h-96 rounded-full bg-blue-600/5 blur-3xl"
           style={{ 
             y: useTransform(scrollYProgress, [0, 1], [0, -50]),
             opacity: useTransform(scrollYProgress, [0, 0.5, 1], [0.3, 0.6, 0.3])
           }}
         />
         <motion.div 
-          className="absolute left-0 bottom-[10%] w-96 h-96 rounded-full bg-yellow/5 blur-3xl"
+          className="absolute left-0 bottom-[10%] w-96 h-96 rounded-full bg-yellow-400/5 blur-3xl"
           style={{ 
             y: useTransform(scrollYProgress, [0, 1], [0, 50]),
             opacity: useTransform(scrollYProgress, [0, 0.5, 1], [0.3, 0.6, 0.3])
@@ -106,21 +106,21 @@ const BenefitsSection = () => {
         
         {/* Partículas decorativas */}
         <motion.div 
-          className="absolute top-40 left-[10%] w-3 h-3 rounded-full bg-blue"
+          className="absolute top-40 left-[10%] w-3 h-3 rounded-full bg-blue-600"
           style={{ 
             y: useTransform(scrollYProgress, [0, 1], [0, -30]),
             opacity: useTransform(scrollYProgress, [0, 0.5, 1], [0.3, 1, 0.3])
           }}
         />
         <motion.div 
-          className="absolute top-[30%] right-[15%] w-2 h-2 rounded-full bg-yellow"
+          className="absolute top-[30%] right-[15%] w-2 h-2 rounded-full bg-yellow-400"
           style={{ 
             y: useTransform(scrollYProgress, [0, 1], [0, 40]),
             opacity: useTransform(scrollYProgress, [0, 0.6, 1], [0.3, 1, 0.3])
           }}
         />
         <motion.div 
-          className="absolute bottom-[25%] left-[20%] w-2 h-2 rounded-full bg-blue"
+          className="absolute bottom-[25%] left-[20%] w-2 h-2 rounded-full bg-blue-600"
           style={{ 
             y: useTransform(scrollYProgress, [0, 1], [0, -20]),
             opacity: useTransform(scrollYProgress, [0, 0.4, 1], [0.3, 1, 0.3])
@@ -141,7 +141,7 @@ const BenefitsSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <span className="bg-blue/10 text-blue px-5 py-1.5 rounded-full text-sm font-medium">
+              <span className="bg-blue-600/10 text-blue-600 px-5 py-1.5 rounded-full text-sm font-medium">
                 Potencialize seu negócio
               </span>
             </motion.div>
@@ -178,7 +178,7 @@ const BenefitsSection = () => {
             onClick={() => setActiveFilter(null)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-300 ${
               activeFilter === null 
-                ? 'bg-blue text-white shadow-md' 
+                ? 'bg-blue-600 text-white shadow-md' 
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -193,7 +193,7 @@ const BenefitsSection = () => {
               onClick={() => setActiveFilter(category)}
               className={`px-4 py-2 rounded-full text-sm font-medium capitalize transition-colors duration-300 ${
                 activeFilter === category 
-                  ? 'bg-blue text-white shadow-md' 
+                  ? 'bg-blue-600 text-white shadow-md' 
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -240,7 +240,7 @@ const BenefitsSection = () => {
                     
                     {/* Botão/Indicador */}
                     <div className="mt-auto">
-                      <div className="inline-flex items-center text-blue font-medium text-sm transition-transform group-hover:translate-x-1">
+                      <div className="inline-flex items-center text-blue-600 font-medium text-sm transition-transform group-hover:translate-x-1">
                         <span>Saiba mais</span>
                         <ArrowRightIcon className="w-4 h-4 ml-1" />
                       </div>

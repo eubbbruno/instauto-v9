@@ -231,7 +231,7 @@ const HeroSection = () => {
                 <div className="flex -space-x-2">
                   {[1, 2, 3, 4].map((i) => (
                     <div key={i} className={`w-8 h-8 rounded-full border-2 border-white ${
-                      i === 1 ? 'bg-yellow' :
+                      i === 1 ? 'bg-yellow-400' :
                       i === 2 ? 'bg-brand-blue' :
                       i === 3 ? 'bg-green-500' :
                       'bg-red-500'

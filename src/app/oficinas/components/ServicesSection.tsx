@@ -261,7 +261,7 @@ const ServicesSection = () => {
             <motion.div 
               key={i}
               className={`absolute rounded-full ${
-                particle.isBlue ? 'bg-blue/20' : 'bg-yellow/20'
+                particle.isBlue ? 'bg-blue-600/20' : 'bg-yellow-400/20'
               }`}
               style={{
                 top: `${particle.top}%`,
@@ -297,7 +297,7 @@ const ServicesSection = () => {
             transition={{ duration: 0.5 }}
             className="relative h-8 flex items-center justify-center mb-4"
           >
-            <span className="bg-blue/10 text-blue px-5 py-1.5 rounded-full text-sm font-medium">
+            <span className="bg-blue-600/10 text-blue-600 px-5 py-1.5 rounded-full text-sm font-medium">
               Serviços automotivos
             </span>
           </motion.div>
@@ -371,7 +371,7 @@ const ServicesSection = () => {
                   {/* Ícone */}
                   <div className="absolute -bottom-8 left-6 w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-lg">
                     <div className={`w-14 h-14 rounded-full p-3 ${
-                      service.color === 'blue' ? 'text-blue bg-blue/10' : 'text-yellow-800 bg-yellow/10'
+                      service.color === 'blue' ? 'text-blue-600 bg-blue-600/10' : 'text-yellow-800 bg-yellow-400/10'
                     } flex items-center justify-center`}>
                       {service.icon}
                     </div>
@@ -411,10 +411,10 @@ const ServicesSection = () => {
                             className="flex items-start"
                           >
                             <div className={`mr-3 mt-0.5 p-1 rounded-full ${
-                              service.color === 'blue' ? 'bg-blue/10' : 'bg-yellow/10'
+                              service.color === 'blue' ? 'bg-blue-600/10' : 'bg-yellow-400/10'
                             }`}>
                               <BoltIcon className={`w-3 h-3 ${
-                                service.color === 'blue' ? 'text-blue' : 'text-yellow-800'
+                                service.color === 'blue' ? 'text-blue-600' : 'text-yellow-800'
                               }`} />
                             </div>
                             <span className="text-sm font-sans text-gray-700">{benefit}</span>
@@ -472,7 +472,7 @@ const ServicesSection = () => {
                   onClick={() => selectService(index)}
                   className={`w-12 h-2 rounded-full transition-all duration-300 ${
                     index === activeService 
-                      ? services[index].color === 'blue' ? 'bg-blue' : 'bg-yellow' 
+                      ? services[index].color === 'blue' ? 'bg-blue-600' : 'bg-yellow-400'
                       : 'bg-gray-200'
                   }`}
                   whileHover={{ scale: 1.2 }}
