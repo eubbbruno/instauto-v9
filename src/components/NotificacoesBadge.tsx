@@ -54,7 +54,7 @@ const NotificacoesBadge = () => {
 
   const getCorNotificacao = (tipo: string) => {
     switch (tipo) {
-      case 'agendamento': return 'bg-blue-100 text-blue-800';
+      case 'agendamento': return 'bg-[#0047CC]/10 text-[#0047CC]';
       case 'mensagem': return 'bg-green-100 text-green-800';
       case 'promocao': return 'bg-yellow-100 text-yellow-800';
       case 'avaliacao': return 'bg-purple-100 text-purple-800';
@@ -178,7 +178,7 @@ const NotificacoesBadge = () => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className={`p-4 hover:bg-gray-50 transition-colors cursor-pointer ${
-                        !notificacao.lida ? 'bg-blue-50/50' : ''
+                        !notificacao.lida ? 'bg-[#0047CC]/5' : ''
                       }`}
                       onClick={() => marcarComoLida(notificacao.id)}
                     >

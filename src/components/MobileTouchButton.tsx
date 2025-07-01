@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 interface MobileTouchButtonProps {
   children: ReactNode;
   onClick?: () => void;
-  variant?: 'primary' | 'secondary' | 'danger' | 'success';
+  variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'warning' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   disabled?: boolean;
@@ -28,11 +28,13 @@ export default function MobileTouchButton({
     lg: "px-8 py-4 text-lg min-h-[52px]"
   };
   
-  const variantClasses = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-sm",
-    secondary: "bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300 border border-gray-300",
+  const styles = {
+    primary: "bg-[#0047CC] text-white hover:bg-[#003CAD] active:bg-[#002E8A] shadow-sm",
+    secondary: "border border-[#0047CC] text-[#0047CC] hover:bg-[#0047CC]/5 active:bg-[#0047CC]/10 shadow-sm",
     danger: "bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-sm",
-    success: "bg-green-600 text-white hover:bg-green-700 active:bg-green-800 shadow-sm"
+    success: "bg-green-600 text-white hover:bg-green-700 active:bg-green-800 shadow-sm",
+    warning: "bg-[#FFDE59] text-[#0047CC] hover:bg-[#E6C850] active:bg-[#D4B647] shadow-sm",
+    ghost: "text-gray-700 hover:bg-gray-100 active:bg-gray-200"
   };
   
   const disabledClasses = disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer";
@@ -45,7 +47,7 @@ export default function MobileTouchButton({
       className={`
         ${baseClasses} 
         ${sizeClasses[size]} 
-        ${variantClasses[variant]} 
+        ${styles[variant]} 
         ${disabledClasses} 
         ${widthClasses}
         ${className}

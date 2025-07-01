@@ -19,10 +19,10 @@ export default function MotoristaDashboard() {
   const { user } = useAuth();
 
   const stats = [
-    { label: 'Veículos', value: user?.vehicles?.length || 0, color: 'bg-blue-500', icon: TruckIcon },
-    { label: 'Agendamentos', value: '3', color: 'bg-green-500', icon: CalendarIcon },
-    { label: 'Próxima Revisão', value: '12 dias', color: 'bg-yellow-500', icon: ClockIcon },
-    { label: 'Serviços', value: '8', color: 'bg-purple-500', icon: WrenchScrewdriverIcon }
+    { label: 'Veículos', value: user?.vehicles?.length || 0, color: 'bg-[#0047CC]', icon: TruckIcon },
+    { label: 'Agendamentos', value: '3', color: 'bg-green-600', icon: CalendarIcon },
+    { label: 'Próxima Revisão', value: '12 dias', color: 'bg-[#FFDE59]', icon: ClockIcon },
+    { label: 'Serviços', value: '8', color: 'bg-purple-600', icon: WrenchScrewdriverIcon }
   ];
 
   const recentActivities = [
@@ -95,9 +95,9 @@ export default function MotoristaDashboard() {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Ações Rápidas</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
           <Link href="/motorista/notificacoes" className="group">
-            <div className="flex items-center p-4 md:p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors min-h-[72px] touch-manipulation">
-              <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                <BellIcon className="h-5 w-5 text-blue-600" />
+            <div className="flex items-center p-4 md:p-4 bg-[#0047CC]/10 rounded-xl hover:bg-[#0047CC]/20 transition-colors min-h-[72px] touch-manipulation">
+              <div className="p-2 bg-[#0047CC]/20 rounded-lg group-hover:bg-[#0047CC]/30 transition-colors">
+                <BellIcon className="h-5 w-5 text-[#0047CC]" />
               </div>
               <div className="ml-3">
                 <p className="font-medium text-gray-900">Notificações</p>
