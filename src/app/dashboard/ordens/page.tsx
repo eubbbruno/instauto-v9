@@ -9,8 +9,6 @@ import {
   ArrowDownIcon,
   ArrowUpIcon,
   CalendarDaysIcon,
-  UserIcon,
-  BanknotesIcon,
   TruckIcon,
   CheckCircleIcon,
   XCircleIcon,
@@ -233,7 +231,7 @@ const mockOrders: Order[] = [
 ];
 
 // Tipo para o componente DashboardFilters
-type FilterValue = string | boolean | number;
+
 
 export default function OrdensPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -560,127 +558,201 @@ export default function OrdensPage() {
             </button>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 text-left">
-                <tr>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    OS
-                  </th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Cliente/Veículo
-                  </th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Serviço
-                  </th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort("total")}>
-                    <div className="flex items-center">
-                      Valor
-                      {sortField === "total" && (
-                        sortDirection === "asc" ? (
-                          <ArrowUpIcon className="h-4 w-4 ml-1" />
-                        ) : (
-                          <ArrowDownIcon className="h-4 w-4 ml-1" />
-                        )
-                      )}
-                    </div>
-                  </th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort("priority")}>
-                    <div className="flex items-center">
-                      Prioridade
-                      {sortField === "priority" && (
-                        sortDirection === "asc" ? (
-                          <ArrowUpIcon className="h-4 w-4 ml-1" />
-                        ) : (
-                          <ArrowDownIcon className="h-4 w-4 ml-1" />
-                        )
-                      )}
-                    </div>
-                  </th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort("createdAt")}>
-                    <div className="flex items-center">
-                      Data
-                      {sortField === "createdAt" && (
-                        sortDirection === "asc" ? (
-                          <ArrowUpIcon className="h-4 w-4 ml-1" />
-                        ) : (
-                          <ArrowDownIcon className="h-4 w-4 ml-1" />
-                        )
-                      )}
-                    </div>
-                  </th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Ações
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredOrders.map((order, index) => (
-                  <motion.tr 
-                    key={order.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                    className="hover:bg-gray-50 cursor-pointer"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-[#0047CC]">{order.id}</div>
-                      <div className="text-xs text-gray-500">{formatRelativeTime(order.createdAt)}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-800">{order.customer.name}</div>
-                      <div className="text-xs text-gray-500 flex items-center">
-                        <TruckIcon className="h-3 w-3 mr-1" />
-                        {order.vehicle.make} {order.vehicle.model} | {order.vehicle.plate}
+          <div>
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 text-left">
+                  <tr>
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      OS
+                    </th>
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Cliente/Veículo
+                    </th>
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Serviço
+                    </th>
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort("total")}>
+                      <div className="flex items-center">
+                        Valor
+                        {sortField === "total" && (
+                          sortDirection === "asc" ? (
+                            <ArrowUpIcon className="h-4 w-4 ml-1" />
+                          ) : (
+                            <ArrowDownIcon className="h-4 w-4 ml-1" />
+                          )
+                        )}
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-800">{order.service.type}</div>
-                      <div className="text-xs text-gray-500">{order.service.description}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    </th>
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort("priority")}>
+                      <div className="flex items-center">
+                        Prioridade
+                        {sortField === "priority" && (
+                          sortDirection === "asc" ? (
+                            <ArrowUpIcon className="h-4 w-4 ml-1" />
+                          ) : (
+                            <ArrowDownIcon className="h-4 w-4 ml-1" />
+                          )
+                        )}
+                      </div>
+                    </th>
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort("createdAt")}>
+                      <div className="flex items-center">
+                        Data
+                        {sortField === "createdAt" && (
+                          sortDirection === "asc" ? (
+                            <ArrowUpIcon className="h-4 w-4 ml-1" />
+                          ) : (
+                            <ArrowDownIcon className="h-4 w-4 ml-1" />
+                          )
+                        )}
+                      </div>
+                    </th>
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Ações
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredOrders.map((order, index) => (
+                    <motion.tr 
+                      key={order.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                      className="hover:bg-gray-50 cursor-pointer"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-[#0047CC]">{order.id}</div>
+                        <div className="text-xs text-gray-500">{formatRelativeTime(order.createdAt)}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-medium text-gray-800">{order.customer.name}</div>
+                        <div className="text-xs text-gray-500 flex items-center">
+                          <TruckIcon className="h-3 w-3 mr-1" />
+                          {order.vehicle.make} {order.vehicle.model} | {order.vehicle.plate}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-medium text-gray-800">{order.service.type}</div>
+                        <div className="text-xs text-gray-500">{order.service.description}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-800">
+                          {order.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                        </div>
+                        <div className="text-xs text-gray-500">{order.service.items.length} itens</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
+                          {getStatusIcon(order.status)}
+                          <span className="ml-1">{getStatusText(order.status)}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getPriorityColor(order.priority)}`}>
+                          {getPriorityText(order.priority)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-800">
+                          {formatDate(order.createdAt).split(' ')[0]}
+                        </div>
+                        <div className="text-xs text-gray-500 flex items-center">
+                          <CalendarDaysIcon className="h-3 w-3 mr-1" />
+                          {order.scheduledFor ? formatDate(order.scheduledFor).split(' ')[1] : '-'}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                        <div className="flex space-x-2 justify-end">
+                          <Link href={`/dashboard/ordens/${order.id}`} className="text-[#0047CC] hover:text-[#003CAD]">
+                            Detalhes
+                          </Link>
+                          <button className="text-gray-400 hover:text-gray-500">
+                            <EllipsisHorizontalIcon className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="md:hidden space-y-4">
+              {filteredOrders.map((order, index) => (
+                <motion.div 
+                  key={order.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  className="bg-white rounded-lg border border-gray-200 p-4"
+                >
+                  {/* Header do card */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center">
+                      <div className="text-base font-medium text-[#0047CC]">{order.id}</div>
+                      <div className={`ml-3 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
+                        {getStatusIcon(order.status)}
+                        <span className="ml-1">{getStatusText(order.status)}</span>
+                      </div>
+                    </div>
+                    <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getPriorityColor(order.priority)}`}>
+                      {getPriorityText(order.priority)}
+                    </div>
+                  </div>
+
+                  {/* Cliente e Veículo */}
+                  <div className="mb-3">
+                    <div className="text-sm font-medium text-gray-800 mb-1">{order.customer.name}</div>
+                    <div className="text-xs text-gray-500 flex items-center">
+                      <TruckIcon className="h-3 w-3 mr-1" />
+                      {order.vehicle.make} {order.vehicle.model} | {order.vehicle.plate}
+                    </div>
+                  </div>
+
+                  {/* Serviço */}
+                  <div className="mb-3">
+                    <div className="text-sm font-medium text-gray-800">{order.service.type}</div>
+                    <div className="text-xs text-gray-500">{order.service.description}</div>
+                  </div>
+
+                  {/* Valor e Data */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
                       <div className="text-sm font-medium text-gray-800">
                         {order.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                       </div>
                       <div className="text-xs text-gray-500">{order.service.items.length} itens</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
-                        {getStatusIcon(order.status)}
-                        <span className="ml-1">{getStatusText(order.status)}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getPriorityColor(order.priority)}`}>
-                        {getPriorityText(order.priority)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    </div>
+                    <div className="text-right">
                       <div className="text-sm text-gray-800">
                         {formatDate(order.createdAt).split(' ')[0]}
                       </div>
-                      <div className="text-xs text-gray-500 flex items-center">
-                        <CalendarDaysIcon className="h-3 w-3 mr-1" />
-                        {order.scheduledFor ? formatDate(order.scheduledFor).split(' ')[1] : '-'}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                      <div className="flex space-x-2 justify-end">
-                        <Link href={`/dashboard/ordens/${order.id}`} className="text-[#0047CC] hover:text-[#003CAD]">
-                          Detalhes
-                        </Link>
-                        <button className="text-gray-400 hover:text-gray-500">
-                          <EllipsisHorizontalIcon className="h-5 w-5" />
-                        </button>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
+                      <div className="text-xs text-gray-500">{formatRelativeTime(order.createdAt)}</div>
+                    </div>
+                  </div>
+
+                  {/* Ações */}
+                  <div className="flex gap-2 pt-3 border-t border-gray-100">
+                    <Link 
+                      href={`/dashboard/ordens/${order.id}`} 
+                      className="flex-1 px-3 py-2 bg-[#0047CC] text-white text-center rounded-lg text-sm font-medium hover:bg-[#003CAD] transition-colors touch-manipulation"
+                    >
+                      Ver Detalhes
+                    </Link>
+                    <button className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors touch-manipulation">
+                      <EllipsisHorizontalIcon className="h-5 w-5" />
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
         )}
       </div>

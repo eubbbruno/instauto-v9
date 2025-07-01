@@ -368,7 +368,8 @@ export default function RelatoriosPage() {
             <h3 className="font-bold text-gray-800">Top Clientes</h3>
             <p className="text-xs text-gray-500 mt-1">Clientes com maior recorrência</p>
           </div>
-          <div className="overflow-x-auto">
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 text-left">
                 <tr>
@@ -417,6 +418,25 @@ export default function RelatoriosPage() {
               </tbody>
             </table>
           </div>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden space-y-3">
+            {topCustomers.map((customer, index) => (
+              <div key={index} className="bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-gray-800">{customer.name}</span>
+                  <div className="flex items-center">
+                    <span className="text-sm text-gray-600 mr-1">{customer.rating.toFixed(1)}</span>
+                    <StarIcon className="h-4 w-4 text-yellow-400" />
+                  </div>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">{customer.services} serviços</span>
+                  <span className="font-medium text-gray-800">{formatCurrency(customer.revenue)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </motion.div>
         
         {/* Top Serviços */}
@@ -430,7 +450,8 @@ export default function RelatoriosPage() {
             <h3 className="font-bold text-gray-800">Top Serviços</h3>
             <p className="text-xs text-gray-500 mt-1">Serviços mais realizados</p>
           </div>
-          <div className="overflow-x-auto">
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 text-left">
                 <tr>
@@ -475,6 +496,22 @@ export default function RelatoriosPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden space-y-3">
+            {topServices.map((service, index) => (
+              <div key={index} className="bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-gray-800">{service.name}</span>
+                  <span className="text-sm font-medium text-gray-800">{formatCurrency(service.revenue)}</span>
+                </div>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>{service.count} serviços</span>
+                  <span>{formatTimeHours(service.avgTime)}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </motion.div>
       </div>

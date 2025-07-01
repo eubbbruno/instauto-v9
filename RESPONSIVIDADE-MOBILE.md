@@ -1,7 +1,7 @@
 # 📱 **RESPONSIVIDADE MOBILE - INSTAUTO V7**
 
-> **Status: 95% CONCLUÍDO** ✅  
-> Todas as páginas principais estão mobile-friendly
+> **Status: 100% CONCLUÍDO** 🎉  
+> Todas as páginas estão completamente mobile-friendly
 
 ## 🎯 **OBJETIVO ALCANÇADO**
 
@@ -30,8 +30,14 @@ O Instauto V7 agora é **100% utilizável no mobile** com:
 - **`/mensagens`** - Central de mensagens global
 - **`/motorista/mensagens`** - Chat motorista
 
-### **GESTÃO DE CLIENTES** 🔄
-- **`/dashboard/clientes`** - Lista clientes (95% concluído)
+### **GESTÃO DE CLIENTES** ✅
+- **`/dashboard/clientes`** - Lista clientes (100% responsivo)
+
+### **ORDENS DE SERVIÇO** ✅
+- **`/dashboard/ordens`** - Tabela de ordens com cards mobile
+
+### **RELATÓRIOS** ✅  
+- **`/dashboard/relatorios`** - Rankings mobile-responsive
 
 ---
 
@@ -235,6 +241,28 @@ Botões otimizados para touch:
   columns={tableColumns}
   actions={tableActions}
   emptyMessage={{ title: "Nenhum cliente encontrado" }}
+/>
+```
+
+### **ORDENS DE SERVIÇO** (`/dashboard/ordens`)
+```tsx
+// Tabela de ordens com cards mobile
+<MobileResponsiveTable
+  data={ordens}
+  columns={ordensColumns}
+  isLoading={loading}
+  emptyMessage={{ title: "Nenhuma ordem encontrada" }}
+/>
+```
+
+### **RELATÓRIOS** (`/dashboard/relatorios`)
+```tsx
+// Rankings mobile-responsive
+<MobileResponsiveTable
+  data={rankings}
+  columns={rankingsColumns}
+  isLoading={loading}
+  emptyMessage={{ title: "Nenhum ranking encontrado" }}
 />
 ```
 
