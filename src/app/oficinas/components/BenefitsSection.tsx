@@ -17,42 +17,42 @@ const benefits = [
     icon: <UserGroupIcon className="h-10 w-10 text-white" />,
     title: "Mais clientes, menos esforço",
     description: "Receba orçamentos diretos de motoristas da sua região que já estão procurando os serviços que você oferece.",
-    color: "from-blue via-blue-dark to-blue",
+    color: "from-blue-600 via-blue-700 to-blue-800",
     category: "crescimento"
   },
   {
     icon: <ChartBarIcon className="h-10 w-10 text-text-base" />,
     title: "ERP e CRM completo",
     description: "Gerencie seu estoque, ordens de serviço, faturamento e relacionamento com clientes em um único sistema.",
-    color: "from-yellow to-yellow-dark",
+    color: "from-yellow-400 to-yellow-600",
     category: "gestão"
   },
   {
     icon: <DevicePhoneMobileIcon className="h-10 w-10 text-white" />,
     title: "Acesso via celular",
     description: "Sistema 100% responsivo que funciona no navegador do seu celular ou tablet, sem precisar instalar apps.",
-    color: "from-blue via-blue-dark to-blue",
+    color: "from-blue-600 via-blue-700 to-blue-800",
     category: "praticidade"
   },
   {
     icon: <ChatBubbleLeftRightIcon className="h-10 w-10 text-text-base" />,
     title: "Integração com WhatsApp",
     description: "Envie notificações automáticas para seus clientes sobre status do serviço, orçamentos e lembretes.",
-    color: "from-yellow to-yellow-dark",
+    color: "from-yellow-400 to-yellow-600",
     category: "comunicação"
   },
   {
     icon: <CogIcon className="h-10 w-10 text-white" />,
     title: "Suporte com IA",
     description: "Assistente virtual que ajuda a gerenciar sua agenda, responder dúvidas comuns e otimizar seus processos.",
-    color: "from-blue via-blue-dark to-blue",
+    color: "from-blue-600 via-blue-700 to-blue-800",
     category: "tecnologia"
   },
   {
     icon: <CurrencyDollarIcon className="h-10 w-10 text-text-base" />,
     title: "Aumente seu faturamento",
     description: "Oficinas que usam o Instauto relatam aumento médio de 30% no faturamento após 3 meses de uso.",
-    color: "from-yellow to-yellow-dark",
+    color: "from-yellow-400 to-yellow-600",
     category: "resultados"
   },
 ];
@@ -155,7 +155,7 @@ const BenefitsSection = () => {
             className="text-4xl md:text-5xl font-bold mb-6 font-syne text-text-base relative inline-block"
           >
             Benefícios para sua oficina
-            <div className="absolute -bottom-3 left-0 w-full h-1 bg-gradient-to-r from-blue/0 via-blue to-blue/0"></div>
+            <div className="absolute -bottom-3 left-0 w-full h-1 bg-gradient-to-r from-blue-600/0 via-blue-600 to-blue-600/0"></div>
           </motion.h2>
           
           <motion.p 

@@ -149,7 +149,7 @@ const VideoSection = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="inline-block bg-gradient-to-r from-blue to-blue-light text-white px-5 py-1.5 rounded-full text-sm font-medium mb-5 shadow-sm"
+              className="inline-block bg-gradient-to-r from-blue-600 to-blue-700 text-white px-5 py-1.5 rounded-full text-sm font-medium mb-5 shadow-sm"
             >
               Conheça a plataforma
             </motion.div>
@@ -243,7 +243,7 @@ const VideoSection = () => {
               aria-label="Reproduzir vídeo"
             >
               <motion.div 
-                className="w-20 h-20 rounded-full bg-gradient-to-r from-blue to-blue-light flex items-center justify-center shadow-lg relative text-white z-10"
+                className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 flex items-center justify-center shadow-lg relative text-white z-10"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -368,7 +368,7 @@ const VideoSection = () => {
                 transition={{ duration: 0.7, delay: feature.delay }}
               >
                 <div className="h-full bg-white shadow-sm rounded-xl p-6 border border-gray-100 hover:shadow-md transition-all duration-300">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-blue to-blue-light flex items-center justify-center text-white mb-4 shadow-sm">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 flex items-center justify-center text-white mb-4 shadow-sm">
                     {feature.icon}
                   </div>
                   

@@ -75,7 +75,7 @@ const FaqSection = () => {
   return (
     <section className="py-24 relative overflow-hidden" data-contrast="light">
       {/* Background com padrão sutil */}
-      <div className="absolute inset-0 bg-gradient-to-b from-blue/5 to-white/80"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-600/5 to-white/80"></div>
       
       {/* Círculos decorativos */}
       <div className="absolute top-20 right-10 w-24 h-24 bg-yellow-400/10 rounded-full blur-xl"></div>

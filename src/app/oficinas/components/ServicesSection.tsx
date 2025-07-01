@@ -310,7 +310,7 @@ const ServicesSection = () => {
             className="text-4xl md:text-5xl font-bold mb-6 font-syne text-text-base relative inline-block"
           >
             Especialidades da sua oficina
-            <div className="absolute -bottom-3 left-0 w-full h-1 bg-gradient-to-r from-blue/0 via-blue to-blue/0"></div>
+            <div className="absolute -bottom-3 left-0 w-full h-1 bg-gradient-to-r from-blue-600/0 via-blue-600 to-blue-600/0"></div>
           </motion.h2>
           
           <motion.p 
@@ -366,7 +366,7 @@ const ServicesSection = () => {
                 className="bg-white rounded-2xl overflow-hidden border border-gray-100"
               >
                 <div className={`h-28 bg-gradient-to-r ${
-                  service.color === 'blue' ? 'from-blue to-blue-dark' : 'from-yellow to-yellow-dark'
+                  service.color === 'blue' ? 'from-blue-600 to-blue-800' : 'from-yellow-400 to-yellow-600'
                 } relative`}>
                   {/* Ícone */}
                   <div className="absolute -bottom-8 left-6 w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-lg">

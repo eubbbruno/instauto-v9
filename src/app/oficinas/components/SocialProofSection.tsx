@@ -174,7 +174,7 @@ const SocialProofSection = () => {
   return (
     <section className="py-24 relative overflow-hidden" data-contrast="dark">
       {/* Fundo gradiente personalizado */}
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-dark via-blue to-blue-dark">
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-800 via-blue-700 to-blue-900">
         <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
         
         {/* Partículas de fundo */}

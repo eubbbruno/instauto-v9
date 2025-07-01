@@ -146,7 +146,7 @@ const PlatformAccessSection = () => {
               className="text-4xl md:text-5xl font-bold mb-6 font-syne text-text-base relative inline-block"
             >
               Use no celular, <br className="hidden md:block" />sem instalar nada
-              <div className="absolute -bottom-3 left-0 w-full h-1 bg-gradient-to-r from-blue/0 via-blue to-blue/0"></div>
+              <div className="absolute -bottom-3 left-0 w-full h-1 bg-gradient-to-r from-blue-600/0 via-blue-600 to-blue-600/0"></div>
             </motion.h2>
             
             <motion.p 
