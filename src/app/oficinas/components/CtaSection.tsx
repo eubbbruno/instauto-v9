@@ -236,7 +236,7 @@ const CtaSection = () => {
                   animate={{ pathLength: 1, opacity: 1 }}
                   transition={{ duration: 1, delay: 1.2 }}
                 >
-                  <path d="M1 5.5C71.5 2.16666 232 -1.9 299 5.5" stroke="#FFDE59" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M1 5.5C71.5 2.16666 232 -1.9 299 5.5" stroke="rgb(250 204 21)" strokeWidth="2" strokeLinecap="round"/>
                 </motion.svg>
               </span>{" "}
               para sua oficina
