@@ -353,7 +353,7 @@ const PlatformAccessSection = () => {
                               className="h-1 rounded-full bg-gray-300"
                               animate={{ 
                                 width: activeNotification === index ? "10px" : "5px",
-                                backgroundColor: activeNotification === index ? "#0047CC" : "#D1D5DB"
+                                backgroundColor: activeNotification === index ? "rgb(37 99 235)" : "#D1D5DB"
                               }}
                             />
                           ))}
