@@ -182,11 +182,21 @@ export default function AuthOficinaPage() {
     setLoading(true)
     setMessage('🔄 Redirecionando para Google...')
     try {
+      console.log('🔧 OAuth Oficina - Enviando parâmetros:', { 
+        type: 'oficina', 
+        plan_type: formData.planType,
+        business_name: formData.businessName 
+      })
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          queryParams: { type: 'oficina', plan_type: formData.planType }
+          redirectTo: `${window.location.origin}/auth/callback?type=oficina&plan_type=${formData.planType}`,
+          queryParams: { 
+            type: 'oficina', 
+            plan_type: formData.planType,
+            business_name: formData.businessName || 'Oficina'
+          }
         }
       })
       if (error) throw error
@@ -204,11 +214,21 @@ export default function AuthOficinaPage() {
     setLoading(true)
     setMessage('🔄 Redirecionando para Facebook...')
     try {
+      console.log('🔧 OAuth Oficina - Enviando parâmetros Facebook:', { 
+        type: 'oficina', 
+        plan_type: formData.planType,
+        business_name: formData.businessName 
+      })
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          queryParams: { type: 'oficina', plan_type: formData.planType }
+          redirectTo: `${window.location.origin}/auth/callback?type=oficina&plan_type=${formData.planType}`,
+          queryParams: { 
+            type: 'oficina', 
+            plan_type: formData.planType,
+            business_name: formData.businessName || 'Oficina'
+          }
         }
       })
       if (error) throw error
