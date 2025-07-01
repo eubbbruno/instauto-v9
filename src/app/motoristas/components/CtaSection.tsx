@@ -58,11 +58,11 @@ export default function CtaSection() {
     <section 
       id="contato" 
       ref={sectionRef}
-      className="py-24 relative bg-gradient-to-b from-blue to-blue-dark text-white overflow-hidden"
+      className="py-24 relative bg-gradient-to-b from-[#0047CC] to-[#003CAD] text-white overflow-hidden"
     >
       {/* Elementos decorativos */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-yellow/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-light/10 rounded-full blur-3xl" />
+      <div className="absolute top-0 right-0 w-96 h-96 bg-[#FFDE59]/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#0047CC]/10 rounded-full blur-3xl" />
       <div className="absolute inset-0 pattern-dots opacity-10" />
       
       <div className="container-custom relative">
@@ -75,7 +75,7 @@ export default function CtaSection() {
               viewport={{ once: true }}
               className="text-3xl md:text-5xl font-bold mb-6"
             >
-              Pronto para <span className="text-yellow">revolucionar</span> a manutenção do seu veículo?
+              Pronto para <span className="text-[#FFDE59]">revolucionar</span> a manutenção do seu veículo?
             </motion.h2>
             
             <motion.p 
@@ -95,7 +95,7 @@ export default function CtaSection() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
                 viewport={{ once: true }}
-                className="btn-secondary flex items-center justify-center"
+                className="bg-[#FFDE59] hover:bg-[#E6C850] text-[#0047CC] px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center"
               >
                 <Car className="mr-2 h-5 w-5" />
                 Cadastrar Veículos
@@ -107,7 +107,7 @@ export default function CtaSection() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
                 viewport={{ once: true }}
-                className="btn-outline border-white text-white hover:bg-white/10 flex items-center justify-center"
+                className="border border-white text-white hover:bg-white/10 px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center"
               >
                 Saiba Mais
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -118,11 +118,11 @@ export default function CtaSection() {
           {/* Card de Contato */}
           <div 
             ref={ctaRef}
-            className="bg-white rounded-2xl p-8 md:p-12 shadow-xl text-gray-800 relative z-10 border border-blue-light"
+            className="bg-white rounded-2xl p-8 md:p-12 shadow-xl text-gray-800 relative z-10 border border-[#0047CC]/20"
           >
             <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-center">
               <div className="md:w-1/2">
-                <h3 className="text-2xl md:text-3xl font-bold text-blue mb-4">
+                <h3 className="text-2xl md:text-3xl font-bold text-[#0047CC] mb-4">
                   Fale conosco
                 </h3>
                 <p className="text-gray-600 mb-6">
@@ -138,7 +138,7 @@ export default function CtaSection() {
                       type="text"
                       id="name"
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0047CC] focus:border-transparent transition-all"
                       placeholder="Seu nome"
                     />
                   </div>
@@ -151,7 +151,7 @@ export default function CtaSection() {
                       type="email"
                       id="email"
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0047CC] focus:border-transparent transition-all"
                       placeholder="seuemail@exemplo.com"
                     />
                   </div>
@@ -164,14 +164,14 @@ export default function CtaSection() {
                       id="message"
                       rows={4}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0047CC] focus:border-transparent transition-all"
                       placeholder="Sua mensagem ou dúvida"
                     ></textarea>
                   </div>
                   
                   <button
                     type="submit"
-                    className="btn-primary w-full flex items-center justify-center group"
+                    className="bg-[#0047CC] hover:bg-[#003CAD] text-white px-6 py-3 rounded-lg font-medium transition-all w-full flex items-center justify-center group"
                   >
                     Enviar Mensagem
                     <Send className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -181,29 +181,26 @@ export default function CtaSection() {
               
               <div className="hidden md:block md:w-1/2 relative">
                 <div className="relative h-80 w-full">
-                  <div className="absolute inset-0 bg-blue-light/50 rounded-2xl overflow-hidden">
+                  <div className="absolute inset-0 bg-[#0047CC]/10 rounded-2xl overflow-hidden">
                     <div className="absolute inset-0 pattern-dots opacity-50" />
                   </div>
                   
                   <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-                    <MessageCircle size={48} className="text-blue mb-4" />
-                    <h4 className="text-xl font-bold text-blue mb-2">Atendimento Rápido</h4>
+                    <MessageCircle size={48} className="text-[#0047CC] mb-4" />
+                    <h4 className="text-xl font-bold text-[#0047CC] mb-2">Atendimento Rápido</h4>
                     <p className="text-gray-600 mb-6">
                       Nossa equipe responderá sua mensagem em até 24 horas. Estamos aqui para ajudar!
                     </p>
                     
                     <div className="flex space-x-3">
                       {[1, 2, 3, 4, 5].map((star) => (
-                        <div key={star} className="text-yellow-dark">
+                        <div key={star} className="text-[#FFDE59]">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                           </svg>
                         </div>
                       ))}
                     </div>
-                    <p className="text-gray-600 mt-2">
-                      4.9/5 - Mais de 10.000 usuários satisfeitos
-                    </p>
                   </div>
                 </div>
               </div>

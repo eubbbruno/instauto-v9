@@ -136,13 +136,13 @@ const Header = () => {
       ref={headerRef}
       className={`py-4 sticky top-0 z-50 transition-all duration-500 ${
         scrolled 
-          ? "bg-brand-light shadow-xl" 
-          : "bg-brand-light"
+          ? "bg-white shadow-xl" 
+          : "bg-white"
       }`}
       data-contrast="light"
     >
       {/* Linha decorativa superior */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-blue via-blue-600 to-brand-blue"></div>
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#0047CC] via-blue-600 to-[#0047CC]"></div>
       
       <div className="container-custom flex justify-between items-center relative">
         {/* Logo SVG animada */}
@@ -198,30 +198,24 @@ const Header = () => {
         </nav>
         
         {/* Botões desktop */}
-        <div className="hidden md:flex items-center space-x-5">
+        <div className="hidden md:flex items-center space-x-4">
           <Link 
-            href="/motorista" 
-            className="relative overflow-hidden !bg-blue !hover:bg-blue-dark text-text-light font-medium py-2 px-5 rounded-md transition-all duration-300 group"
-            style={{backgroundColor: '#0047CC'}}
+            href="/auth/oficina" 
+            className="px-6 py-2 border border-[#0047CC] text-[#0047CC] rounded-lg font-medium hover:bg-[#0047CC]/10 transition-all duration-300"
           >
-            <span className="relative z-10 font-sans">Para Motoristas</span>
-            <span className="absolute inset-0 bg-gradient-to-r from-blue/0 via-white/10 to-blue/0 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></span>
+            Entrar
           </Link>
-          
-          {/* Botão CTA com efeito de brilho */}
           <Link 
             href="/auth/oficina" 
             ref={ctaButtonRef}
-            className="relative overflow-hidden !bg-yellow !hover:bg-yellow-dark text-text-base font-bold py-2.5 px-6 rounded-lg shadow-lg transition-all duration-300 group"
-            style={{backgroundColor: '#FFDE59'}}
+            className="px-6 py-3 bg-[#FFDE59] hover:bg-[#E6C850] text-[#0047CC] rounded-lg font-bold transition-all duration-300 shadow-lg relative overflow-hidden group"
           >
-            <span className="relative z-10 flex items-center font-sans">
-              Cadastrar Oficina
-              <ArrowRight className="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+            <span className="relative z-10 flex items-center">
+              Começar Agora
+              <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
             </span>
-            
-            {/* Efeito de brilho */}
-            <span className="btn-shine absolute inset-0 bg-gradient-to-r from-yellow/0 via-white/60 to-yellow/0 bg-[length:200%_100%]"></span>
+            {/* Efeito brilho */}
+            <span className="btn-shine absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent bg-[length:200%_100%]"></span>
           </Link>
         </div>
 

@@ -109,14 +109,14 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="bg-brand-light py-20 md:py-32 relative overflow-hidden" data-contrast="light">
+    <section className="bg-gray-50 py-20 md:py-32 relative overflow-hidden" data-contrast="light">
       {/* Partículas de fundo */}
       <div ref={particlesContainerRef} className="absolute inset-0 pointer-events-none"></div>
       
       {/* Gradientes de fundo */}
-      <div className="absolute top-0 right-0 w-1/3 h-2/3 bg-brand-blue/10 rounded-full blur-[120px]"></div>
-      <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-yellow/10 rounded-full blur-[150px]"></div>
-      <div className="absolute top-1/3 left-1/4 w-1/4 h-1/4 bg-blue-500/10 rounded-full blur-[100px]"></div>
+      <div className="absolute top-0 right-0 w-1/3 h-2/3 bg-[#0047CC]/10 rounded-full blur-[120px]"></div>
+      <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-[#FFDE59]/10 rounded-full blur-[150px]"></div>
+      <div className="absolute top-1/3 left-1/4 w-1/4 h-1/4 bg-[#0047CC]/10 rounded-full blur-[100px]"></div>
       
       {/* Padrão de grade */}
       <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] bg-repeat opacity-10"></div>
@@ -137,37 +137,37 @@ const HeroSection = () => {
               transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
               className="relative"
             >
-              <span className="bg-yellow text-text-base px-5 py-1.5 rounded-full text-sm font-medium inline-block mb-6 shadow-lg shadow-yellow/20">
+              <span className="bg-[#FFDE59] text-[#0047CC] px-5 py-1.5 rounded-full text-sm font-medium inline-block mb-6 shadow-lg shadow-[#FFDE59]/20">
                 <span className="flex items-center">
-                  <Star className="w-4 h-4 mr-1.5 fill-text-base" />
+                  <Star className="w-4 h-4 mr-1.5 fill-[#0047CC]" />
                   Sistema premium para sua oficina
                 </span>
               </span>
               
               {/* Efeito de brilho atrás do badge */}
-              <div className="absolute -inset-1 bg-yellow/20 rounded-full blur-md -z-10 animate-pulse"></div>
+              <div className="absolute -inset-1 bg-[#FFDE59]/20 rounded-full blur-md -z-10 animate-pulse"></div>
             </motion.div>
             
             <motion.h1 
               variants={fadeInUp}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-text-base mb-6 font-syne leading-tight"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 font-syne leading-tight"
             >
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-text-base to-text-base/90">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-800">
                 Transforme sua oficina em um 
               </span>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-blue-700 relative inline-block">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0047CC] to-blue-700 relative inline-block">
                 negócio digital
                 <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 8" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-                  <path d="M1 5.5C47.6667 2.16666 154.6 -1.9 199 5.5" stroke="#0A2ADA" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M1 5.5C47.6667 2.16666 154.6 -1.9 199 5.5" stroke="#0047CC" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               </span>
             </motion.h1>
             
             <motion.p 
               variants={fadeInUp}
-              className="text-text-base text-lg mb-8 font-sans max-w-xl leading-relaxed"
+              className="text-gray-700 text-lg mb-8 font-sans max-w-xl leading-relaxed"
             >
-              Cadastre sua oficina no Instauto e comece <span className="text-brand-blue font-medium">hoje mesmo</span> a receber orçamentos de motoristas da sua região, aumentando seu faturamento com um sistema completo de gestão.
+              Cadastre sua oficina no Instauto e comece <span className="text-[#0047CC] font-medium">hoje mesmo</span> a receber orçamentos de motoristas da sua região, aumentando seu faturamento com um sistema completo de gestão.
             </motion.p>
             
             <motion.div 
@@ -177,8 +177,7 @@ const HeroSection = () => {
               <Link 
                 href="/auth/oficina" 
                 ref={ctaButtonRef}
-                className="group relative bg-yellow hover:bg-yellow-dark text-text-base font-bold py-3.5 px-8 rounded-lg transition-all duration-300 shadow-lg hover:shadow-yellow/30 overflow-hidden"
-                style={{backgroundColor: '#FFDE59'}}
+                className="group relative bg-[#FFDE59] hover:bg-[#E6C850] text-[#0047CC] font-bold py-3.5 px-8 rounded-lg transition-all duration-300 shadow-lg hover:shadow-[#FFDE59]/30 overflow-hidden"
               >
                 <span className="relative z-10 flex items-center justify-center w-full font-sans">
                   Cadastrar minha oficina
@@ -190,8 +189,7 @@ const HeroSection = () => {
               
               <Link 
                 href="#como-funciona" 
-                className="group bg-blue hover:bg-blue-dark text-text-light font-medium py-3.5 px-8 rounded-lg transition-all duration-300 flex items-center justify-center"
-                style={{backgroundColor: '#0047CC'}}
+                className="group bg-[#0047CC] hover:bg-[#003CAD] text-white font-medium py-3.5 px-8 rounded-lg transition-all duration-300 flex items-center justify-center"
               >
                 <span className="font-sans">Como funciona</span>
                 <ChevronRight className="h-5 w-5 ml-1 transform group-hover:translate-x-0.5 transition-transform" />

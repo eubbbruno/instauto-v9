@@ -5,7 +5,7 @@ import { ArrowRight, CheckCircle } from "lucide-react";
 import Image from "next/image";
 import { Variants } from "framer-motion";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
-import { useState } from "react";
+// useState removido pois não está sendo usado
 
 interface AddressSuggestion {
   cep: string;
@@ -19,7 +19,7 @@ interface AddressSuggestion {
 }
 
 export default function HeroSection() {
-  const [selectedAddress, setSelectedAddress] = useState<AddressSuggestion | null>(null);
+  // Removido selectedAddress por não estar sendo usado
 
   // Variantes para animações
   const containerVariants: Variants = {
@@ -53,7 +53,6 @@ export default function HeroSection() {
   ];
 
   const handleAddressSelect = (address: AddressSuggestion) => {
-    setSelectedAddress(address);
     console.log('Endereço selecionado:', address);
     // Aqui você pode redirecionar para a página de resultados ou fazer a busca
   };
@@ -82,7 +81,7 @@ export default function HeroSection() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
-                className="inline-block bg-blue-light text-blue px-5 py-2 rounded-full text-sm font-medium mb-6"
+                className="inline-block bg-[#0047CC]/10 text-[#0047CC] px-5 py-2 rounded-full text-sm font-medium mb-6"
               >
                 Conseguir um orçamento nunca ficou tão fácil
               </motion.span>
@@ -97,7 +96,7 @@ export default function HeroSection() {
                 <span className="relative inline-block min-w-32">
                   <span className="text-blue opacity-0">automóvel</span>
                   <motion.span
-                    className="text-blue absolute left-0 w-full"
+                    className="text-[#0047CC] absolute left-0 w-full"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: [0, 1, 0], y: [10, 0, -10] }}
                     transition={{
@@ -110,7 +109,7 @@ export default function HeroSection() {
                     automóvel
                   </motion.span>
                   <motion.span
-                    className="text-blue absolute left-0 w-full"
+                    className="text-[#0047CC] absolute left-0 w-full"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: [0, 1, 0], y: [10, 0, -10] }}
                     transition={{
@@ -124,7 +123,7 @@ export default function HeroSection() {
                     carro
                   </motion.span>
                   <motion.span
-                    className="text-blue absolute left-0 w-full"
+                    className="text-[#0047CC] absolute left-0 w-full"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: [0, 1, 0], y: [10, 0, -10] }}
                     transition={{
@@ -138,7 +137,7 @@ export default function HeroSection() {
                     moto
                   </motion.span>
                   <motion.span
-                    className="text-blue absolute left-0 w-full"
+                    className="text-[#0047CC] absolute left-0 w-full"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: [0, 1, 0], y: [10, 0, -10] }}
                     transition={{
@@ -152,7 +151,7 @@ export default function HeroSection() {
                     caminhão
                   </motion.span>
                   <motion.span
-                    className="text-blue absolute left-0 w-full"
+                    className="text-[#0047CC] absolute left-0 w-full"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: [0, 1, 0], y: [10, 0, -10] }}
                     transition={{
@@ -166,7 +165,7 @@ export default function HeroSection() {
                     van
                   </motion.span>
                 </span>
-                {" "}com<br /> <span className="text-yellow">oficinas mecânicas</span>
+                {" "}com<br /> <span className="text-[#FFDE59]">oficinas mecânicas</span>
               </motion.h1>
               
               <motion.p 
