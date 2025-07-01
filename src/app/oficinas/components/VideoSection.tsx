@@ -253,7 +253,7 @@ const VideoSection = () => {
                   transition={{ duration: 1.5, repeat: Infinity }}
                 />
                 <motion.div 
-                  className="w-20 h-20 rounded-full bg-blue-light absolute"
+                  className="w-20 h-20 rounded-full bg-blue-700 absolute"
                   animate={{ scale: [1, 1.8], opacity: [0.5, 0] }}
                   transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
                 />
@@ -273,7 +273,7 @@ const VideoSection = () => {
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-yellow-400 mr-1.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span className="text-white text-xs">3:22 min</span>
+                  <span className="text-white text-xs">Vídeo oficial</span>
                 </div>
                 <div className="flex items-center bg-gray-900/60 backdrop-blur-sm rounded-full px-3 py-1">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-yellow-400 mr-1.5">
@@ -313,7 +313,7 @@ const VideoSection = () => {
                       <iframe
                         className="absolute top-0 left-0 w-full h-full"
                         src="https://www.youtube.com/embed/9GCOl9dXm6I?autoplay=1&rel=0"
-                        title="Instauto Demo"
+                        title="Instauto - Sistema Completo para Oficinas"
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
