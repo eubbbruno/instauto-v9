@@ -82,15 +82,15 @@ const CtaSection = () => {
   
   const benefits = [
     {
-      icon: <Clock className="w-5 h-5 text-blue-900" />,
+      icon: <Clock className="w-5 h-5 text-gray-800" />,
       text: "14 dias grátis"
     },
     {
-      icon: <CheckCircle className="w-5 h-5 text-blue-900" />,
+      icon: <CheckCircle className="w-5 h-5 text-gray-800" />,
       text: "Sem cartão de crédito"
     },
     {
-      icon: <TrendingUp className="w-5 h-5 text-blue-900" />,
+      icon: <TrendingUp className="w-5 h-5 text-gray-800" />,
       text: "Cancele quando quiser"
     }
   ];
@@ -102,14 +102,14 @@ const CtaSection = () => {
       data-contrast="dark"
     >
       {/* Retângulo de fundo com efeito de gradiente */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0047CC] to-[#031023] -z-10"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-900 -z-10"></div>
       
       {/* Efeito de grade */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] -z-10"></div>
       
       {/* Círculos decorativos */}
       <motion.div 
-        className="absolute -top-20 -right-20 w-96 h-96 bg-[#FFDE59]/10 rounded-full blur-[100px] -z-10"
+        className="absolute -top-20 -right-20 w-96 h-96 bg-yellow-400/10 rounded-full blur-[100px] -z-10"
         animate={{ 
           scale: [1, 1.1, 1],
           opacity: [0.3, 0.4, 0.3],
@@ -122,7 +122,7 @@ const CtaSection = () => {
         }}
       />
       <motion.div 
-        className="absolute -bottom-32 -left-20 w-96 h-96 bg-[#0047CC]/10 rounded-full blur-[120px] -z-10"
+        className="absolute -bottom-32 -left-20 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] -z-10"
         animate={{ 
           scale: [1, 1.2, 1],
           opacity: [0.2, 0.3, 0.2],
@@ -173,9 +173,9 @@ const CtaSection = () => {
           animate={controls}
           className="max-w-5xl mx-auto"
         >
-          <div className="relative bg-gradient-to-br from-[#0047CC]/90 to-[#031023]/90 p-8 sm:p-12 rounded-2xl shadow-2xl backdrop-blur-sm border border-white/10 overflow-hidden">
+          <div className="relative bg-gradient-to-br from-blue-600/90 to-blue-900/90 p-8 sm:p-12 rounded-2xl shadow-2xl backdrop-blur-sm border border-white/10 overflow-hidden">
             {/* Linha decorativa superior */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#FFDE59]/0 via-[#FFDE59] to-[#FFDE59]/0"></div>
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-yellow-400/0 via-yellow-400 to-yellow-400/0"></div>
             
             {/* Linhas diagonais decorativas */}
             <div className="absolute top-0 right-0 w-64 h-64 opacity-20">
@@ -210,11 +210,11 @@ const CtaSection = () => {
                 variants={itemVariants}
                 className="relative"
               >
-                <div className="inline-flex items-center bg-gradient-to-r from-[#FFDE59] to-[#FFDE59]/90 px-5 py-2 rounded-full text-[#031023] text-sm font-medium shadow-lg">
-                  <Star className="w-4 h-4 mr-2 fill-[#031023]" />
+                <div className="inline-flex items-center bg-gradient-to-r from-yellow-400 to-yellow-400/90 px-5 py-2 rounded-full text-gray-800 text-sm font-medium shadow-lg">
+                  <Star className="w-4 h-4 mr-2 fill-gray-800" />
                   <span>Vamos transformar sua oficina juntos</span>
                 </div>
-                <div className="absolute -inset-1.5 bg-[#FFDE59]/20 rounded-full blur-md -z-10"></div>
+                <div className="absolute -inset-1.5 bg-yellow-400/20 rounded-full blur-md -z-10"></div>
               </motion.div>
             </div>
             
@@ -225,7 +225,7 @@ const CtaSection = () => {
             >
               Dê o próximo passo e{" "}
               <span className="relative inline-block">
-                <span className="text-[#FFDE59]">conquiste mais clientes</span>
+                <span className="text-yellow-400">conquiste mais clientes</span>
                 <motion.svg 
                   className="absolute -bottom-1 left-0 w-full" 
                   viewBox="0 0 300 8" 
@@ -259,10 +259,10 @@ const CtaSection = () => {
                 <motion.div 
                   key={index}
                   whileHover={{ y: -5, scale: 1.02 }}
-                  className="flex items-center gap-3 text-white justify-center bg-[#0047CC]/40 p-4 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300"
+                  className="flex items-center gap-3 text-white justify-center bg-blue-600/40 p-4 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300"
                 >
                   <motion.div 
-                    className="w-10 h-10 rounded-full bg-gradient-to-r from-[#FFDE59] to-[#FFDE59]/90 flex items-center justify-center shadow-lg"
+                    className="w-10 h-10 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-400/90 flex items-center justify-center shadow-lg"
                     whileHover={{ scale: 1.1 }}
                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
                   >
@@ -278,7 +278,7 @@ const CtaSection = () => {
               variants={itemVariants}
               className="flex justify-center mb-10"
             >
-              <div className="bg-[#0047CC]/30 backdrop-blur-sm rounded-lg px-6 py-4 inline-flex items-center space-x-4 border border-white/5 hover:border-white/10 transition-all duration-300">
+              <div className="bg-blue-600/30 backdrop-blur-sm rounded-lg px-6 py-4 inline-flex items-center space-x-4 border border-white/5 hover:border-white/10 transition-all duration-300">
                 <div className="flex -space-x-2">
                   {Array.from({ length: 3 }).map((_, i) => (
                     <motion.div 
@@ -291,9 +291,9 @@ const CtaSection = () => {
                         stiffness: 200, 
                         damping: 10 
                       }}
-                      className={`w-8 h-8 rounded-full border-2 border-[#0047CC] ${
-                        i === 0 ? 'bg-[#FFDE59]' :
-                        i === 1 ? 'bg-[#0047CC]' :
+                      className={`w-8 h-8 rounded-full border-2 border-blue-600 ${
+                        i === 0 ? 'bg-yellow-400' :
+                        i === 1 ? 'bg-blue-600' :
                         'bg-green-500'
                       }`}
                     />
@@ -304,7 +304,7 @@ const CtaSection = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.8, duration: 0.5 }}
-                    className="text-[#FFDE59] font-medium"
+                    className="text-yellow-400 font-medium"
                   >
                     +650 oficinas cadastradas
                   </motion.div>

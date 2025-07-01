@@ -146,9 +146,9 @@ const HowItWorksSection = () => {
       />
       <defs>
         <linearGradient id="gradient-line" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#0047CC" />
-          <stop offset="50%" stopColor="#FFDE59" />
-          <stop offset="100%" stopColor="#0047CC" />
+          <stop offset="0%" stopColor="rgb(37 99 235)" />
+          <stop offset="50%" stopColor="rgb(250 204 21)" />
+          <stop offset="100%" stopColor="rgb(37 99 235)" />
         </linearGradient>
       </defs>
     </svg>

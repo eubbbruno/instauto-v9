@@ -31,16 +31,16 @@ const Footer = () => {
   return (
     <footer className="relative bg-gradient-to-b from-[#031023] to-[#020A14] text-white pt-20 pb-10 overflow-hidden" data-contrast="dark">
       {/* Elementos decorativos de fundo */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#0047CC]/30 to-transparent"></div>
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-600/30 to-transparent"></div>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.07]"></div>
-      <div className="absolute top-20 -right-20 w-64 h-64 bg-[#0047CC]/10 rounded-full blur-[100px]"></div>
-      <div className="absolute bottom-20 -left-20 w-64 h-64 bg-[#FFDE59]/5 rounded-full blur-[100px]"></div>
+      <div className="absolute top-20 -right-20 w-64 h-64 bg-blue-600/10 rounded-full blur-[100px]"></div>
+      <div className="absolute bottom-20 -left-20 w-64 h-64 bg-yellow-400/5 rounded-full blur-[100px]"></div>
       
       {/* Partículas decorativas */}
-      <div className="absolute top-10 left-[10%] w-1 h-1 bg-[#FFDE59]/30 rounded-full"></div>
-      <div className="absolute top-[30%] right-[15%] w-2 h-2 bg-[#0047CC]/20 rounded-full"></div>
-      <div className="absolute bottom-[20%] left-[20%] w-1.5 h-1.5 bg-[#FFDE59]/20 rounded-full"></div>
-      <div className="absolute top-[70%] right-[30%] w-1 h-1 bg-[#0047CC]/30 rounded-full"></div>
+      <div className="absolute top-10 left-[10%] w-1 h-1 bg-yellow-400/30 rounded-full"></div>
+      <div className="absolute top-[30%] right-[15%] w-2 h-2 bg-blue-600/20 rounded-full"></div>
+      <div className="absolute bottom-[20%] left-[20%] w-1.5 h-1.5 bg-yellow-400/20 rounded-full"></div>
+      <div className="absolute top-[70%] right-[30%] w-1 h-1 bg-blue-600/30 rounded-full"></div>
       
       <div className="container-custom relative z-10">
         {/* Logo e informações principais */}
@@ -62,7 +62,7 @@ const Footer = () => {
                 className="h-10 w-auto"
               />
               <motion.div 
-                className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-[#0047CC]/0 via-[#0047CC] to-[#0047CC]/0"
+                className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-blue-600/0 via-blue-600 to-blue-600/0"
                 initial={{ scaleX: 0 }}
                 whileHover={{ scaleX: 1 }}
                 transition={{ duration: 0.3 }}
@@ -78,7 +78,7 @@ const Footer = () => {
                 href="https://facebook.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-[#0047CC]/10 hover:bg-[#0047CC] flex items-center justify-center transition-colors duration-300 group"
+                className="w-10 h-10 rounded-full bg-blue-600/10 hover:bg-blue-600 flex items-center justify-center transition-colors duration-300 group"
                 whileHover={{ y: -3 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -88,7 +88,7 @@ const Footer = () => {
                 href="https://instagram.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-[#0047CC]/10 hover:bg-[#0047CC] flex items-center justify-center transition-colors duration-300 group"
+                className="w-10 h-10 rounded-full bg-blue-600/10 hover:bg-blue-600 flex items-center justify-center transition-colors duration-300 group"
                 whileHover={{ y: -3 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -98,7 +98,7 @@ const Footer = () => {
                 href="https://youtube.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-[#0047CC]/10 hover:bg-[#0047CC] flex items-center justify-center transition-colors duration-300 group"
+                className="w-10 h-10 rounded-full bg-blue-600/10 hover:bg-blue-600 flex items-center justify-center transition-colors duration-300 group"
                 whileHover={{ y: -3 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -111,8 +111,8 @@ const Footer = () => {
                 className="flex items-center text-gray-300 hover:text-white transition-colors group"
                 whileHover={{ x: 3 }}
               >
-                <div className="w-8 h-8 rounded-full bg-[#0047CC]/10 flex items-center justify-center mr-3 group-hover:bg-[#0047CC]/20 transition-colors">
-                  <Mail className="w-4 h-4 text-[#0047CC]" />
+                <div className="w-8 h-8 rounded-full bg-blue-600/10 flex items-center justify-center mr-3 group-hover:bg-blue-600/20 transition-colors">
+                  <Mail className="w-4 h-4 text-blue-600" />
                 </div>
                 <span>contato@instauto.com.br</span>
               </motion.div>
@@ -126,8 +126,8 @@ const Footer = () => {
                   rel="noopener noreferrer"
                   className="flex items-center w-full"
                 >
-                  <div className="w-8 h-8 rounded-full bg-[#0047CC]/10 flex items-center justify-center mr-3 group-hover:bg-[#0047CC]/20 transition-colors">
-                    <Phone className="w-4 h-4 text-[#0047CC]" />
+                  <div className="w-8 h-8 rounded-full bg-blue-600/10 flex items-center justify-center mr-3 group-hover:bg-blue-600/20 transition-colors">
+                    <Phone className="w-4 h-4 text-blue-600" />
                   </div>
                   <span>(43) 99646-6446</span>
                 </a>
@@ -136,8 +136,8 @@ const Footer = () => {
                 className="flex items-center text-gray-300 hover:text-white transition-colors group"
                 whileHover={{ x: 3 }}
               >
-                <div className="w-8 h-8 rounded-full bg-[#0047CC]/10 flex items-center justify-center mr-3 group-hover:bg-[#0047CC]/20 transition-colors flex-shrink-0">
-                  <MapPin className="w-4 h-4 text-[#0047CC]" />
+                <div className="w-8 h-8 rounded-full bg-blue-600/10 flex items-center justify-center mr-3 group-hover:bg-blue-600/20 transition-colors flex-shrink-0">
+                  <MapPin className="w-4 h-4 text-blue-600" />
                 </div>
                 <span className="flex items-center">Londrina, PR. Brasil</span>
               </motion.div>
@@ -149,7 +149,7 @@ const Footer = () => {
             <h3 className="font-bold text-lg mb-5 font-syne text-white relative inline-block">
               Produto
               <motion.span 
-                className="absolute -bottom-1 left-0 w-12 h-0.5 bg-[#FFDE59]"
+                className="absolute -bottom-1 left-0 w-12 h-0.5 bg-yellow-400"
                 initial={{ width: 0 }}
                 whileInView={{ width: 48 }}
                 viewport={{ once: true }}
@@ -170,7 +170,7 @@ const Footer = () => {
                                item === "Recursos" ? "#beneficios" : 
                                "/"} 
                       className="text-gray-300 hover:text-white transition-colors flex items-center group">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#FFDE59] mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                     {item}
                   </Link>
                 </motion.li>
@@ -182,7 +182,7 @@ const Footer = () => {
             <h3 className="font-bold text-lg mb-5 font-syne text-white relative inline-block">
               Empresa
               <motion.span 
-                className="absolute -bottom-1 left-0 w-12 h-0.5 bg-[#FFDE59]"
+                className="absolute -bottom-1 left-0 w-12 h-0.5 bg-yellow-400"
                 initial={{ width: 0 }}
                 whileInView={{ width: 48 }}
                 viewport={{ once: true }}
@@ -199,7 +199,7 @@ const Footer = () => {
                 >
                   <Link href={`/${item.toLowerCase().replace(/\s/g, '')}`} 
                       className="text-gray-300 hover:text-white transition-colors flex items-center group">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#FFDE59] mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                     {item}
                   </Link>
                 </motion.li>
@@ -211,7 +211,7 @@ const Footer = () => {
             <h3 className="font-bold text-lg mb-5 font-syne text-white relative inline-block">
               Suporte
               <motion.span 
-                className="absolute -bottom-1 left-0 w-12 h-0.5 bg-[#FFDE59]"
+                className="absolute -bottom-1 left-0 w-12 h-0.5 bg-yellow-400"
                 initial={{ width: 0 }}
                 whileInView={{ width: 48 }}
                 viewport={{ once: true }}
@@ -229,7 +229,7 @@ const Footer = () => {
                   <Link href={item === "FAQ" ? "#faq" : 
                                `/${item.toLowerCase().replace(/\s/g, '')}`} 
                       className="text-gray-300 hover:text-white transition-colors flex items-center group">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#FFDE59] mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                     {item}
                   </Link>
                 </motion.li>
@@ -242,7 +242,7 @@ const Footer = () => {
             <h3 className="font-bold text-lg mb-5 font-syne text-white relative inline-block">
               Newsletter
               <motion.span 
-                className="absolute -bottom-1 left-0 w-12 h-0.5 bg-[#FFDE59]"
+                className="absolute -bottom-1 left-0 w-12 h-0.5 bg-yellow-400"
                 initial={{ width: 0 }}
                 whileInView={{ width: 48 }}
                 viewport={{ once: true }}
@@ -257,12 +257,12 @@ const Footer = () => {
                 <input 
                   type="email" 
                   placeholder="Seu e-mail" 
-                  className="w-full bg-[#0A1429] border border-gray-800 rounded-lg py-2.5 px-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#0047CC] focus:border-transparent transition-all"
+                  className="w-full px-4 py-2.5 border border-gray-600 rounded-lg bg-gray-800/50 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
                 />
               </div>
               <motion.button 
                 type="submit" 
-                className="bg-[#0047CC] hover:bg-[#003DA6] text-white font-medium py-2.5 px-4 rounded-lg transition-colors w-full flex items-center justify-center group"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors w-full flex items-center justify-center group"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >

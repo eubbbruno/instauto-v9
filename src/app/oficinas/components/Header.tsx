@@ -90,7 +90,7 @@ const Header = () => {
         
         // Cor azul com opacidade variável
         const opacity = Math.random() * 0.15 + 0.05;
-        particle.style.backgroundColor = `rgba(10, 42, 218, ${opacity})`; // Ajustado para brand-blue
+        particle.style.backgroundColor = `rgb(37 99 235 / ${opacity})`; // Usando blue-600 do Tailwind
         
         // Posição aleatória
         particle.style.left = `${Math.random() * 100}%`;
@@ -142,7 +142,7 @@ const Header = () => {
       data-contrast="light"
     >
       {/* Linha decorativa superior */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#0047CC] via-blue-600 to-[#0047CC]"></div>
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-blue-600 to-blue-600"></div>
       
       <div className="container-custom flex justify-between items-center relative">
         {/* Logo SVG animada */}
@@ -163,7 +163,7 @@ const Header = () => {
               />
               
               {/* Efeito de brilho sob o logo */}
-              <div className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-brand-blue/0 via-brand-blue/70 to-brand-blue/0 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+              <div className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-blue-600/0 via-blue-600/70 to-blue-600/0 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
             </motion.div>
           </Link>
         </div>
@@ -178,7 +178,7 @@ const Header = () => {
                 key={item.href}
                 href={item.href} 
                 className={`relative group py-2 px-1 font-medium transition-colors ${
-                  isActive ? 'text-brand-blue font-semibold' : 'text-text-base hover:text-brand-blue'
+                  isActive ? 'text-blue-600 font-semibold' : 'text-text-base hover:text-blue-600'
                 }`}
               >
                 <span className="relative z-10">{item.label}</span>
@@ -186,12 +186,12 @@ const Header = () => {
                 {/* Linha de destaque animada */}
                 <span className={`absolute bottom-0 left-0 w-full h-0.5 transform origin-left transition-all duration-300 ${
                   isActive 
-                    ? 'bg-brand-blue scale-x-100' 
-                    : 'bg-brand-blue/70 scale-x-0 group-hover:scale-x-100'
+                    ? 'bg-blue-600 scale-x-100' 
+                    : 'bg-blue-600/70 scale-x-0 group-hover:scale-x-100'
                 }`}></span>
                 
                 {/* Efeito de hover */}
-                <span className="absolute inset-0 bg-brand-blue/5 rounded scale-0 group-hover:scale-100 transition-transform duration-200"></span>
+                <span className="absolute inset-0 bg-blue-600/5 rounded scale-0 group-hover:scale-100 transition-transform duration-200"></span>
               </Link>
             );
           })}
