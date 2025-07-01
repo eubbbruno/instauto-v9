@@ -90,15 +90,15 @@ export default function CtaSection() {
             
             <div className="flex flex-col md:flex-row justify-center gap-4 mb-16">
               <motion.a 
-                href="/motorista"
+                href="/auth/motorista"
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
                 viewport={{ once: true }}
-                className="bg-[#FFDE59] hover:bg-[#E6C850] text-[#0047CC] px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center"
+                className="btn-secondary flex items-center justify-center"
               >
                 <Car className="mr-2 h-5 w-5" />
-                Cadastrar Veículos
+                Cadastrar-se Agora
               </motion.a>
               
               <motion.a 
@@ -107,7 +107,7 @@ export default function CtaSection() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
                 viewport={{ once: true }}
-                className="border border-white text-white hover:bg-white/10 px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center"
+                className="btn-white flex items-center justify-center"
               >
                 Saiba Mais
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -171,7 +171,7 @@ export default function CtaSection() {
                   
                   <button
                     type="submit"
-                    className="bg-[#0047CC] hover:bg-[#003CAD] text-white px-6 py-3 rounded-lg font-medium transition-all w-full flex items-center justify-center group"
+                    className="btn-primary w-full flex items-center justify-center group"
                   >
                     Enviar Mensagem
                     <Send className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />

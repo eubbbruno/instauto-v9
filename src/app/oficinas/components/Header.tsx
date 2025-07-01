@@ -201,14 +201,14 @@ const Header = () => {
         <div className="hidden md:flex items-center space-x-4">
           <Link 
             href="/auth/oficina" 
-            className="px-6 py-2 border border-[#0047CC] text-[#0047CC] rounded-lg font-medium hover:bg-[#0047CC]/10 transition-all duration-300"
+            className="btn-outline"
           >
             Entrar
           </Link>
           <Link 
             href="/auth/oficina" 
             ref={ctaButtonRef}
-            className="px-6 py-3 bg-[#FFDE59] hover:bg-[#E6C850] text-[#0047CC] rounded-lg font-bold transition-all duration-300 shadow-lg relative overflow-hidden group"
+            className="btn-secondary relative overflow-hidden group flex items-center"
           >
             <span className="relative z-10 flex items-center">
               Começar Agora
@@ -287,8 +287,7 @@ const Header = () => {
                 <div className="space-y-4 mt-auto">
                   <Link 
                     href="/motorista" 
-                    className="block w-full text-center !bg-blue !hover:bg-blue-dark text-text-light font-medium py-3 px-4 rounded-md transition-all"
-                    style={{backgroundColor: '#0047CC'}}
+                    className="btn-primary block w-full text-center"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Para Motoristas
@@ -296,8 +295,7 @@ const Header = () => {
                   
                   <Link 
                     href="/auth/oficina" 
-                    className="block w-full text-center !bg-yellow !hover:bg-yellow-dark text-text-base font-bold py-3 px-4 rounded-lg shadow-lg transition-all"
-                    style={{backgroundColor: '#FFDE59'}}
+                    className="btn-secondary block w-full text-center"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Cadastrar Oficina

@@ -327,15 +327,13 @@ const HowItWorksSection = () => {
             <div className="absolute top-1/2 left-0 transform -translate-y-1/2 z-20 flex justify-between w-full px-2">
               <button 
                 onClick={prevStep}
-                className="bg-white/80 hover:bg-white w-10 h-10 rounded-full flex items-center justify-center shadow-md text-blue border border-blue-100 transition-colors"
-                aria-label="Passo anterior"
+                className="btn-white w-10 h-10 rounded-full flex items-center justify-center border border-blue-100"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button 
                 onClick={nextStep}
-                className="bg-white/80 hover:bg-white w-10 h-10 rounded-full flex items-center justify-center shadow-md text-blue border border-blue-100 transition-colors"
-                aria-label="Próximo passo"
+                className="btn-white w-10 h-10 rounded-full flex items-center justify-center border border-blue-100"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -388,8 +386,7 @@ const HowItWorksSection = () => {
           <Link 
             href="/cadastro" 
             ref={ctaButtonRef}
-            className="inline-flex items-center justify-center bg-blue hover:bg-blue-dark text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:shadow-blue/30 transition-all duration-300"
-            style={{backgroundColor: '#0047CC'}}
+            className="btn-primary"
           >
             <span className="font-sans">Começar agora</span>
             <ArrowRight className="ml-2 h-5 w-5" />

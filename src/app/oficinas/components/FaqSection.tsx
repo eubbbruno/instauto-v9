@@ -249,7 +249,7 @@ const FaqSection = () => {
               href="/contato"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
-              className="inline-block mt-4 bg-blue text-white px-6 py-2.5 rounded-lg font-medium shadow-sm hover:bg-blue-dark transition-all duration-300"
+              className="btn-primary inline-block mt-4"
             >
               Entre em contato
             </motion.a>

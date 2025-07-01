@@ -392,7 +392,7 @@ const VideoSection = () => {
             >
               <a 
                 href="/demonstracao" 
-                className="inline-flex items-center justify-center bg-yellow hover:bg-yellow-600 text-gray-900 font-medium py-3 px-6 rounded-lg shadow-sm transition-all duration-300 group"
+                className="btn-secondary inline-flex items-center group"
               >
                 <span className="font-sans">Agendar uma demonstração</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1">

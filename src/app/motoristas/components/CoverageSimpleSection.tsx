@@ -250,12 +250,12 @@ export default function CoverageSimpleSection() {
                 Nossa plataforma web já está disponível para motoristas e oficinas em todo o Brasil. Faça seu cadastro e comece a usar hoje mesmo.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
-                <button className="btn-secondary flex items-center">
+                <a href="/auth/motorista" className="btn-secondary flex items-center">
                   Cadastre-se agora
-                </button>
+                </a>
                 <Link 
                   href="/cobertura" 
-                  className="btn-outline border-white text-white hover:bg-white/10 flex items-center"
+                  className="btn-white flex items-center"
                 >
                   <span>Ver mapa detalhado</span>
                   <ChevronRight className="w-5 h-5 ml-1" />

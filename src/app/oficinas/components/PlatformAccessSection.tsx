@@ -204,7 +204,7 @@ const PlatformAccessSection = () => {
             >
               <Link 
                 href="/cadastro" 
-                className="group bg-blue hover:bg-blue-dark text-white font-medium py-3 px-6 rounded-md transition-all duration-300 shadow-md hover:shadow-lg inline-flex items-center"
+                className="btn-primary group inline-flex items-center"
               >
                 <span className="font-sans">Começar a usar agora</span>
                 <ArrowRightIcon className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />

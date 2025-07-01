@@ -277,17 +277,17 @@ export default function FeaturesSection() {
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <a 
-                  href="#" 
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-blue text-white rounded-lg font-medium hover:bg-blue-600 transition-colors shadow-md group"
+                  href="/auth/motorista" 
+                  className="btn-primary inline-flex items-center gap-2 group"
                 >
-                  <span className="font-bold text-blue-500">Acessar plataforma</span>
-                  <ChevronRight className="w-5 h-5 text-white" />
+                  <span>Acessar plataforma</span>
+                  <ChevronRight className="w-5 h-5" />
                 </a>
                 <a 
-                  href="#" 
-                  className="bg-white border-2 border-blue-200 text-blue-600 hover:bg-blue-50 font-medium rounded-lg px-8 py-3 inline-flex items-center gap-2 transition-all duration-300 shadow-sm hover:shadow"
+                  href="#como-funciona" 
+                  className="btn-outline inline-flex items-center gap-2"
                 >
-                  <span className="font-bold">Saiba mais</span>
+                  <span>Saiba mais</span>
                   <ChevronRight className="w-5 h-5" />
                 </a>
               </div>

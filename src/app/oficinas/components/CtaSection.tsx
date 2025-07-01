@@ -330,9 +330,9 @@ const CtaSection = () => {
                 whileTap={{ scale: 0.98 }}
               >
                 <Link 
-                  href="/oficina-basica"
+                  href="/auth/oficina"
                   ref={ctaButtonRef}
-                  className="relative overflow-hidden bg-gradient-to-r from-[#FFDE59] to-[#FFD429] text-[#031023] font-bold py-4 px-8 rounded-lg text-lg shadow-xl hover:shadow-[#FFDE59]/30 transition-all duration-300 flex items-center justify-center group"
+                  className="btn-secondary relative overflow-hidden py-4 px-8 text-lg shadow-xl flex items-center justify-center group"
                 >
                   <span className="relative z-10 font-sans flex items-center">
                     Cadastrar minha oficina 
@@ -364,7 +364,7 @@ const CtaSection = () => {
               >
                 <Link 
                   href="#como-funciona"
-                  className="flex items-center text-white font-medium hover:text-[#FFDE59] transition-colors duration-300"
+                  className="btn-white flex items-center"
                 >
                   <span>Veja como funciona</span>
                   <ChevronRight className="ml-1 h-5 w-5" />

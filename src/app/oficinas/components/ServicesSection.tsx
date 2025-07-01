@@ -333,7 +333,7 @@ const ServicesSection = () => {
               onClick={prevService}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white hover:bg-gray-100 text-text-base p-3 rounded-full shadow-lg"
+              className="btn-white p-3 rounded-full shadow-lg"
             >
               <ChevronLeftIcon className="w-6 h-6" />
             </motion.button>
@@ -344,7 +344,7 @@ const ServicesSection = () => {
               onClick={nextService}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white hover:bg-gray-100 text-text-base p-3 rounded-full shadow-lg"
+              className="btn-white p-3 rounded-full shadow-lg"
             >
               <ChevronRightIcon className="w-6 h-6" />
             </motion.button>
@@ -493,14 +493,14 @@ const ServicesSection = () => {
         >
           <motion.a 
             href="/cadastro" 
-            className="inline-flex items-center justify-center bg-blue hover:bg-blue-dark text-white font-medium py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 group"
+            className="btn-primary inline-flex items-center group"
             whileHover={{ 
               scale: 1.03,
               boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
             }}
             whileTap={{ scale: 0.98 }}
           >
-            <span className="font-sans text-lg">Transforme sua oficina com o Instauto</span>
+            <span className="font-sans text-lg">Transformar minha oficina</span>
             <ArrowLongRightIcon className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-2" />
           </motion.a>
         </motion.div>

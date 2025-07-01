@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, ArrowLeft, ArrowRight, Quote } from "lucide-react";
-import Image from "next/image";
 
 export default function TestimonialsSection() {
   const [current, setCurrent] = useState(0);
@@ -153,7 +152,7 @@ export default function TestimonialsSection() {
           <div className="absolute left-0 right-0 bottom-0 flex justify-between p-4 bg-gradient-to-t from-white to-transparent">
             <button 
               onClick={prevTestimonial}
-              className="w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-md text-blue hover:bg-blue hover:text-white transition-colors"
+              className="btn-primary w-10 h-10 rounded-full flex items-center justify-center group"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
@@ -175,7 +174,7 @@ export default function TestimonialsSection() {
             
             <button 
               onClick={nextTestimonial}
-              className="w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-md text-blue hover:bg-blue hover:text-white transition-colors"
+              className="btn-primary w-10 h-10 rounded-full flex items-center justify-center group"
             >
               <ArrowRight className="w-5 h-5" />
             </button>

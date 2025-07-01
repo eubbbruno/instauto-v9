@@ -262,7 +262,7 @@ const BenefitsSection = () => {
         >
           <a 
             href="#planos" 
-            className="inline-flex items-center justify-center bg-transparent hover:bg-blue/5 border-2 border-blue text-blue font-bold py-3 px-8 rounded-lg transition-all duration-300"
+            className="btn-outline"
           >
             <span className="font-sans">Ver todos os recursos</span>
             <ArrowRightIcon className="ml-2 h-5 w-5" />

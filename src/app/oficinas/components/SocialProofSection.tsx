@@ -433,7 +433,7 @@ const SocialProofSection = () => {
                 onClick={prevTestimonial}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-full backdrop-blur-sm"
+                className="btn-white p-2 rounded-full backdrop-blur-sm"
               >
                 <ChevronLeftIcon className="w-6 h-6" />
               </motion.button>
@@ -444,7 +444,7 @@ const SocialProofSection = () => {
                 onClick={nextTestimonial}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-full backdrop-blur-sm"
+                className="btn-white p-2 rounded-full backdrop-blur-sm"
               >
                 <ChevronRightIcon className="w-6 h-6" />
               </motion.button>
@@ -541,7 +541,7 @@ const SocialProofSection = () => {
             </p>
             <motion.a 
               href="/cadastro" 
-              className="inline-flex items-center justify-center bg-yellow hover:bg-yellow-dark text-text-dark font-medium py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 group"
+              className="btn-secondary inline-flex items-center group"
               whileHover={{ 
                 scale: 1.03,
                 boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1)"

@@ -25,28 +25,58 @@
 }
 
 @layer components {
+  /* Botão primário - Fundo azul com texto branco */
   .btn-primary {
-    @apply bg-blue-600 text-white py-3 px-6 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow-md active:scale-95;
+    @apply bg-[#0047CC] text-white py-3 px-6 rounded-lg font-bold transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 border-2 border-[#0047CC];
   }
 
   .btn-primary:hover {
-    @apply bg-blue-700;
+    @apply bg-[#003CAD] border-[#003CAD] shadow-xl;
   }
 
+  /* Botão secundário - Fundo amarelo com texto azul escuro */
   .btn-secondary {
-    @apply bg-yellow-400 text-gray-900 py-3 px-6 rounded-lg font-medium transition-all duration-300 shadow-sm hover:shadow-md active:scale-95;
+    @apply bg-[#FFDE59] text-[#0047CC] py-3 px-6 rounded-lg font-bold transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 border-2 border-[#FFDE59];
   }
 
   .btn-secondary:hover {
-    @apply bg-yellow-500;
+    @apply bg-[#E6C850] border-[#E6C850] text-[#003CAD];
   }
 
+  /* Botão outline - Borda azul com texto azul, hover com fundo azul claro */
   .btn-outline {
-    @apply border-2 border-blue-600 text-blue-600 py-3 px-6 rounded-lg font-medium transition-all duration-300 hover:shadow-sm active:scale-95;
+    @apply border-2 border-[#0047CC] text-[#0047CC] py-3 px-6 rounded-lg font-bold transition-all duration-300 hover:shadow-lg active:scale-95 bg-white;
   }
 
   .btn-outline:hover {
-    @apply bg-blue-50;
+    @apply bg-[#EBF2FF] border-[#003CAD] text-[#003CAD];
+  }
+
+  /* Botão azul claro - Fundo azul claro com texto azul escuro */
+  .btn-light-blue {
+    @apply bg-[#EBF2FF] text-[#003CAD] py-3 px-6 rounded-lg font-bold transition-all duration-300 shadow-sm hover:shadow-md active:scale-95 border-2 border-[#EBF2FF];
+  }
+
+  .btn-light-blue:hover {
+    @apply bg-[#D1E9FF] border-[#D1E9FF] text-[#002B85];
+  }
+
+  /* Botão branco - Fundo branco com texto azul */
+  .btn-white {
+    @apply bg-white text-[#0047CC] py-3 px-6 rounded-lg font-bold transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 border-2 border-white;
+  }
+
+  .btn-white:hover {
+    @apply bg-gray-50 border-gray-50 text-[#003CAD];
+  }
+
+  /* Botão verde para ações de sucesso */
+  .btn-success {
+    @apply bg-green-600 text-white py-3 px-6 rounded-lg font-bold transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 border-2 border-green-600;
+  }
+
+  .btn-success:hover {
+    @apply bg-green-700 border-green-700;
   }
 
   .container-custom {

@@ -177,7 +177,7 @@ const HeroSection = () => {
               <Link 
                 href="/auth/oficina" 
                 ref={ctaButtonRef}
-                className="group relative bg-[#FFDE59] hover:bg-[#E6C850] text-[#0047CC] font-bold py-3.5 px-8 rounded-lg transition-all duration-300 shadow-lg hover:shadow-[#FFDE59]/30 overflow-hidden"
+                className="btn-secondary group relative overflow-hidden flex items-center justify-center"
               >
                 <span className="relative z-10 flex items-center justify-center w-full font-sans">
                   Cadastrar minha oficina
@@ -189,7 +189,7 @@ const HeroSection = () => {
               
               <Link 
                 href="#como-funciona" 
-                className="group bg-[#0047CC] hover:bg-[#003CAD] text-white font-medium py-3.5 px-8 rounded-lg transition-all duration-300 flex items-center justify-center"
+                className="btn-primary group flex items-center justify-center"
               >
                 <span className="font-sans">Como funciona</span>
                 <ChevronRight className="h-5 w-5 ml-1 transform group-hover:translate-x-0.5 transition-transform" />
