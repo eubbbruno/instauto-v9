@@ -1,785 +1,674 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useMemo } from 'react';
 import { 
-  MagnifyingGlassIcon, 
-  ChevronDownIcon,
-  ChevronUpIcon,
-  ArrowDownIcon,
-  ArrowUpIcon,
-  CalendarDaysIcon,
-  TruckIcon,
+  MagnifyingGlassIcon,
+  PlusIcon,
+  FunnelIcon,
+  ClockIcon,
+  WrenchIcon,
   CheckCircleIcon,
   XCircleIcon,
-  ArrowPathIcon,
-  WrenchScrewdriverIcon,
-  FunnelIcon,
-  PlusIcon,
-  EllipsisHorizontalIcon,
-  ClockIcon
-} from "@heroicons/react/24/outline";
-import Link from "next/link";
-import DashboardFilters from "@/components/DashboardFilters";
+  ExclamationTriangleIcon,
+  PhoneIcon,
+  UserIcon,
+  CalendarIcon,
+  CurrencyDollarIcon,
+  EllipsisVerticalIcon,
+  EyeIcon,
+  PencilIcon,
+  TruckIcon,
+  WrenchScrewdriverIcon
+} from '@heroicons/react/24/outline';
+import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 
-// Tipos para ordens de serviço
-type OrderStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled';
-
-type Order = {
+interface ServiceOrder {
   id: string;
+  orderNumber: string;
+  status: 'pending' | 'in-progress' | 'waiting-parts' | 'completed' | 'cancelled';
+  priority: 'low' | 'medium' | 'high';
   customer: {
     name: string;
     phone: string;
-    rating: number;
+    email: string;
   };
   vehicle: {
-    make: string;
+    brand: string;
     model: string;
     year: number;
     plate: string;
+    color: string;
   };
-  service: {
-    type: string;
-    description: string;
-    items: Array<{
-      name: string;
-      quantity: number;
-      price: number;
-    }>;
-  };
-  total: number;
-  status: OrderStatus;
-  priority: 'low' | 'medium' | 'high';
+  services: string[];
+  estimatedCost: number;
   createdAt: string;
-  scheduledFor?: string;
-  mechanic?: string;
-  completedAt?: string;
-};
+  estimatedCompletion: string;
+  progress: number;
+  timeline: {
+    step: string;
+    completed: boolean;
+    date?: string;
+  }[];
+}
 
-// Dados de exemplo
-const mockOrders: Order[] = [
+const mockOrders: ServiceOrder[] = [
   {
-    id: "OS-2023-001",
+    id: '1',
+    orderNumber: 'OS-2025-001',
+    status: 'in-progress',
+    priority: 'high',
     customer: {
-      name: "João Silva",
-      phone: "(11) 98765-4321",
-      rating: 4.8
+      name: 'João Silva',
+      phone: '(11) 99999-9999',
+      email: 'joao@email.com'
     },
     vehicle: {
-      make: "Toyota",
-      model: "Corolla",
+      brand: 'Toyota',
+      model: 'Corolla',
       year: 2020,
-      plate: "ABC-1234"
+      plate: 'ABC-1234',
+      color: 'Prata'
     },
-    service: {
-      type: "Revisão",
-      description: "Revisão completa 30.000km",
-      items: [
-        { name: "Óleo de motor", quantity: 1, price: 120 },
-        { name: "Filtro de óleo", quantity: 1, price: 50 },
-        { name: "Filtro de ar", quantity: 1, price: 65 },
-        { name: "Mão de obra", quantity: 1, price: 200 }
-      ]
-    },
-    total: 435,
-    status: "completed",
-    priority: "medium",
-    createdAt: "2023-10-15T14:30:00Z",
-    scheduledFor: "2023-10-17T10:00:00Z",
-    mechanic: "Carlos Ferreira",
-    completedAt: "2023-10-17T12:30:00Z"
+    services: ['Troca de óleo', 'Revisão geral', 'Alinhamento'],
+    estimatedCost: 450.00,
+    createdAt: '2025-01-15',
+    estimatedCompletion: '2025-01-17',
+    progress: 65,
+    timeline: [
+      { step: 'Recebimento', completed: true, date: '15/01 09:00' },
+      { step: 'Diagnóstico', completed: true, date: '15/01 10:30' },
+      { step: 'Execução', completed: false },
+      { step: 'Finalização', completed: false },
+      { step: 'Entrega', completed: false }
+    ]
   },
   {
-    id: "OS-2023-002",
+    id: '2',
+    orderNumber: 'OS-2025-002',
+    status: 'pending',
+    priority: 'medium',
     customer: {
-      name: "Maria Santos",
-      phone: "(11) 98765-1234",
-      rating: 4.5
+      name: 'Maria Santos',
+      phone: '(11) 88888-8888',
+      email: 'maria@email.com'
     },
     vehicle: {
-      make: "Honda",
-      model: "Civic",
+      brand: 'Honda',
+      model: 'Civic',
       year: 2019,
-      plate: "DEF-5678"
+      plate: 'DEF-5678',
+      color: 'Preto'
     },
-    service: {
-      type: "Reparo",
-      description: "Troca de pastilhas de freio",
-      items: [
-        { name: "Pastilhas de freio dianteiras", quantity: 1, price: 180 },
-        { name: "Mão de obra", quantity: 1, price: 150 }
-      ]
-    },
-    total: 330,
-    status: "in_progress",
-    priority: "high",
-    createdAt: "2023-10-16T09:15:00Z",
-    scheduledFor: "2023-10-16T14:00:00Z",
-    mechanic: "Pedro Souza"
+    services: ['Troca de pastilhas de freio', 'Verificação do sistema ABS'],
+    estimatedCost: 380.00,
+    createdAt: '2025-01-16',
+    estimatedCompletion: '2025-01-18',
+    progress: 0,
+    timeline: [
+      { step: 'Recebimento', completed: false },
+      { step: 'Diagnóstico', completed: false },
+      { step: 'Execução', completed: false },
+      { step: 'Finalização', completed: false },
+      { step: 'Entrega', completed: false }
+    ]
   },
   {
-    id: "OS-2023-003",
+    id: '3',
+    orderNumber: 'OS-2025-003',
+    status: 'completed',
+    priority: 'low',
     customer: {
-      name: "Lucas Oliveira",
-      phone: "(11) 97654-3210",
-      rating: 4.2
+      name: 'Pedro Costa',
+      phone: '(11) 77777-7777',
+      email: 'pedro@email.com'
     },
     vehicle: {
-      make: "Volkswagen",
-      model: "Golf",
-      year: 2018,
-      plate: "GHI-9012"
-    },
-    service: {
-      type: "Diagnóstico",
-      description: "Luz do motor acesa",
-      items: [
-        { name: "Diagnóstico eletrônico", quantity: 1, price: 120 }
-      ]
-    },
-    total: 120,
-    status: "pending",
-    priority: "medium",
-    createdAt: "2023-10-16T16:30:00Z",
-    scheduledFor: "2023-10-18T09:00:00Z"
-  },
-  {
-    id: "OS-2023-004",
-    customer: {
-      name: "Ana Pereira",
-      phone: "(11) 91234-5678",
-      rating: 5.0
-    },
-    vehicle: {
-      make: "Fiat",
-      model: "Pulse",
-      year: 2022,
-      plate: "JKL-3456"
-    },
-    service: {
-      type: "Manutenção",
-      description: "Alinhamento e balanceamento",
-      items: [
-        { name: "Alinhamento", quantity: 1, price: 100 },
-        { name: "Balanceamento", quantity: 4, price: 20 }
-      ]
-    },
-    total: 180,
-    status: "cancelled",
-    priority: "low",
-    createdAt: "2023-10-15T11:45:00Z",
-    scheduledFor: "2023-10-16T11:00:00Z"
-  },
-  {
-    id: "OS-2023-005",
-    customer: {
-      name: "Roberto Almeida",
-      phone: "(11) 98877-6655",
-      rating: 4.7
-    },
-    vehicle: {
-      make: "Chevrolet",
-      model: "Onix",
+      brand: 'Volkswagen',
+      model: 'Golf',
       year: 2021,
-      plate: "MNO-7890"
+      plate: 'GHI-9012',
+      color: 'Branco'
     },
-    service: {
-      type: "Revisão",
-      description: "Revisão completa 10.000km",
-      items: [
-        { name: "Óleo de motor", quantity: 1, price: 120 },
-        { name: "Filtro de óleo", quantity: 1, price: 50 },
-        { name: "Mão de obra", quantity: 1, price: 150 }
-      ]
-    },
-    total: 320,
-    status: "completed",
-    priority: "medium",
-    createdAt: "2023-10-14T13:20:00Z",
-    scheduledFor: "2023-10-15T13:00:00Z",
-    mechanic: "Carlos Ferreira",
-    completedAt: "2023-10-15T15:30:00Z"
+    services: ['Troca de pneus', 'Balanceamento', 'Geometria'],
+    estimatedCost: 1200.00,
+    createdAt: '2025-01-10',
+    estimatedCompletion: '2025-01-12',
+    progress: 100,
+    timeline: [
+      { step: 'Recebimento', completed: true, date: '10/01 08:00' },
+      { step: 'Diagnóstico', completed: true, date: '10/01 09:00' },
+      { step: 'Execução', completed: true, date: '11/01 14:00' },
+      { step: 'Finalização', completed: true, date: '12/01 10:00' },
+      { step: 'Entrega', completed: true, date: '12/01 16:00' }
+    ]
   },
   {
-    id: "OS-2023-006",
+    id: '4',
+    orderNumber: 'OS-2025-004',
+    status: 'waiting-parts',
+    priority: 'high',
     customer: {
-      name: "Camila Rodrigues",
-      phone: "(11) 92233-4455",
-      rating: 4.0
+      name: 'Ana Costa',
+      phone: '(11) 66666-6666',
+      email: 'ana@email.com'
     },
     vehicle: {
-      make: "Hyundai",
-      model: "HB20",
-      year: 2020,
-      plate: "PQR-1234"
+      brand: 'Fiat',
+      model: 'Argo',
+      year: 2022,
+      plate: 'JKL-3456',
+      color: 'Vermelho'
     },
-    service: {
-      type: "Reparo",
-      description: "Troca de bateria",
-      items: [
-        { name: "Bateria 60ah", quantity: 1, price: 450 },
-        { name: "Mão de obra", quantity: 1, price: 50 }
-      ]
-    },
-    total: 500,
-    status: "in_progress",
-    priority: "high",
-    createdAt: "2023-10-16T10:05:00Z",
-    scheduledFor: "2023-10-16T16:00:00Z",
-    mechanic: "Pedro Souza"
+    services: ['Troca da correia dentada', 'Troca do tensor'],
+    estimatedCost: 680.00,
+    createdAt: '2025-01-14',
+    estimatedCompletion: '2025-01-20',
+    progress: 35,
+    timeline: [
+      { step: 'Recebimento', completed: true, date: '14/01 11:00' },
+      { step: 'Diagnóstico', completed: true, date: '14/01 14:00' },
+      { step: 'Execução', completed: false },
+      { step: 'Finalização', completed: false },
+      { step: 'Entrega', completed: false }
+    ]
   }
 ];
 
-// Tipo para o componente DashboardFilters
+const statusConfig = {
+  pending: { 
+    label: 'Pendente', 
+    color: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+    bgColor: 'bg-yellow-50',
+    icon: ClockIcon 
+  },
+  'in-progress': { 
+    label: 'Em Andamento', 
+    color: 'bg-blue-100 text-blue-700 border-blue-200',
+    bgColor: 'bg-blue-50',
+    icon: WrenchIcon 
+  },
+  'waiting-parts': { 
+    label: 'Aguardando Peças', 
+    color: 'bg-orange-100 text-orange-700 border-orange-200',
+    bgColor: 'bg-orange-50',
+    icon: ExclamationTriangleIcon 
+  },
+  completed: { 
+    label: 'Concluído', 
+    color: 'bg-green-100 text-green-700 border-green-200',
+    bgColor: 'bg-green-50',
+    icon: CheckCircleIcon 
+  },
+  cancelled: { 
+    label: 'Cancelado', 
+    color: 'bg-red-100 text-red-700 border-red-200',
+    bgColor: 'bg-red-50',
+    icon: XCircleIcon 
+  }
+};
 
+const priorityConfig = {
+  low: { label: 'Baixa', color: 'bg-gray-500' },
+  medium: { label: 'Média', color: 'bg-yellow-500' },
+  high: { label: 'Alta', color: 'bg-red-500' }
+};
 
 export default function OrdensPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<OrderStatus | "all">("all");
-  const [sortField, setSortField] = useState<string>("createdAt");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [orders, setOrders] = useState<ServiceOrder[]>(mockOrders);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [selectedOrder, setSelectedOrder] = useState<ServiceOrder | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [filteredOrders, setFilteredOrders] = useState<Order[]>(mockOrders);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  // Simulação de carregamento
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, []);
-  
-  // Filtragem e ordenação
-  useEffect(() => {
-    let result = [...mockOrders];
-    
-    // Filtro por termo de busca
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      result = result.filter(order => 
-        order.id.toLowerCase().includes(term) ||
-        order.customer.name.toLowerCase().includes(term) ||
-        order.vehicle.plate.toLowerCase().includes(term) ||
-        order.service.type.toLowerCase().includes(term) ||
-        order.service.description.toLowerCase().includes(term)
-      );
-    }
-    
-    // Filtro por status
-    if (statusFilter !== "all") {
-      result = result.filter(order => order.status === statusFilter);
-    }
-    
-    // Ordenação
-    result.sort((a, b) => {
-      let valueA, valueB;
+
+  const filteredOrders = useMemo(() => {
+    return orders.filter(order => {
+      const matchesSearch = 
+        order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.vehicle.plate.toLowerCase().includes(searchTerm.toLowerCase());
       
-      switch (sortField) {
-        case "createdAt":
-          valueA = new Date(a.createdAt).getTime();
-          valueB = new Date(b.createdAt).getTime();
-          break;
-        case "total":
-          valueA = a.total;
-          valueB = b.total;
-          break;
-        case "priority":
-          const priorityValues = { "low": 1, "medium": 2, "high": 3 };
-          valueA = priorityValues[a.priority];
-          valueB = priorityValues[b.priority];
-          break;
-        default:
-          valueA = new Date(a.createdAt).getTime();
-          valueB = new Date(b.createdAt).getTime();
-      }
+      const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+      const matchesPriority = priorityFilter === 'all' || order.priority === priorityFilter;
       
-      return sortDirection === "asc" ? valueA - valueB : valueB - valueA;
+      return matchesSearch && matchesStatus && matchesPriority;
     });
-    
-    setFilteredOrders(result);
-  }, [searchTerm, statusFilter, sortField, sortDirection]);
-  
-  // Toggle sort direction
-  const handleSort = (field: string) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("desc");
-    }
+  }, [orders, searchTerm, statusFilter, priorityFilter]);
+
+  const updateOrderStatus = (orderId: string, newStatus: ServiceOrder['status']) => {
+    setOrders(prev => prev.map(order => 
+      order.id === orderId 
+        ? { ...order, status: newStatus, progress: newStatus === 'completed' ? 100 : order.progress }
+        : order
+    ));
   };
-  
-  // Retorna a cor do status
-  const getStatusColor = (status: OrderStatus) => {
-    switch (status) {
-      case "pending":
-        return "text-amber-600 bg-amber-50 border-amber-200";
-      case "in_progress":
-        return "text-blue-600 bg-blue-50 border-blue-200";
-      case "completed":
-        return "text-green-600 bg-green-50 border-green-200";
-      case "cancelled":
-        return "text-red-600 bg-red-50 border-red-200";
-      default:
-        return "text-gray-600 bg-gray-50 border-gray-200";
-    }
+
+  const openOrderDetails = (order: ServiceOrder) => {
+    setSelectedOrder(order);
+    setShowDetails(true);
   };
-  
-  // Retorna o texto do status
-  const getStatusText = (status: OrderStatus) => {
-    switch (status) {
-      case "pending":
-        return "Pendente";
-      case "in_progress":
-        return "Em Andamento";
-      case "completed":
-        return "Concluída";
-      case "cancelled":
-        return "Cancelada";
-      default:
-        return "";
-    }
+
+  const stats = {
+    total: orders.length,
+    pending: orders.filter(o => o.status === 'pending').length,
+    inProgress: orders.filter(o => o.status === 'in-progress').length,
+    completed: orders.filter(o => o.status === 'completed').length
   };
-  
-  // Retorna o ícone do status
-  const getStatusIcon = (status: OrderStatus) => {
-    switch (status) {
-      case "pending":
-        return <ClockIcon className="h-4 w-4" />;
-      case "in_progress":
-        return <ArrowPathIcon className="h-4 w-4" />;
-      case "completed":
-        return <CheckCircleIcon className="h-4 w-4" />;
-      case "cancelled":
-        return <XCircleIcon className="h-4 w-4" />;
-      default:
-        return null;
-    }
-  };
-  
-  // Retorna a cor da prioridade
-  const getPriorityColor = (priority: 'low' | 'medium' | 'high') => {
-    switch (priority) {
-      case "low":
-        return "bg-green-100 text-green-700 border-green-200";
-      case "medium":
-        return "bg-amber-100 text-amber-700 border-amber-200";
-      case "high":
-        return "bg-red-100 text-red-700 border-red-200";
-      default:
-        return "bg-gray-100 text-gray-700 border-gray-200";
-    }
-  };
-  
-  // Retorna o texto da prioridade
-  const getPriorityText = (priority: 'low' | 'medium' | 'high') => {
-    switch (priority) {
-      case "low":
-        return "Baixa";
-      case "medium":
-        return "Média";
-      case "high":
-        return "Alta";
-      default:
-        return "";
-    }
-  };
-  
-  // Formata a data para o formato DD/MM/YYYY HH:MM
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  };
-  
-  // Formata a data para o formato relativo (há X horas/minutos)
-  const formatRelativeTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.round(diffMs / 60000);
-    
-    if (diffMins < 60) {
-      return `Há ${diffMins} min`;
-    } else if (diffMins < 1440) {
-      const diffHours = Math.floor(diffMins / 60);
-      return `Há ${diffHours} h`;
-    } else {
-      const diffDays = Math.floor(diffMins / 1440);
-      return `Há ${diffDays} d`;
-    }
-  };
-  
+
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6 pb-safe">
+      {/* Header */}
       <div className="mb-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Ordens de Serviço</h1>
-            <p className="text-gray-500 text-sm mt-1">Gerencie as ordens de serviço da sua oficina</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Ordens de Serviço</h1>
+            <p className="text-gray-600 text-sm md:text-base mt-1">Gerencie todas as ordens da oficina</p>
           </div>
-          
-          <button
-            className="px-4 py-2 bg-[#0047CC] text-white rounded-lg text-sm font-medium hover:bg-[#003CAD] transition-colors inline-flex items-center"
-          >
+          <button className="px-5 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors inline-flex items-center justify-center touch-manipulation min-h-[48px] active:bg-blue-800">
             <PlusIcon className="h-5 w-5 mr-2" />
             Nova Ordem
           </button>
         </div>
       </div>
-      
-      {/* Filtros e busca */}
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-        <div className="flex flex-col sm:flex-row justify-between gap-4">
-          {/* Busca */}
-          <div className="relative flex-1">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white rounded-xl shadow-sm p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium text-gray-600">Total</h3>
+            <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+              <ClockIcon className="h-4 w-4" />
             </div>
+          </div>
+          <p className="text-2xl md:text-3xl font-bold text-gray-800">{stats.total}</p>
+          <p className="text-xs text-gray-500 mt-1">Ordens ativas</p>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium text-gray-600">Pendentes</h3>
+            <div className="p-2 bg-yellow-100 text-yellow-600 rounded-lg">
+              <ClockIcon className="h-4 w-4" />
+            </div>
+          </div>
+          <p className="text-2xl md:text-3xl font-bold text-gray-800">{stats.pending}</p>
+          <p className="text-xs text-gray-500 mt-1">Aguardando início</p>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium text-gray-600">Em Andamento</h3>
+            <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+              <WrenchIcon className="h-4 w-4" />
+            </div>
+          </div>
+          <p className="text-2xl md:text-3xl font-bold text-gray-800">{stats.inProgress}</p>
+          <p className="text-xs text-gray-500 mt-1">Em execução</p>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium text-gray-600">Concluídas</h3>
+            <div className="p-2 bg-green-100 text-green-600 rounded-lg">
+              <CheckCircleIcon className="h-4 w-4" />
+            </div>
+          </div>
+          <p className="text-2xl md:text-3xl font-bold text-gray-800">{stats.completed}</p>
+          <p className="text-xs text-gray-500 mt-1">Este mês</p>
+        </div>
+      </div>
+
+      {/* Filters and Search */}
+      <div className="bg-white rounded-xl shadow-sm p-4 md:p-6 mb-6">
+        {/* Search */}
+        <div className="mb-4">
+          <div className="relative">
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <input
               type="text"
-              placeholder="Buscar por OS, cliente, placa..."
+              placeholder="Buscar por número, cliente ou placa..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0047CC] focus:border-[#0047CC] text-sm"
+              className="w-full pl-10 pr-4 py-3 text-base border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent touch-manipulation min-h-[48px]"
             />
           </div>
-          
-          {/* Filtros de status */}
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setStatusFilter("all")}
-              className={`px-3 py-2 rounded-lg text-sm ${
-                statusFilter === "all"
-                  ? "bg-[#0047CC] text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
+        </div>
+
+        {/* Filter Controls */}
+        <div className="flex flex-col md:flex-row gap-3">
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-2 px-2">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="flex-shrink-0 px-4 py-3 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 min-w-[160px] touch-manipulation min-h-[48px] bg-white"
             >
-              Todas
-            </button>
-            <button
-              onClick={() => setStatusFilter("pending")}
-              className={`px-3 py-2 rounded-lg text-sm ${
-                statusFilter === "pending"
-                  ? "bg-amber-500 text-white"
-                  : "bg-amber-50 text-amber-600 hover:bg-amber-100"
-              }`}
+              <option value="all">Todos os Status</option>
+              <option value="pending">Pendente</option>
+              <option value="in-progress">Em Andamento</option>
+              <option value="waiting-parts">Aguardando Peças</option>
+              <option value="completed">Concluído</option>
+              <option value="cancelled">Cancelado</option>
+            </select>
+
+            <select
+              value={priorityFilter}
+              onChange={(e) => setPriorityFilter(e.target.value)}
+              className="flex-shrink-0 px-4 py-3 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 min-w-[140px] touch-manipulation min-h-[48px] bg-white"
             >
-              Pendentes
-            </button>
-            <button
-              onClick={() => setStatusFilter("in_progress")}
-              className={`px-3 py-2 rounded-lg text-sm ${
-                statusFilter === "in_progress"
-                  ? "bg-blue-500 text-white"
-                  : "bg-blue-50 text-blue-600 hover:bg-blue-100"
-              }`}
-            >
-              Em Andamento
-            </button>
-            <button
-              onClick={() => setStatusFilter("completed")}
-              className={`px-3 py-2 rounded-lg text-sm ${
-                statusFilter === "completed"
-                  ? "bg-green-500 text-white"
-                  : "bg-green-50 text-green-600 hover:bg-green-100"
-              }`}
-            >
-              Concluídas
-            </button>
+              <option value="all">Todas Prioridades</option>
+              <option value="high">Alta</option>
+              <option value="medium">Média</option>
+              <option value="low">Baixa</option>
+            </select>
           </div>
-          
-          {/* Botão de filtros avançados */}
+
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="px-3 py-2 rounded-lg text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 inline-flex items-center"
+            className="flex items-center justify-center px-4 py-3 text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors touch-manipulation md:flex-shrink-0 min-h-[48px] active:bg-gray-100"
           >
-            <FunnelIcon className="h-4 w-4 mr-2" />
-            Filtros 
-            {showFilters ? (
-              <ChevronUpIcon className="h-4 w-4 ml-1" />
-            ) : (
-              <ChevronDownIcon className="h-4 w-4 ml-1" />
-            )}
+            <FunnelIcon className="h-5 w-5 mr-2" />
+            <span className="text-sm font-medium">Mais Filtros</span>
           </button>
         </div>
-        
-        {/* Filtros avançados (expansível) */}
+
+        {/* Advanced Filters */}
         {showFilters && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="mt-4 pt-4 border-t border-gray-200"
-          >
-            <DashboardFilters
-              filterOptions={[
-                { id: "date", label: "Data", type: "date" },
-                { id: "customer", label: "Cliente", type: "select", options: ["Todos", "João Silva", "Maria Santos", "Lucas Oliveira"] },
-                { id: "vehicle", label: "Veículo", type: "select", options: ["Todos", "Toyota Corolla", "Honda Civic", "Volkswagen Golf"] },
-                { id: "service", label: "Tipo de Serviço", type: "select", options: ["Todos", "Revisão", "Reparo", "Diagnóstico", "Manutenção"] },
-                { id: "mechanic", label: "Mecânico", type: "select", options: ["Todos", "Carlos Ferreira", "Pedro Souza"] },
-              ]}
-              onSearch={(query) => console.log("Busca:", query)}
-              onFilter={(filters) => console.log("Filtros aplicados:", filters)}
-              onClearFilters={() => console.log("Filtros limpos")}
-            />
-          </motion.div>
+          <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Período</label>
+              <select className="w-full px-4 py-3 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 touch-manipulation min-h-[48px] bg-white">
+                <option>Hoje</option>
+                <option>Esta semana</option>
+                <option>Este mês</option>
+                <option>Últimos 3 meses</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Serviço</label>
+              <select className="w-full px-4 py-3 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 touch-manipulation min-h-[48px] bg-white">
+                <option>Todos os serviços</option>
+                <option>Troca de óleo</option>
+                <option>Revisão</option>
+                <option>Freios</option>
+                <option>Suspensão</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Valor</label>
+              <select className="w-full px-4 py-3 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 touch-manipulation min-h-[48px] bg-white">
+                <option>Qualquer valor</option>
+                <option>Até R$ 500</option>
+                <option>R$ 500 - R$ 1.000</option>
+                <option>Acima de R$ 1.000</option>
+              </select>
+            </div>
+          </div>
         )}
       </div>
-      
-      {/* Tabela de ordens */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
-        {isLoading ? (
-          <div className="py-20 flex flex-col items-center justify-center">
-            <ArrowPathIcon className="h-10 w-10 text-[#0047CC] animate-spin mb-4" />
-            <p className="text-gray-500">Carregando ordens de serviço...</p>
-          </div>
-        ) : filteredOrders.length === 0 ? (
-          <div className="py-20 flex flex-col items-center justify-center">
-            <div className="bg-gray-100 p-4 rounded-full mb-4">
-              <WrenchScrewdriverIcon className="h-10 w-10 text-gray-400" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-800 mb-1">Nenhuma ordem encontrada</h3>
-            <p className="text-gray-500 mb-4">Tente ajustar seus filtros ou criar uma nova ordem</p>
-            <button
-              className="px-4 py-2 bg-[#0047CC] text-white rounded-lg text-sm font-medium hover:bg-[#003CAD] transition-colors inline-flex items-center"
-            >
-              <PlusIcon className="h-5 w-5 mr-2" />
-              Nova Ordem
-            </button>
-          </div>
-        ) : (
-          <div>
-            {/* Desktop Table */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 text-left">
-                  <tr>
-                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      OS
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Cliente/Veículo
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Serviço
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort("total")}>
-                      <div className="flex items-center">
-                        Valor
-                        {sortField === "total" && (
-                          sortDirection === "asc" ? (
-                            <ArrowUpIcon className="h-4 w-4 ml-1" />
-                          ) : (
-                            <ArrowDownIcon className="h-4 w-4 ml-1" />
-                          )
-                        )}
-                      </div>
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort("priority")}>
-                      <div className="flex items-center">
-                        Prioridade
-                        {sortField === "priority" && (
-                          sortDirection === "asc" ? (
-                            <ArrowUpIcon className="h-4 w-4 ml-1" />
-                          ) : (
-                            <ArrowDownIcon className="h-4 w-4 ml-1" />
-                          )
-                        )}
-                      </div>
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort("createdAt")}>
-                      <div className="flex items-center">
-                        Data
-                        {sortField === "createdAt" && (
-                          sortDirection === "asc" ? (
-                            <ArrowUpIcon className="h-4 w-4 ml-1" />
-                          ) : (
-                            <ArrowDownIcon className="h-4 w-4 ml-1" />
-                          )
-                        )}
-                      </div>
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Ações
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredOrders.map((order, index) => (
-                    <motion.tr 
-                      key={order.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
-                      className="hover:bg-gray-50 cursor-pointer"
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-[#0047CC]">{order.id}</div>
-                        <div className="text-xs text-gray-500">{formatRelativeTime(order.createdAt)}</div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-800">{order.customer.name}</div>
-                        <div className="text-xs text-gray-500 flex items-center">
-                          <TruckIcon className="h-3 w-3 mr-1" />
-                          {order.vehicle.make} {order.vehicle.model} | {order.vehicle.plate}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-800">{order.service.type}</div>
-                        <div className="text-xs text-gray-500">{order.service.description}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-800">
-                          {order.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                        </div>
-                        <div className="text-xs text-gray-500">{order.service.items.length} itens</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
-                          {getStatusIcon(order.status)}
-                          <span className="ml-1">{getStatusText(order.status)}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getPriorityColor(order.priority)}`}>
-                          {getPriorityText(order.priority)}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-800">
-                          {formatDate(order.createdAt).split(' ')[0]}
-                        </div>
-                        <div className="text-xs text-gray-500 flex items-center">
-                          <CalendarDaysIcon className="h-3 w-3 mr-1" />
-                          {order.scheduledFor ? formatDate(order.scheduledFor).split(' ')[1] : '-'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                        <div className="flex space-x-2 justify-end">
-                          <Link href={`/dashboard/ordens/${order.id}`} className="text-[#0047CC] hover:text-[#003CAD]">
-                            Detalhes
-                          </Link>
-                          <button className="text-gray-400 hover:text-gray-500">
-                            <EllipsisHorizontalIcon className="h-5 w-5" />
-                          </button>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
 
-            {/* Mobile Cards */}
-            <div className="md:hidden space-y-4">
-              {filteredOrders.map((order, index) => (
-                <motion.div 
-                  key={order.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                  className="bg-white rounded-lg border border-gray-200 p-4"
+      {/* Orders Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+        {filteredOrders.map((order) => {
+          const statusInfo = statusConfig[order.status];
+          const StatusIcon = statusInfo.icon;
+          const priorityInfo = priorityConfig[order.priority];
+
+          return (
+            <div key={order.id} className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-all ${statusInfo.bgColor}`}>
+              {/* Card Header */}
+              <div className="p-4 border-b border-gray-100">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="font-semibold text-gray-900 text-lg">{order.orderNumber}</h3>
+                    <p className="text-sm text-gray-600 mt-1">{order.customer.name}</p>
+                  </div>
+                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center">
+                    <EllipsisVerticalIcon className="h-5 w-5 text-gray-500" />
+                  </button>
+                </div>
+                
+                {/* Status and Priority */}
+                <div className="flex flex-wrap gap-2">
+                  <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium border ${statusInfo.color}`}>
+                    <StatusIcon className="h-4 w-4 mr-1.5" />
+                    {statusInfo.label}
+                  </span>
+                  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium text-white ${priorityInfo.color}`}>
+                    {priorityInfo.label}
+                  </span>
+                </div>
+              </div>
+
+              {/* Card Body */}
+              <div className="p-4 space-y-4">
+                {/* Vehicle Info */}
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <div className="flex items-center text-sm text-gray-700">
+                    <div className="flex-1">
+                      <p className="font-medium">{order.vehicle.brand} {order.vehicle.model} {order.vehicle.year}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">{order.vehicle.color} • {order.vehicle.plate}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Progress */}
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-gray-600">Progresso</span>
+                    <span className="font-medium text-gray-900">{order.progress}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${order.progress}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Services */}
+                <div>
+                  <p className="text-sm font-medium text-gray-700 mb-2">Serviços:</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {order.services.map((service, index) => (
+                      <span key={index} className="inline-flex items-center px-2.5 py-1 rounded-md bg-gray-100 text-xs text-gray-700">
+                        {service}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Cost and Date */}
+                <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <CalendarIcon className="h-4 w-4 mr-1.5" />
+                    <span>{new Date(order.estimatedCompletion).toLocaleDateString('pt-BR')}</span>
+                  </div>
+                  <span className="font-semibold text-gray-900">
+                    R$ {order.estimatedCost.toFixed(2).replace('.', ',')}
+                  </span>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-2">
+                  <button 
+                    onClick={() => openOrderDetails(order)}
+                    className="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors touch-manipulation min-h-[44px] active:bg-gray-100"
+                  >
+                    Ver Detalhes
+                  </button>
+                  {order.status !== 'completed' && order.status !== 'cancelled' && (
+                    <button 
+                      onClick={() => {
+                        const nextStatus = order.status === 'pending' ? 'in-progress' : 
+                                         order.status === 'in-progress' ? 'completed' : 'completed';
+                        updateOrderStatus(order.id, nextStatus);
+                      }}
+                      className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors touch-manipulation min-h-[44px] active:bg-blue-800"
+                    >
+                      {order.status === 'pending' ? 'Iniciar' : 'Finalizar'}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Empty State */}
+      {filteredOrders.length === 0 && (
+        <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+          <WrenchIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma ordem encontrada</h3>
+          <p className="text-gray-500 mb-6">Tente ajustar seus filtros ou criar uma nova ordem de serviço</p>
+          <button className="px-5 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors inline-flex items-center justify-center touch-manipulation min-h-[48px]">
+            <PlusIcon className="h-5 w-5 mr-2" />
+            Nova Ordem
+          </button>
+        </div>
+      )}
+
+      {/* Order Details Modal */}
+      {showDetails && selectedOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end md:items-center justify-center p-0 md:p-4">
+          <div className="bg-white w-full md:max-w-4xl md:rounded-xl shadow-xl max-h-[90vh] overflow-hidden animate-slide-up md:animate-none">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 md:p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-gray-900">{selectedOrder.orderNumber}</h2>
+                  <p className="text-sm text-gray-600 mt-1">Detalhes da ordem de serviço</p>
+                </div>
+                <button 
+                  onClick={() => setShowDetails(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
                 >
-                  {/* Header do card */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center">
-                      <div className="text-base font-medium text-[#0047CC]">{order.id}</div>
-                      <div className={`ml-3 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
-                        {getStatusIcon(order.status)}
-                        <span className="ml-1">{getStatusText(order.status)}</span>
-                      </div>
-                    </div>
-                    <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getPriorityColor(order.priority)}`}>
-                      {getPriorityText(order.priority)}
-                    </div>
-                  </div>
+                  <XCircleIcon className="h-6 w-6 text-gray-500" />
+                </button>
+              </div>
+            </div>
 
-                  {/* Cliente e Veículo */}
-                  <div className="mb-3">
-                    <div className="text-sm font-medium text-gray-800 mb-1">{order.customer.name}</div>
-                    <div className="text-xs text-gray-500 flex items-center">
-                      <TruckIcon className="h-3 w-3 mr-1" />
-                      {order.vehicle.make} {order.vehicle.model} | {order.vehicle.plate}
-                    </div>
-                  </div>
-
-                  {/* Serviço */}
-                  <div className="mb-3">
-                    <div className="text-sm font-medium text-gray-800">{order.service.type}</div>
-                    <div className="text-xs text-gray-500">{order.service.description}</div>
-                  </div>
-
-                  {/* Valor e Data */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <div className="text-sm font-medium text-gray-800">
-                        {order.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                      </div>
-                      <div className="text-xs text-gray-500">{order.service.items.length} itens</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm text-gray-800">
-                        {formatDate(order.createdAt).split(' ')[0]}
-                      </div>
-                      <div className="text-xs text-gray-500">{formatRelativeTime(order.createdAt)}</div>
-                    </div>
-                  </div>
-
-                  {/* Ações */}
-                  <div className="flex gap-2 pt-3 border-t border-gray-100">
-                    <Link 
-                      href={`/dashboard/ordens/${order.id}`} 
-                      className="flex-1 px-3 py-2 bg-[#0047CC] text-white text-center rounded-lg text-sm font-medium hover:bg-[#003CAD] transition-colors touch-manipulation"
-                    >
-                      Ver Detalhes
-                    </Link>
-                    <button className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors touch-manipulation">
-                      <EllipsisHorizontalIcon className="h-5 w-5" />
+            {/* Modal Body */}
+            <div className="overflow-y-auto p-4 md:p-6 space-y-6">
+              {/* Customer Info */}
+              <div className="bg-gray-50 rounded-xl p-4">
+                <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                  <UserIcon className="h-5 w-5 mr-2 text-gray-600" />
+                  Informações do Cliente
+                </h3>
+                <div className="space-y-2">
+                  <p className="text-sm"><span className="text-gray-600">Nome:</span> <span className="font-medium">{selectedOrder.customer.name}</span></p>
+                  <div className="flex items-center gap-4">
+                    <p className="text-sm">
+                      <span className="text-gray-600">Telefone:</span> 
+                      <span className="font-medium ml-1">{selectedOrder.customer.phone}</span>
+                    </p>
+                    <button className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors touch-manipulation min-w-[36px] min-h-[36px] flex items-center justify-center">
+                      <PhoneIcon className="h-4 w-4" />
                     </button>
                   </div>
-                </motion.div>
-              ))}
+                  <p className="text-sm">
+                    <span className="text-gray-600">Email:</span> 
+                    <span className="font-medium ml-1">{selectedOrder.customer.email}</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Vehicle Info */}
+              <div className="bg-gray-50 rounded-xl p-4">
+                <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                  <TruckIcon className="h-5 w-5 mr-2 text-gray-600" />
+                  Informações do Veículo
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-sm text-gray-600">Marca/Modelo</p>
+                    <p className="font-medium">{selectedOrder.vehicle.brand} {selectedOrder.vehicle.model}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Ano</p>
+                    <p className="font-medium">{selectedOrder.vehicle.year}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Placa</p>
+                    <p className="font-medium">{selectedOrder.vehicle.plate}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Cor</p>
+                    <p className="font-medium">{selectedOrder.vehicle.color}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Timeline */}
+              <div className="bg-white border border-gray-200 rounded-xl p-4">
+                <h3 className="font-semibold text-gray-900 mb-4">Timeline do Serviço</h3>
+                <div className="space-y-4">
+                  {selectedOrder.timeline.map((step, index) => (
+                    <div key={index} className="flex items-start gap-3">
+                      <div className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        step.completed 
+                          ? 'bg-green-500 border-green-500' 
+                          : 'bg-white border-gray-300'
+                      }`}>
+                        {step.completed && <CheckCircleIconSolid className="h-3 w-3 text-white" />}
+                      </div>
+                      <div className="flex-1">
+                        <p className={`font-medium ${step.completed ? 'text-gray-900' : 'text-gray-500'}`}>
+                          {step.step}
+                        </p>
+                        {step.date && (
+                          <p className="text-sm text-gray-500 mt-0.5">{step.date}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Services and Cost */}
+              <div className="bg-white border border-gray-200 rounded-xl p-4">
+                <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                  <WrenchScrewdriverIcon className="h-5 w-5 mr-2 text-gray-600" />
+                  Serviços e Valores
+                </h3>
+                <div className="space-y-2 mb-4">
+                  {selectedOrder.services.map((service, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                      <span className="text-sm text-gray-700">{service}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="pt-3 border-t border-gray-200">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-gray-900">Valor Total:</span>
+                    <span className="text-xl font-bold text-gray-900">
+                      R$ {selectedOrder.estimatedCost.toFixed(2).replace('.', ',')}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-      
-      {/* Paginação */}
-      {!isLoading && filteredOrders.length > 0 && (
-        <div className="flex justify-between items-center bg-white rounded-xl shadow-sm p-4">
-          <div className="text-sm text-gray-500">
-            Exibindo <span className="font-medium text-gray-800">{filteredOrders.length}</span> de <span className="font-medium text-gray-800">{mockOrders.length}</span> ordens
-          </div>
-          
-          <div className="flex space-x-2">
-            <button className="px-3 py-1 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
-              Anterior
-            </button>
-            <button className="px-3 py-1 rounded-md bg-[#0047CC] text-white hover:bg-[#003CAD] text-sm font-medium">
-              1
-            </button>
-            <button className="px-3 py-1 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm">
-              2
-            </button>
-            <button className="px-3 py-1 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm">
-              3
-            </button>
-            <button className="px-3 py-1 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm">
-              Próxima
-            </button>
+
+            {/* Modal Footer */}
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 md:p-6">
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setShowDetails(false)}
+                  className="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors touch-manipulation min-h-[48px] active:bg-gray-400"
+                >
+                  Fechar
+                </button>
+                <button className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors touch-manipulation min-h-[48px] active:bg-blue-800 flex items-center justify-center">
+                  <PencilIcon className="h-5 w-5 mr-2" />
+                  Editar
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
