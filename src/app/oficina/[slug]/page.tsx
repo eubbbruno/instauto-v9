@@ -1,630 +1,658 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { 
-  MapPinIcon, 
-  PhoneIcon, 
-  ClockIcon, 
-  StarIcon, 
-  CheckCircleIcon, 
-  WrenchIcon,
+import { useState } from 'react';
+import { useParams } from 'next/navigation';
+import {
+  MapPinIcon,
+  PhoneIcon,
+  ClockIcon,
+  StarIcon,
+  HeartIcon,
+  ShareIcon,
+  CameraIcon,
+  ChatBubbleLeftIcon,
   CalendarIcon,
+  CheckCircleIcon,
+  WrenchScrewdriverIcon,
+  CurrencyDollarIcon,
+  ShieldCheckIcon,
+  TruckIcon,
   ChevronLeftIcon,
-  ChatBubbleLeftRightIcon,
-  PhotoIcon,
-  HomeIcon,
-  UserCircleIcon
-} from "@heroicons/react/24/outline";
-import AvaliacaoOficina from "@/components/AvaliacaoOficina";
-import MapView from "@/components/MapView";
-import useGeolocation from "@/hooks/useGeolocation";
-import { OficinaBase } from "@/types";
-import FavoritoButton from "@/components/FavoritoButton";
-import AvaliacaoEstatisticas from "@/components/AvaliacaoEstatisticas";
+  ChevronRightIcon,
+  XMarkIcon
+} from '@heroicons/react/24/outline';
+import { StarIcon as StarIconSolid, HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
+import Link from 'next/link';
 
-export default function OficinaDetalhesPage({ params }: { params: { slug: string } }) {
-  const [activeTab, setActiveTab] = useState<"info" | "servicos" | "avaliacoes">("info");
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [selectedHour, setSelectedHour] = useState<string | null>(null);
-  const { latitude, longitude } = useGeolocation();
-  
-  // Função para calcular a distância em km entre duas coordenadas
-  const calcularDistanciaEmKm = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-    if (!lat1 || !lon1 || !lat2 || !lon2) return 0;
-    
-    const R = 6371; // Raio da Terra em km
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = 
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-      Math.sin(dLon / 2) * Math.sin(dLon / 2); 
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); 
-    const d = R * c; // Distância em km
-    return parseFloat(d.toFixed(1));
+interface OficinaDetails {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  rating: number;
+  totalReviews: number;
+  priceRange: string;
+  category: string;
+  images: string[];
+  phone: string;
+  whatsapp: string;
+  email: string;
+  address: {
+    street: string;
+    number: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+    cep: string;
   };
-  
-  // Dados mockados da oficina
-  const oficina = {
-    id: params.slug,
-    nome: "Auto Center Silva",
-    endereco: "Av. Paulista, 1500 - São Paulo, SP",
-    telefone: "(11) 99999-9999",
-    whatsapp: "(11) 99999-9999",
-    descricao: "Oficina especializada em serviços automotivos com mais de 15 anos de experiência. Contamos com profissionais qualificados e equipamentos de última geração para oferecer o melhor atendimento.",
-    horarios: {
-      segunda: { abre: "08:00", fecha: "18:00", fechado: false },
-      terca: { abre: "08:00", fecha: "18:00", fechado: false },
-      quarta: { abre: "08:00", fecha: "18:00", fechado: false },
-      quinta: { abre: "08:00", fecha: "18:00", fechado: false },
-      sexta: { abre: "08:00", fecha: "18:00", fechado: false },
-      sabado: { abre: "08:00", fecha: "12:00", fechado: false },
-      domingo: { abre: "", fecha: "", fechado: true },
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+  businessHours: {
+    [key: string]: { open: string; close: string } | null;
+  };
+  services: {
+    name: string;
+    description: string;
+    price: string;
+    duration: string;
+  }[];
+  amenities: string[];
+  specialties: string[];
+  reviews: {
+    id: string;
+    author: string;
+    avatar?: string;
+    rating: number;
+    date: string;
+    comment: string;
+    photos?: string[];
+  }[];
+}
+
+// Mock data
+const mockOficina: OficinaDetails = {
+  id: '1',
+  slug: 'auto-center-silva',
+  name: 'Auto Center Silva',
+  description: 'Oficina completa com mais de 20 anos de experiência. Especializada em mecânica geral, elétrica automotiva e diagnóstico computadorizado.',
+  rating: 4.5,
+  totalReviews: 127,
+  priceRange: '$$',
+  category: 'Mecânica Geral',
+  images: [
+    'https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=800&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=800&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1565043666747-69f6646db940?w=800&h=600&fit=crop',
+  ],
+  phone: '(11) 3456-7890',
+  whatsapp: '(11) 98765-4321',
+  email: 'contato@autocentersiva.com.br',
+  address: {
+    street: 'Av. Paulista',
+    number: '1000',
+    neighborhood: 'Bela Vista',
+    city: 'São Paulo',
+    state: 'SP',
+    cep: '01310-100'
+  },
+  coordinates: {
+    lat: -23.5629,
+    lng: -46.6544
+  },
+  businessHours: {
+    'segunda': { open: '08:00', close: '18:00' },
+    'terça': { open: '08:00', close: '18:00' },
+    'quarta': { open: '08:00', close: '18:00' },
+    'quinta': { open: '08:00', close: '18:00' },
+    'sexta': { open: '08:00', close: '18:00' },
+    'sábado': { open: '08:00', close: '14:00' },
+    'domingo': null
+  },
+  services: [
+    {
+      name: 'Revisão Completa',
+      description: 'Revisão completa com 30 itens verificados',
+      price: 'R$ 189,90',
+      duration: '2 horas'
     },
-    avaliacao: 4.8,
-    totalAvaliacoes: 254,
-    fotos: [
-      "/images/oficina1.jpg",
-      "/images/oficina2.jpg",
-      "/images/oficina3.jpg",
-      "/images/oficina4.jpg",
-    ],
-    servicos: [
-      { nome: "Troca de óleo", descricao: "Inclui óleo e filtro", preco: "A partir de R$ 150,00" },
-      { nome: "Alinhamento e balanceamento", descricao: "Serviço completo", preco: "A partir de R$ 180,00" },
-      { nome: "Revisão completa", descricao: "Checagem de 50 itens", preco: "A partir de R$ 350,00" },
-      { nome: "Freios", descricao: "Troca de pastilhas e discos", preco: "A partir de R$ 250,00" },
-      { nome: "Suspensão", descricao: "Verificação e substituição", preco: "A partir de R$ 300,00" },
-      { nome: "Diagnóstico eletrônico", descricao: "Escaneamento completo", preco: "A partir de R$ 120,00" },
-    ],
-    avaliacoes: [
-      { 
-        nome: "João Silva", 
-        data: "15/05/2023", 
-        nota: 5, 
-        comentario: "Excelente atendimento, serviço rápido e preço justo. Recomendo!" 
-      },
-      { 
-        nome: "Maria Oliveira", 
-        data: "03/04/2023", 
-        nota: 4, 
-        comentario: "Bom serviço, apenas demorou um pouco mais que o esperado." 
-      },
-      { 
-        nome: "Pedro Santos", 
-        data: "20/03/2023", 
-        nota: 5, 
-        comentario: "Muito satisfeito com o serviço. Os mecânicos são muito atenciosos e explicaram tudo detalhadamente." 
-      },
-    ],
-    // Coordenadas da oficina (Av. Paulista)
-    latitude: -23.5632,
-    longitude: -46.6541,
-    distancia: 2.3
+    {
+      name: 'Troca de Óleo',
+      description: 'Troca de óleo e filtro com produtos de qualidade',
+      price: 'R$ 89,90',
+      duration: '30 min'
+    },
+    {
+      name: 'Alinhamento e Balanceamento',
+      description: 'Alinhamento 3D e balanceamento computadorizado',
+      price: 'R$ 120,00',
+      duration: '1 hora'
+    },
+    {
+      name: 'Diagnóstico Eletrônico',
+      description: 'Diagnóstico completo com scanner automotivo',
+      price: 'R$ 80,00',
+      duration: '45 min'
+    }
+  ],
+  amenities: [
+    'Wi-Fi gratuito',
+    'Sala de espera climatizada',
+    'Café e água',
+    'TV na sala de espera',
+    'Estacionamento gratuito',
+    'Pagamento com cartão'
+  ],
+  specialties: [
+    'Mecânica geral',
+    'Elétrica automotiva',
+    'Injeção eletrônica',
+    'Ar condicionado',
+    'Suspensão',
+    'Freios'
+  ],
+  reviews: [
+    {
+      id: '1',
+      author: 'João Silva',
+      rating: 5,
+      date: '2025-01-10',
+      comment: 'Excelente atendimento! Equipe muito profissional e preço justo. Recomendo!'
+    },
+    {
+      id: '2',
+      author: 'Maria Santos',
+      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop',
+      rating: 4,
+      date: '2025-01-05',
+      comment: 'Ótima oficina, resolveram meu problema rapidamente. Só achei o preço um pouco alto.',
+      photos: [
+        'https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=400&h=300&fit=crop'
+      ]
+    },
+    {
+      id: '3',
+      author: 'Pedro Costa',
+      rating: 5,
+      date: '2024-12-28',
+      comment: 'Sempre levo meu carro aqui. Confiança total no trabalho deles!'
+    }
+  ]
+};
+
+export default function OficinaDetailsPage() {
+  const params = useParams();
+  const [oficina] = useState<OficinaDetails>(mockOficina);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [showGallery, setShowGallery] = useState(false);
+  const [activeTab, setActiveTab] = useState<'services' | 'reviews' | 'info'>('services');
+
+  const getDayOfWeek = () => {
+    const days = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+    return days[new Date().getDay()];
   };
 
-  // Mapa da localização da oficina
-  const oficinasParaMapa: OficinaBase[] = [{
-    id: oficina.id,
-    nome: oficina.nome,
-    endereco: oficina.endereco,
-    latitude: oficina.latitude,
-    longitude: oficina.longitude,
-    avaliacao: oficina.avaliacao,
-    distancia: latitude && longitude ? 
-      calcularDistanciaEmKm(latitude, longitude, oficina.latitude, oficina.longitude) : 
-      oficina.distancia
-  }];
-  
-  // Informação de distância para exibir
-  const distanciaTexto = latitude && longitude ? 
-    `${calcularDistanciaEmKm(latitude, longitude, oficina.latitude, oficina.longitude)} km de distância` : 
-    oficina.distancia ? `${oficina.distancia} km de distância` : 
-    "Distância não disponível";
-  
-  // Dias disponíveis para agendamento (próximos 7 dias)
-  const diasDisponiveis = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() + i);
-    return date;
-  });
-  
-  // Horários disponíveis (a cada 1 hora)
-  const horariosDisponiveis = [
-    "08:00", "09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00"
-  ];
-  
-  // Função para formatar data em texto legível
-  const formatarData = (data: Date) => {
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
+  const isOpen = () => {
+    const today = getDayOfWeek();
+    const hours = oficina.businessHours[today];
+    if (!hours) return false;
     
-    const amanha = new Date(hoje);
-    amanha.setDate(amanha.getDate() + 1);
+    const now = new Date();
+    const [openHour, openMin] = hours.open.split(':').map(Number);
+    const [closeHour, closeMin] = hours.close.split(':').map(Number);
     
-    const dataComparacao = new Date(data);
-    dataComparacao.setHours(0, 0, 0, 0);
+    const openTime = new Date();
+    openTime.setHours(openHour, openMin, 0);
     
-    if (dataComparacao.getTime() === hoje.getTime()) {
-      return "Hoje";
-    } else if (dataComparacao.getTime() === amanha.getTime()) {
-      return "Amanhã";
-    } else {
-      return data.toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' });
-    }
+    const closeTime = new Date();
+    closeTime.setHours(closeHour, closeMin, 0);
+    
+    return now >= openTime && now <= closeTime;
   };
-  
+
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      i < Math.floor(rating) ? (
+        <StarIconSolid key={i} className="h-4 w-4 text-yellow-500" />
+      ) : (
+        <StarIcon key={i} className="h-4 w-4 text-gray-300" />
+      )
+    ));
+  };
+
+  const nextImage = () => {
+    setSelectedImage((prev) => (prev + 1) % oficina.images.length);
+  };
+
+  const prevImage = () => {
+    setSelectedImage((prev) => (prev - 1 + oficina.images.length) % oficina.images.length);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <Link href="/oficinas" className="flex items-center text-gray-600 hover:text-[#0047CC]">
-            <ChevronLeftIcon className="h-5 w-5 mr-1" />
-            <span>Voltar para lista de oficinas</span>
+    <div className="min-h-screen bg-gray-50 pb-safe">
+      {/* Header Mobile */}
+      <div className="sticky top-0 z-40 bg-white border-b border-gray-200 lg:hidden">
+        <div className="flex items-center justify-between p-4">
+          <Link href="/motorista/buscar" className="p-2 -ml-2">
+            <ChevronLeftIcon className="h-6 w-6 text-gray-600" />
           </Link>
-        </div>
-      </header>
-      
-      {/* Galeria de imagens */}
-      <div className="relative h-64 md:h-96 bg-gray-200">
-        <div className="container mx-auto h-full flex">
-          {oficina.fotos && oficina.fotos.length > 0 ? (
-            <>
-              <div className="h-full w-full md:w-2/3 relative">
-                <Image 
-                  src={oficina.fotos[0]} 
-                  alt={oficina.nome}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="hidden md:flex w-1/3 flex-col">
-                <div className="h-1/2 relative">
-                  <Image 
-                    src={oficina.fotos.length > 1 ? oficina.fotos[1] : oficina.fotos[0]} 
-                    alt={oficina.nome}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="h-1/2 flex">
-                  <div className="w-1/2 relative">
-                    <Image 
-                      src={oficina.fotos.length > 2 ? oficina.fotos[2] : oficina.fotos[0]} 
-                      alt={oficina.nome}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="w-1/2 relative">
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10 cursor-pointer">
-                      <div className="text-white text-center">
-                        <PhotoIcon className="h-8 w-8 mx-auto mb-1" />
-                        <span>Ver todas</span>
-                      </div>
-                    </div>
-                    <Image 
-                      src={oficina.fotos.length > 3 ? oficina.fotos[3] : oficina.fotos[0]} 
-                      alt={oficina.nome}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="h-full w-full bg-gray-200 flex items-center justify-center">
-              <div className="text-gray-400 text-center">
-                <PhotoIcon className="h-12 w-12 mx-auto mb-2" />
-                <p>Sem imagens disponíveis</p>
-              </div>
-            </div>
-          )}
+          <h1 className="font-semibold text-gray-900 truncate flex-1 mx-2">{oficina.name}</h1>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setIsFavorite(!isFavorite)}
+              className="p-2 touch-manipulation"
+            >
+              {isFavorite ? (
+                <HeartIconSolid className="h-6 w-6 text-red-500" />
+              ) : (
+                <HeartIcon className="h-6 w-6 text-gray-600" />
+              )}
+            </button>
+            <button className="p-2 touch-manipulation">
+              <ShareIcon className="h-6 w-6 text-gray-600" />
+            </button>
+          </div>
         </div>
       </div>
-      
-      {/* Conteúdo principal */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Coluna principal */}
-          <div className="md:w-2/3">
-            {/* Header da oficina */}
-            <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">{oficina.nome}</h1>
-                  <div className="flex items-center mt-2">
+
+      <div className="max-w-7xl mx-auto">
+        {/* Image Gallery */}
+        <div className="relative">
+          <div 
+            className="aspect-[16/9] md:aspect-[21/9] bg-gray-200 cursor-pointer"
+            onClick={() => setShowGallery(true)}
+          >
+            <img 
+              src={oficina.images[selectedImage]} 
+              alt={oficina.name}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute bottom-4 right-4 bg-black bg-opacity-60 text-white px-3 py-1.5 rounded-full flex items-center gap-1.5 text-sm">
+              <CameraIcon className="h-4 w-4" />
+              {oficina.images.length} fotos
+            </div>
+          </div>
+          
+          {/* Thumbnail Strip - Desktop */}
+          <div className="hidden md:flex gap-2 p-4 overflow-x-auto">
+            {oficina.images.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                alt={`${oficina.name} - ${index + 1}`}
+                className={`h-20 w-32 object-cover rounded-lg cursor-pointer transition-all ${
+                  selectedImage === index ? 'ring-2 ring-blue-600' : 'opacity-70 hover:opacity-100'
+                }`}
+                onClick={() => setSelectedImage(index)}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4 md:p-6">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Basic Info Card */}
+            <div className="bg-white rounded-xl shadow-sm p-4 md:p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{oficina.name}</h1>
+                  <p className="text-gray-600 mt-1">{oficina.category} • {oficina.priceRange}</p>
+                  
+                  {/* Rating */}
+                  <div className="flex items-center gap-2 mt-3">
                     <div className="flex items-center">
-                      <StarIcon className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-                      <span className="ml-1 font-medium">{oficina.avaliacao}</span>
-                      <span className="ml-1 text-gray-500 text-sm">({oficina.totalAvaliacoes} avaliações)</span>
+                      {renderStars(oficina.rating)}
                     </div>
-                    <div className="flex items-center ml-4">
-                      <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                      <span className="ml-1 text-green-500 text-sm">Verificado</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center mt-2 text-gray-600">
-                    <MapPinIcon className="h-5 w-5 text-gray-500 mr-1" />
-                    <span>{oficina.endereco}</span>
-                  </div>
-                  <div className="mt-1 text-xs text-gray-500 flex items-center">
-                    <span className="ml-6">{distanciaTexto}</span>
+                    <span className="font-medium text-gray-900">{oficina.rating}</span>
+                    <span className="text-gray-500">({oficina.totalReviews} avaliações)</span>
                   </div>
                 </div>
                 
+                {/* Desktop Actions */}
+                <div className="hidden lg:flex items-center gap-2">
+                  <button 
+                    onClick={() => setIsFavorite(!isFavorite)}
+                    className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    {isFavorite ? (
+                      <HeartIconSolid className="h-5 w-5 text-red-500" />
+                    ) : (
+                      <HeartIcon className="h-5 w-5 text-gray-600" />
+                    )}
+                  </button>
+                  <button className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    <ShareIcon className="h-5 w-5 text-gray-600" />
+                  </button>
+                </div>
+              </div>
+
+              <p className="text-gray-700 leading-relaxed">{oficina.description}</p>
+
+              {/* Specialties */}
+              <div className="mt-4">
+                <h3 className="font-semibold text-gray-900 mb-2">Especialidades</h3>
                 <div className="flex flex-wrap gap-2">
-                  <a 
-                    href={`tel:${oficina.telefone.replace(/[^0-9]/g, '')}`}
-                    className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center"
-                  >
-                    <PhoneIcon className="h-4 w-4 mr-2" />
-                    Ligar
-                  </a>
-                  <a 
-                    href={`https://wa.me/55${oficina.whatsapp.replace(/[^0-9]/g, '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center"
-                  >
-                    <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                    </svg>
-                    WhatsApp
-                  </a>
-                  <FavoritoButton 
-                    oficina={oficinasParaMapa[0]} 
-                    mostrarTexto 
-                    className="border-0"
-                  />
-                  <Link 
-                    href={`/agendar/${oficina.id}`}
-                    className="bg-[#0047CC] hover:bg-[#0055EB] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center"
-                  >
-                    <CalendarIcon className="h-4 w-4 mr-2" />
-                    Agendar Serviço
-                  </Link>
+                  {oficina.specialties.map((specialty, index) => (
+                    <span key={index} className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm">
+                      {specialty}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
-            
-            {/* Tabs de navegação */}
-            <div className="bg-white rounded-t-xl shadow-sm p-1 mb-0 flex">
-              <button
-                onClick={() => setActiveTab("info")}
-                className={`flex-1 py-3 text-sm font-medium rounded-lg transition-colors ${
-                  activeTab === "info"
-                    ? "bg-[#0047CC]/10 text-[#0047CC]"
-                    : "text-gray-600 hover:bg-gray-100"
-                }`}
-              >
-                Informações
-              </button>
-              <button
-                onClick={() => setActiveTab("servicos")}
-                className={`flex-1 py-3 text-sm font-medium rounded-lg transition-colors ${
-                  activeTab === "servicos"
-                    ? "bg-[#0047CC]/10 text-[#0047CC]"
-                    : "text-gray-600 hover:bg-gray-100"
-                }`}
-              >
-                Serviços
-              </button>
-              <button
-                onClick={() => setActiveTab("avaliacoes")}
-                className={`flex-1 py-3 text-sm font-medium rounded-lg transition-colors ${
-                  activeTab === "avaliacoes"
-                    ? "bg-[#0047CC]/10 text-[#0047CC]"
-                    : "text-gray-600 hover:bg-gray-100"
-                }`}
-              >
-                Avaliações
-              </button>
-            </div>
-            
-            {/* Conteúdo das tabs */}
-            <div className="bg-white rounded-b-xl shadow-sm p-6 mb-6">
-              {activeTab === "info" && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
+
+            {/* Tabs */}
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="flex border-b border-gray-200">
+                <button
+                  onClick={() => setActiveTab('services')}
+                  className={`flex-1 px-4 py-4 text-sm font-medium transition-colors ${
+                    activeTab === 'services' 
+                      ? 'text-blue-600 border-b-2 border-blue-600' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
                 >
-                  <h2 className="text-lg font-semibold text-gray-800 mb-4">Sobre a Oficina</h2>
-                  <p className="text-gray-600 mb-6">{oficina.descricao}</p>
-                  
-                  <h3 className="text-md font-semibold text-gray-800 mb-3 flex items-center">
-                    <ClockIcon className="h-5 w-5 mr-2 text-[#0047CC]" />
-                    Horário de Funcionamento
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-                    <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium">Segunda-feira</span>
-                      {oficina.horarios.segunda.fechado ? (
-                        <span className="text-sm text-red-500">Fechado</span>
-                      ) : (
-                        <span className="text-sm">{oficina.horarios.segunda.abre} - {oficina.horarios.segunda.fecha}</span>
-                      )}
-                    </div>
-                    <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium">Terça-feira</span>
-                      {oficina.horarios.terca.fechado ? (
-                        <span className="text-sm text-red-500">Fechado</span>
-                      ) : (
-                        <span className="text-sm">{oficina.horarios.terca.abre} - {oficina.horarios.terca.fecha}</span>
-                      )}
-                    </div>
-                    <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium">Quarta-feira</span>
-                      {oficina.horarios.quarta.fechado ? (
-                        <span className="text-sm text-red-500">Fechado</span>
-                      ) : (
-                        <span className="text-sm">{oficina.horarios.quarta.abre} - {oficina.horarios.quarta.fecha}</span>
-                      )}
-                    </div>
-                    <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium">Quinta-feira</span>
-                      {oficina.horarios.quinta.fechado ? (
-                        <span className="text-sm text-red-500">Fechado</span>
-                      ) : (
-                        <span className="text-sm">{oficina.horarios.quinta.abre} - {oficina.horarios.quinta.fecha}</span>
-                      )}
-                    </div>
-                    <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium">Sexta-feira</span>
-                      {oficina.horarios.sexta.fechado ? (
-                        <span className="text-sm text-red-500">Fechado</span>
-                      ) : (
-                        <span className="text-sm">{oficina.horarios.sexta.abre} - {oficina.horarios.sexta.fecha}</span>
-                      )}
-                    </div>
-                    <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium">Sábado</span>
-                      {oficina.horarios.sabado.fechado ? (
-                        <span className="text-sm text-red-500">Fechado</span>
-                      ) : (
-                        <span className="text-sm">{oficina.horarios.sabado.abre} - {oficina.horarios.sabado.fecha}</span>
-                      )}
-                    </div>
-                    <div className="flex justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium">Domingo</span>
-                      {oficina.horarios.domingo.fechado ? (
-                        <span className="text-sm text-red-500">Fechado</span>
-                      ) : (
-                        <span className="text-sm">{oficina.horarios.domingo.abre} - {oficina.horarios.domingo.fecha}</span>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <h3 className="text-md font-semibold text-gray-800 mb-3 flex items-center">
-                    <MapPinIcon className="h-5 w-5 mr-2 text-[#0047CC]" />
-                    Localização
-                  </h3>
-                  <div className="h-64 bg-gray-100 rounded-lg overflow-hidden">
-                    <MapView oficinas={oficinasParaMapa} />
-                  </div>
-                  <div className="mt-2 text-center">
-                    <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(oficina.endereco)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#0047CC] text-sm mt-2 inline-block"
-                    >
-                      Ver no Google Maps
-                    </a>
-                  </div>
-                </motion.div>
-              )}
-              
-              {activeTab === "servicos" && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
+                  Serviços
+                </button>
+                <button
+                  onClick={() => setActiveTab('reviews')}
+                  className={`flex-1 px-4 py-4 text-sm font-medium transition-colors ${
+                    activeTab === 'reviews' 
+                      ? 'text-blue-600 border-b-2 border-blue-600' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
                 >
-                  <h2 className="text-lg font-semibold text-gray-800 mb-4">Serviços Oferecidos</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {oficina.servicos.map((servico, index) => (
-                      <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                        <div className="flex items-start">
-                          <div className="rounded-full bg-[#0047CC]/10 p-2 mr-3">
-                            <WrenchIcon className="h-5 w-5 text-[#0047CC]" />
-                          </div>
-                          <div>
-                            <h3 className="font-medium text-gray-900">{servico.nome}</h3>
-                            <p className="text-sm text-gray-600 mt-1">{servico.descricao}</p>
-                            <p className="text-sm font-medium text-[#0047CC] mt-2">{servico.preco}</p>
-                          </div>
+                  Avaliações
+                </button>
+                <button
+                  onClick={() => setActiveTab('info')}
+                  className={`flex-1 px-4 py-4 text-sm font-medium transition-colors ${
+                    activeTab === 'info' 
+                      ? 'text-blue-600 border-b-2 border-blue-600' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Informações
+                </button>
+              </div>
+
+              {/* Tab Content */}
+              <div className="p-4 md:p-6">
+                {/* Services Tab */}
+                {activeTab === 'services' && (
+                  <div className="space-y-4">
+                    {oficina.services.map((service, index) => (
+                      <div key={index} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                        <div className="flex items-start justify-between mb-2">
+                          <h4 className="font-semibold text-gray-900">{service.name}</h4>
+                          <span className="font-bold text-blue-600">{service.price}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-2">{service.description}</p>
+                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                          <span className="flex items-center gap-1">
+                            <ClockIcon className="h-4 w-4" />
+                            {service.duration}
+                          </span>
                         </div>
                       </div>
                     ))}
                   </div>
-                </motion.div>
-              )}
-              
-              {activeTab === "avaliacoes" && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold text-gray-800">Avaliações</h2>
+                )}
+
+                {/* Reviews Tab */}
+                {activeTab === 'reviews' && (
+                  <div className="space-y-6">
+                    {/* Rating Summary */}
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-3xl font-bold text-gray-900">{oficina.rating}</span>
+                            <div className="flex items-center">
+                              {renderStars(oficina.rating)}
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-600 mt-1">{oficina.totalReviews} avaliações</p>
+                        </div>
+                        <Link 
+                          href={`/oficina/${params.slug}/avaliar`}
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                        >
+                          Avaliar
+                        </Link>
+                      </div>
+                    </div>
+
+                    {/* Reviews List */}
+                    <div className="space-y-4">
+                      {oficina.reviews.map((review) => (
+                        <div key={review.id} className="border-b border-gray-200 pb-4 last:border-0">
+                          <div className="flex items-start gap-3">
+                            {review.avatar ? (
+                              <img 
+                                src={review.avatar} 
+                                alt={review.author}
+                                className="w-10 h-10 rounded-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                <span className="text-gray-600 font-medium">
+                                  {review.author.charAt(0)}
+                                </span>
+                              </div>
+                            )}
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-1">
+                                <h5 className="font-medium text-gray-900">{review.author}</h5>
+                                <span className="text-sm text-gray-500">
+                                  {new Date(review.date).toLocaleDateString('pt-BR')}
+                                </span>
+                              </div>
+                              <div className="flex items-center mb-2">
+                                {renderStars(review.rating)}
+                              </div>
+                              <p className="text-gray-700">{review.comment}</p>
+                              {review.photos && review.photos.length > 0 && (
+                                <div className="flex gap-2 mt-3">
+                                  {review.photos.map((photo, idx) => (
+                                    <img
+                                      key={idx}
+                                      src={photo}
+                                      alt={`Review photo ${idx + 1}`}
+                                      className="h-16 w-20 object-cover rounded-lg cursor-pointer hover:opacity-90"
+                                      onClick={() => setShowGallery(true)}
+                                    />
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  
-                  <AvaliacaoEstatisticas 
-                    avaliacaoGeral={oficina.avaliacao}
-                    totalAvaliacoes={oficina.totalAvaliacoes}
-                    distribuicao={{
-                      estrela5: Math.round(oficina.totalAvaliacoes * 0.7),
-                      estrela4: Math.round(oficina.totalAvaliacoes * 0.2),
-                      estrela3: Math.round(oficina.totalAvaliacoes * 0.05),
-                      estrela2: Math.round(oficina.totalAvaliacoes * 0.03),
-                      estrela1: Math.round(oficina.totalAvaliacoes * 0.02)
-                    }}
-                    categorias={[
-                      { nome: "Atendimento", avaliacao: 4.9 },
-                      { nome: "Qualidade do serviço", avaliacao: 4.8 },
-                      { nome: "Preço", avaliacao: 4.6 },
-                      { nome: "Pontualidade", avaliacao: 4.7 },
-                      { nome: "Limpeza", avaliacao: 4.8 },
-                      { nome: "Infraestrutura", avaliacao: 4.5 }
-                    ]}
-                    className="mb-6"
-                  />
-                  
-                  <AvaliacaoOficina 
-                    avaliacao={oficina.avaliacao} 
-                    totalAvaliacoes={oficina.totalAvaliacoes}
-                    avaliacoes={oficina.avaliacoes.map((av, idx) => ({
-                      id: idx + 1,
-                      nome: av.nome,
-                      data: av.data,
-                      nota: av.nota,
-                      comentario: av.comentario
-                    }))}
-                    className="mb-4"
-                  />
-                  
-                  <div className="text-center">
-                    <button className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300">
-                      Ver todas as avaliações
-                    </button>
+                )}
+
+                {/* Info Tab */}
+                {activeTab === 'info' && (
+                  <div className="space-y-6">
+                    {/* Amenities */}
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-3">Comodidades</h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        {oficina.amenities.map((amenity, index) => (
+                          <div key={index} className="flex items-center gap-2 text-sm text-gray-700">
+                            <CheckCircleIcon className="h-5 w-5 text-green-500 flex-shrink-0" />
+                            <span>{amenity}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Additional Info */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                        <ShieldCheckIcon className="h-6 w-6 text-blue-600" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Garantia</p>
+                          <p className="text-xs text-gray-600">6 meses em todos os serviços</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                        <TruckIcon className="h-6 w-6 text-blue-600" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Busca e Entrega</p>
+                          <p className="text-xs text-gray-600">Serviço disponível</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </motion.div>
-              )}
+                )}
+              </div>
             </div>
           </div>
-          
+
           {/* Sidebar */}
-          <div className="md:w-1/3">
-            {/* Bloco de agendamento */}
-            <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">Agendar Serviço</h2>
+          <div className="space-y-6">
+            {/* Contact Card */}
+            <div className="bg-white rounded-xl shadow-sm p-4 md:p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">Contato e Localização</h3>
               
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de serviço</label>
-                <select 
-                  className="w-full border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-[#0047CC] focus:border-transparent"
-                >
-                  <option value="">Selecione um serviço</option>
-                  {oficina.servicos.map((servico, idx) => (
-                    <option key={idx} value={servico.nome}>{servico.nome}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Selecione uma data</label>
-                <div className="grid grid-cols-7 gap-1 mb-4">
-                  {diasDisponiveis.map((data, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setSelectedDate(data.toISOString())}
-                      className={`p-2 text-center rounded-lg ${
-                        selectedDate === data.toISOString()
-                          ? 'bg-[#0047CC] text-white'
-                          : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      <div className="text-xs font-medium">{data.toLocaleDateString('pt-BR', { weekday: 'short' }).substring(0, 3)}</div>
-                      <div className="font-medium">{formatarData(data)}</div>
-                    </button>
+              {/* Business Hours */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <ClockIcon className="h-5 w-5 text-gray-600" />
+                    <span className="font-medium text-gray-900">Horário</span>
+                  </div>
+                  {isOpen() ? (
+                    <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                      Aberto agora
+                    </span>
+                  ) : (
+                    <span className="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">
+                      Fechado
+                    </span>
+                  )}
+                </div>
+                <div className="space-y-1 text-sm">
+                  {Object.entries(oficina.businessHours).map(([day, hours]) => (
+                    <div key={day} className={`flex justify-between ${getDayOfWeek() === day ? 'font-medium text-blue-600' : 'text-gray-600'}`}>
+                      <span className="capitalize">{day}</span>
+                      <span>{hours ? `${hours.open} - ${hours.close}` : 'Fechado'}</span>
+                    </div>
                   ))}
                 </div>
               </div>
-              
-              {selectedDate && (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Selecione um horário</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {horariosDisponiveis.map((horario, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setSelectedHour(horario)}
-                        className={`p-2 text-center rounded-lg text-sm ${
-                          selectedHour === horario
-                            ? 'bg-[#0047CC] text-white'
-                            : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
-                        }`}
-                      >
-                        {horario}
-                      </button>
-                    ))}
+
+              {/* Address */}
+              <div className="mb-6">
+                <div className="flex items-start gap-3">
+                  <MapPinIcon className="h-5 w-5 text-gray-600 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-gray-900 mb-1">Endereço</p>
+                    <p className="text-sm text-gray-600">
+                      {oficina.address.street}, {oficina.address.number}<br />
+                      {oficina.address.neighborhood}<br />
+                      {oficina.address.city} - {oficina.address.state}<br />
+                      CEP: {oficina.address.cep}
+                    </p>
                   </div>
                 </div>
-              )}
-              
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Veículo</label>
-                <select 
-                  className="w-full border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-[#0047CC] focus:border-transparent"
-                >
-                  <option value="">Selecione um veículo</option>
-                  <option value="veiculo1">Fiat Argo 2022</option>
-                  <option value="veiculo2">Honda City 2020</option>
-                  <option value="veiculo3">Jeep Compass 2021</option>
-                  <option value="outro">Outro veículo</option>
-                </select>
               </div>
-              
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Observações (opcional)</label>
-                <textarea 
-                  className="w-full border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-[#0047CC] focus:border-transparent"
-                  rows={3}
-                  placeholder="Descreva detalhes adicionais sobre o serviço..."
-                ></textarea>
-              </div>
-              
-              <button
-                disabled={!selectedDate || !selectedHour}
-                className={`w-full py-3 rounded-lg font-medium transition-colors ${
-                  selectedDate && selectedHour
-                    ? 'bg-[#0047CC] hover:bg-[#0055EB] text-white'
-                    : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                }`}
-              >
-                Solicitar Agendamento
-              </button>
-            </div>
-            
-            {/* Bloco de contato */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">Entrar em Contato</h2>
+
+              {/* Contact Buttons */}
               <div className="space-y-3">
-                <a
-                  href={`tel:${oficina.telefone.replace(/[^0-9]/g, '')}`}
-                  className="flex items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                <a 
+                  href={`tel:${oficina.phone}`}
+                  className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 touch-manipulation min-h-[48px]"
                 >
-                  <PhoneIcon className="h-5 w-5 text-[#0047CC] mr-3" />
-                  <span>{oficina.telefone}</span>
+                  <PhoneIcon className="h-5 w-5" />
+                  Ligar
                 </a>
-                <a
-                  href={`https://wa.me/55${oficina.whatsapp.replace(/[^0-9]/g, '')}`}
+                <a 
+                  href={`https://wa.me/${oficina.whatsapp.replace(/\D/g, '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                  className="w-full px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2 touch-manipulation min-h-[48px]"
                 >
-                  <svg className="h-5 w-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                  </svg>
-                  <span>WhatsApp</span>
+                  <ChatBubbleLeftIcon className="h-5 w-5" />
+                  WhatsApp
                 </a>
-                <button className="flex items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors w-full">
-                  <ChatBubbleLeftRightIcon className="h-5 w-5 text-[#0047CC] mr-3" />
-                  <span>Enviar mensagem</span>
-                </button>
+                <Link 
+                  href={`/agendar/${oficina.id}`}
+                  className="w-full px-4 py-3 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 touch-manipulation min-h-[48px]"
+                >
+                  <CalendarIcon className="h-5 w-5" />
+                  Agendar Serviço
+                </Link>
+              </div>
+            </div>
+
+            {/* Map */}
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="aspect-[4/3] bg-gray-200">
+                <img 
+                  src={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-l+0047cc(${oficina.coordinates.lng},${oficina.coordinates.lat})/${oficina.coordinates.lng},${oficina.coordinates.lat},15,0/400x300@2x?access_token=YOUR_MAPBOX_TOKEN`}
+                  alt="Mapa"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-4">
+                <a 
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${oficina.coordinates.lat},${oficina.coordinates.lng}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center justify-center gap-1"
+                >
+                  <MapPinIcon className="h-4 w-4" />
+                  Ver rotas no Google Maps
+                </a>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Gallery Modal */}
+      {showGallery && (
+        <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
+          <button
+            onClick={() => setShowGallery(false)}
+            className="absolute top-4 right-4 p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-opacity-70 z-10"
+          >
+            <XMarkIcon className="h-6 w-6" />
+          </button>
+          
+          <button
+            onClick={prevImage}
+            className="absolute left-4 p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-opacity-70"
+          >
+            <ChevronLeftIcon className="h-6 w-6" />
+          </button>
+          
+          <img 
+            src={oficina.images[selectedImage]} 
+            alt={oficina.name}
+            className="max-w-full max-h-full object-contain"
+          />
+          
+          <button
+            onClick={nextImage}
+            className="absolute right-4 p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-opacity-70"
+          >
+            <ChevronRightIcon className="h-6 w-6" />
+          </button>
+          
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
+            {selectedImage + 1} / {oficina.images.length}
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
