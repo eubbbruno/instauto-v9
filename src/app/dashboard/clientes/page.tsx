@@ -314,21 +314,21 @@ export default function ClientesPage() {
       label: 'Cliente',
       render: (client: Client) => (
         <div className="flex items-center">
-          <div className="flex-shrink-0 h-10 w-10 md:h-8 md:w-8">
+          <div className="flex-shrink-0 h-12 w-12 md:h-10 md:w-10">
             {client.photo ? (
               <img 
                 src={client.photo} 
                 alt={client.name}
-                className="h-10 w-10 md:h-8 md:w-8 rounded-full object-cover"
+                className="h-12 w-12 md:h-10 md:w-10 rounded-full object-cover"
               />
             ) : (
-              <div className="h-10 w-10 md:h-8 md:w-8 rounded-full bg-blue-100 flex items-center justify-center">
+              <div className="h-12 w-12 md:h-10 md:w-10 rounded-full bg-blue-100 flex items-center justify-center">
                 <UserCircleIcon className="h-6 w-6 md:h-5 md:w-5 text-blue-600" />
               </div>
             )}
           </div>
           <div className="ml-3">
-            <div className="text-sm md:text-sm font-medium text-gray-900">{client.name}</div>
+            <div className="text-base md:text-sm font-medium text-gray-900">{client.name}</div>
             <div className="text-xs text-gray-500">Cliente desde {formatDate(client.createdAt)}</div>
           </div>
         </div>
@@ -376,7 +376,7 @@ export default function ClientesPage() {
       key: 'status' as keyof Client,
       label: 'Status',
       render: (client: Client) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusClass(client.status)}`}>
+        <span className={`inline-flex items-center px-3 py-1.5 md:px-2.5 md:py-0.5 rounded-full text-xs font-medium border ${getStatusClass(client.status)}`}>
           {getStatusText(client.status)}
         </span>
       )
@@ -407,49 +407,49 @@ export default function ClientesPage() {
     }
   ];
 
-  const tableActions = (_client: Client) => (
+  const tableActions = () => (
     <div className="flex flex-col md:flex-row gap-2 md:gap-1 md:space-x-2">
       <button 
-        className="flex items-center justify-center md:justify-start px-3 py-2 md:p-1 text-gray-500 hover:text-gray-700 bg-gray-100 md:bg-transparent rounded-lg md:rounded-none transition-colors touch-manipulation" 
+        className="flex items-center justify-center md:justify-start px-4 py-3 md:px-3 md:py-2 text-gray-700 hover:text-gray-900 bg-gray-100 md:bg-transparent rounded-lg md:rounded-none transition-colors touch-manipulation min-h-[44px] md:min-h-0 active:bg-gray-200" 
         title="Ver detalhes"
       >
         <DocumentDuplicateIcon className="h-5 w-5 md:h-4 md:w-4" />
-        <span className="ml-2 md:hidden text-sm">Ver detalhes</span>
+        <span className="ml-2 md:hidden text-sm font-medium">Ver detalhes</span>
       </button>
       <button 
-        className="flex items-center justify-center md:justify-start px-3 py-2 md:p-1 text-blue-500 hover:text-blue-700 bg-blue-50 md:bg-transparent rounded-lg md:rounded-none transition-colors touch-manipulation" 
+        className="flex items-center justify-center md:justify-start px-4 py-3 md:px-3 md:py-2 text-blue-600 hover:text-blue-700 bg-blue-50 md:bg-transparent rounded-lg md:rounded-none transition-colors touch-manipulation min-h-[44px] md:min-h-0 active:bg-blue-100" 
         title="Enviar mensagem"
       >
         <ChatBubbleLeftIcon className="h-5 w-5 md:h-4 md:w-4" />
-        <span className="ml-2 md:hidden text-sm">Mensagem</span>
+        <span className="ml-2 md:hidden text-sm font-medium">Mensagem</span>
       </button>
       <button 
-        className="flex items-center justify-center md:justify-start px-3 py-2 md:p-1 text-green-500 hover:text-green-700 bg-green-50 md:bg-transparent rounded-lg md:rounded-none transition-colors touch-manipulation" 
+        className="flex items-center justify-center md:justify-start px-4 py-3 md:px-3 md:py-2 text-green-600 hover:text-green-700 bg-green-50 md:bg-transparent rounded-lg md:rounded-none transition-colors touch-manipulation min-h-[44px] md:min-h-0 active:bg-green-100" 
         title="Agendar serviço"
       >
         <CalendarDaysIcon className="h-5 w-5 md:h-4 md:w-4" />
-        <span className="ml-2 md:hidden text-sm">Agendar</span>
+        <span className="ml-2 md:hidden text-sm font-medium">Agendar</span>
       </button>
     </div>
   );
   
   return (
-    <div className="p-4 md:p-6 bg-gray-50 min-h-screen">
+    <div className="p-4 md:p-6 bg-gray-50 min-h-screen pb-safe">
       {/* Header responsivo */}
-      <div className="mb-4 md:mb-6">
+      <div className="mb-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-xl md:text-2xl font-bold text-gray-800">Clientes</h1>
-            <p className="text-gray-500 text-sm mt-1">Gerencie seus clientes e veículos</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Clientes</h1>
+            <p className="text-gray-600 text-sm md:text-base mt-1">Gerencie seus clientes e veículos</p>
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-2">
-            <button className="px-4 py-3 md:py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors inline-flex items-center justify-center touch-manipulation">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button className="px-5 py-3 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors inline-flex items-center justify-center touch-manipulation min-h-[48px] active:bg-blue-800">
               <PlusIcon className="h-5 w-5 mr-2" />
               Adicionar Cliente
             </button>
             
-            <button className="px-4 py-3 md:py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors inline-flex items-center justify-center touch-manipulation">
+            <button className="px-5 py-3 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors inline-flex items-center justify-center touch-manipulation min-h-[48px] active:bg-gray-400">
               <ArrowUpTrayIcon className="h-5 w-5 mr-2" />
               Importar
             </button>
@@ -458,63 +458,63 @@ export default function ClientesPage() {
       </div>
       
       {/* Estatísticas de clientes - responsivas */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
-        <div className="bg-white rounded-xl shadow-sm p-3 md:p-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white rounded-xl shadow-sm p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs md:text-sm font-medium text-gray-500">Total</h3>
-            <div className="p-1 md:p-2 bg-blue-100 text-blue-600 rounded-lg">
-              <UserCircleIcon className="h-3 w-3 md:h-4 md:w-4" />
+            <h3 className="text-sm font-medium text-gray-600">Total</h3>
+            <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+              <UserCircleIcon className="h-4 w-4" />
             </div>
           </div>
-          <p className="text-lg md:text-2xl font-bold text-gray-800">{clientStats.totalClients}</p>
-          <div className="mt-1 md:mt-2 text-xs text-green-600 flex items-center">
+          <p className="text-2xl md:text-3xl font-bold text-gray-800">{clientStats.totalClients}</p>
+          <div className="mt-2 text-xs text-green-600 flex items-center">
             <ArrowPathIcon className="h-3 w-3 mr-1" />
-            <span>+{clientStats.newClientsThisMonth} mês</span>
+            <span>+{clientStats.newClientsThisMonth} este mês</span>
           </div>
         </div>
         
-        <div className="bg-white rounded-xl shadow-sm p-3 md:p-4">
+        <div className="bg-white rounded-xl shadow-sm p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs md:text-sm font-medium text-gray-500">Ativos</h3>
-            <div className="p-1 md:p-2 bg-green-100 text-green-600 rounded-lg">
-              <UserCircleIcon className="h-3 w-3 md:h-4 md:w-4" />
+            <h3 className="text-sm font-medium text-gray-600">Ativos</h3>
+            <div className="p-2 bg-green-100 text-green-600 rounded-lg">
+              <UserCircleIcon className="h-4 w-4" />
             </div>
           </div>
-          <p className="text-lg md:text-2xl font-bold text-gray-800">{clientStats.activeClients}</p>
-          <div className="mt-1 md:mt-2 text-xs text-gray-500">
-            {Math.round((clientStats.activeClients / clientStats.totalClients) * 100)}% total
+          <p className="text-2xl md:text-3xl font-bold text-gray-800">{clientStats.activeClients}</p>
+          <div className="mt-2 text-xs text-gray-500">
+            {Math.round((clientStats.activeClients / clientStats.totalClients) * 100)}% do total
           </div>
         </div>
         
-        <div className="bg-white rounded-xl shadow-sm p-3 md:p-4">
+        <div className="bg-white rounded-xl shadow-sm p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs md:text-sm font-medium text-gray-500">VIP</h3>
-            <div className="p-1 md:p-2 bg-purple-100 text-purple-600 rounded-lg">
-              <TagIcon className="h-3 w-3 md:h-4 md:w-4" />
+            <h3 className="text-sm font-medium text-gray-600">VIP</h3>
+            <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
+              <TagIcon className="h-4 w-4" />
             </div>
           </div>
-          <p className="text-lg md:text-2xl font-bold text-gray-800">{clientStats.vipClients}</p>
-          <div className="mt-1 md:mt-2 text-xs text-gray-500">
-            {Math.round((clientStats.vipClients / clientStats.totalClients) * 100)}% total
+          <p className="text-2xl md:text-3xl font-bold text-gray-800">{clientStats.vipClients}</p>
+          <div className="mt-2 text-xs text-gray-500">
+            {Math.round((clientStats.vipClients / clientStats.totalClients) * 100)}% do total
           </div>
         </div>
         
-        <div className="bg-white rounded-xl shadow-sm p-3 md:p-4">
+        <div className="bg-white rounded-xl shadow-sm p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs md:text-sm font-medium text-gray-500">Retenção</h3>
-            <div className="p-1 md:p-2 bg-amber-100 text-amber-600 rounded-lg">
-              <ChartBarIcon className="h-3 w-3 md:h-4 md:w-4" />
+            <h3 className="text-sm font-medium text-gray-600">Retenção</h3>
+            <div className="p-2 bg-amber-100 text-amber-600 rounded-lg">
+              <ChartBarIcon className="h-4 w-4" />
             </div>
           </div>
-          <p className="text-lg md:text-2xl font-bold text-gray-800">{clientStats.retentionRate}%</p>
-          <div className="mt-1 md:mt-2 text-xs text-gray-500">
-            Retornam
+          <p className="text-2xl md:text-3xl font-bold text-gray-800">{clientStats.retentionRate}%</p>
+          <div className="mt-2 text-xs text-gray-500">
+            Taxa de retorno
           </div>
         </div>
       </div>
       
       {/* Filtros e busca - mobile-first */}
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-4 md:mb-6">
+      <div className="bg-white rounded-xl shadow-sm p-4 md:p-6 mb-6">
         {/* Busca principal */}
         <div className="mb-4">
           <div className="relative">
@@ -524,7 +524,7 @@ export default function ClientesPage() {
             <input
               type="text"
               placeholder="Buscar por nome, email ou telefone..."
-              className="w-full pl-10 pr-4 py-3 md:py-2 text-base md:text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent touch-manipulation"
+              className="w-full pl-10 pr-4 py-3 text-base border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent touch-manipulation min-h-[48px]"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -533,9 +533,9 @@ export default function ClientesPage() {
         
         {/* Filtros rápidos - scroll horizontal no mobile */}
         <div className="flex flex-col md:flex-row gap-3 md:gap-4">
-          <div className="flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide">
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-2 px-2">
             <select
-              className="flex-shrink-0 px-3 py-3 md:py-2 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 min-w-[140px] touch-manipulation"
+              className="flex-shrink-0 px-4 py-3 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 min-w-[140px] touch-manipulation min-h-[48px] bg-white"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as ClientStatus | "all")}
             >
@@ -547,7 +547,7 @@ export default function ClientesPage() {
             </select>
 
             <select
-              className="flex-shrink-0 px-3 py-3 md:py-2 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 min-w-[120px] touch-manipulation"
+              className="flex-shrink-0 px-4 py-3 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 min-w-[140px] touch-manipulation min-h-[48px] bg-white"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as "name" | "lastVisit" | "totalSpent")}
             >
@@ -559,10 +559,10 @@ export default function ClientesPage() {
 
           <button
             onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-            className="flex items-center justify-center px-4 py-3 md:py-2 text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors touch-manipulation md:flex-shrink-0"
+            className="flex items-center justify-center px-4 py-3 text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors touch-manipulation md:flex-shrink-0 min-h-[48px] active:bg-gray-100"
           >
             <FunnelIcon className="h-5 w-5 mr-2" />
-            <span className="text-sm">Filtros</span>
+            <span className="text-sm font-medium">Mais Filtros</span>
             <ChevronDownIcon className={`h-4 w-4 ml-2 transition-transform ${showAdvancedFilters ? 'rotate-180' : ''}`} />
           </button>
         </div>
@@ -573,7 +573,7 @@ export default function ClientesPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de veículo</label>
-                <select className="w-full px-3 py-3 md:py-2 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 touch-manipulation">
+                <select className="w-full px-4 py-3 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 touch-manipulation min-h-[48px] bg-white">
                   <option>Todos os veículos</option>
                   <option>Carros</option>
                   <option>Motos</option>
@@ -584,7 +584,7 @@ export default function ClientesPage() {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Localização</label>
-                <select className="w-full px-3 py-3 md:py-2 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 touch-manipulation">
+                <select className="w-full px-4 py-3 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 touch-manipulation min-h-[48px] bg-white">
                   <option>Todas as localidades</option>
                   <option>São Paulo - SP</option>
                   <option>Campinas - SP</option>
@@ -595,7 +595,7 @@ export default function ClientesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Período</label>
-                <select className="w-full px-3 py-3 md:py-2 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 touch-manipulation">
+                <select className="w-full px-4 py-3 rounded-lg text-sm border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 touch-manipulation min-h-[48px] bg-white">
                   <option>Último mês</option>
                   <option>Últimos 3 meses</option>
                   <option>Último ano</option>
@@ -608,7 +608,7 @@ export default function ClientesPage() {
       </div>
       
       {/* Lista de clientes - usando MobileResponsiveTable */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <MobileResponsiveTable
           data={filteredClients}
           columns={tableColumns}
