@@ -13,26 +13,32 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { payer, planType, workshopId } = body;
 
-    // Planos disponiveis
+    // Base URL com fallback para desenvolvimento
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
+    // Planos seguindo o padrao das paginas de captacao
     const plans = {
-      basic: {
-        title: 'Plano Basico - Instauto Oficinas',
-        price: 89.90,
-        description: '30 orcamentos/mes + Sistema completo'
+      free: {
+        title: 'Plano Gratuito - Instauto Oficinas',
+        price: 0,
+        description: 'Receber e responder orcamentos + Acesso via celular'
       },
       pro: {
-        title: 'Plano Pro - Instauto Oficinas',
-        price: 179.90,
-        description: '100 orcamentos/mes + Relatorios avancados'
-      },
-      premium: {
-        title: 'Plano Premium - Instauto Oficinas',
-        price: 299.90,
-        description: 'Orcamentos ilimitados + Suporte prioritario'
+        title: 'Plano Profissional - Instauto Oficinas',
+        price: 149,
+        description: 'ERP + CRM completo + Ordens de Servico + Estoque + Relatorios + Suporte IA'
       }
     };
 
-    const selectedPlan = plans[planType as keyof typeof plans] || plans.basic;
+    const selectedPlan = plans[planType as keyof typeof plans] || plans.free;
+
+    // Se for plano gratuito, nao criar preferencia de pagamento
+    if (planType === 'free' || selectedPlan.price === 0) {
+      return NextResponse.json({
+        id: 'free_plan',
+        redirect_url: '/dashboard?plan=free'
+      });
+    }
 
     const preferenceData = {
       items: [
@@ -46,21 +52,21 @@ export async function POST(request: NextRequest) {
         }
       ],
       payer: {
-        name: payer.name,
-        email: payer.email,
+        name: payer.name || 'Usuario Teste',
+        email: payer.email || 'teste@exemplo.com',
         phone: {
-          area_code: payer.phone.area_code,
-          number: payer.phone.number.toString()
+          area_code: payer.phone?.area_code || '11',
+          number: payer.phone?.number?.toString() || '999999999'
         },
         identification: {
           type: payer.identification?.type || 'CPF',
-          number: payer.identification?.number || ''
+          number: payer.identification?.number || '00000000000'
         }
       },
       back_urls: {
-        success: `${process.env.NEXT_PUBLIC_BASE_URL}/pagamento/sucesso?workshop=${workshopId}`,
-        failure: `${process.env.NEXT_PUBLIC_BASE_URL}/pagamento/erro`,
-        pending: `${process.env.NEXT_PUBLIC_BASE_URL}/pagamento/pendente`
+        success: `${baseUrl}/dashboard?plan=${planType}&status=success`,
+        failure: `${baseUrl}/oficinas/planos?status=error`,
+        pending: `${baseUrl}/oficinas/planos?status=pending`
       },
       auto_return: 'approved',
       payment_methods: {
@@ -69,10 +75,12 @@ export async function POST(request: NextRequest) {
         installments: 12,
         default_installments: 1
       },
-      notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/webhooks/mercadopago`,
+      notification_url: `${baseUrl}/api/webhooks/mercadopago`,
       statement_descriptor: 'INSTAUTO',
       external_reference: `workshop_${workshopId}_plan_${planType}_${Date.now()}`
     };
+
+    console.log('Criando preferencia com dados:', JSON.stringify(preferenceData, null, 2));
 
     const result = await preference.create({ body: preferenceData });
     
@@ -85,7 +93,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erro ao criar preferencia:', error);
     return NextResponse.json(
-      { error: 'Erro ao processar pagamento' },
+      { 
+        error: 'Erro ao processar pagamento', 
+        details: error instanceof Error ? error.message : 'Erro desconhecido'
+      },
       { status: 500 }
     );
   }

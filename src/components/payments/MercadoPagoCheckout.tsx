@@ -10,75 +10,70 @@ if (process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY) {
 }
 
 interface CheckoutProps {
-  planType: 'basic' | 'pro' | 'premium';
-  workshop: {
-    id: string;
-    name: string;
-    owner: {
-      name: string;
-      email: string;
-      phone: string;
-      cpf?: string;
-    };
-  };
+  planType: 'free' | 'pro';
+  onSuccess?: () => void;
+  onError?: () => void;
 }
 
 const planDetails = {
-  basic: {
-    name: 'Plano Basico',
-    price: 89.90,
+  free: {
+    name: 'Plano Gratuito',
+    price: 0,
     features: [
-      '30 orcamentos por mes',
-      'Dashboard completo',
-      'Chat com clientes',
-      'Gestao de agendamentos',
-      'Relatorios basicos'
+      'Receber e responder orcamentos',
+      'Acesso via celular',
+      'Gestao basica de agendamentos'
     ],
-    color: 'blue'
+    color: 'gray'
   },
   pro: {
-    name: 'Plano Pro',
-    price: 179.90,
+    name: 'Plano Profissional',
+    price: 149,
     features: [
-      '100 orcamentos por mes',
-      'Tudo do plano Basico',
-      'Relatorios avancados',
-      'Integracao WhatsApp',
-      'Prioridade no suporte'
+      'ERP + CRM completo',
+      'Ordens de Servico',
+      'Estoque, financeiro, relatorios',
+      'Suporte com IA + WhatsApp',
+      'Atendimento prioritario',
+      'Relatorios avancados'
     ],
-    color: 'purple'
-  },
-  premium: {
-    name: 'Plano Premium',
-    price: 299.90,
-    features: [
-      'Orcamentos ilimitados',
-      'Tudo do plano Pro',
-      'API personalizada',
-      'Multiplos usuarios',
-      'Suporte 24/7'
-    ],
-    color: 'yellow'
+    color: 'blue'
   }
 };
 
-export default function MercadoPagoCheckout({ planType, workshop }: CheckoutProps) {
+export default function MercadoPagoCheckout({ planType, onSuccess, onError }: CheckoutProps) {
   const [preferenceId, setPreferenceId] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
   const plan = planDetails[planType];
 
+  // Se for plano gratuito, nao mostrar checkout
+  if (planType === 'free') {
+    return (
+      <div className="bg-white rounded-xl shadow-sm border p-6 max-w-md mx-auto">
+        <div className="text-center">
+          <CheckCircleIcon className="h-16 w-16 text-green-500 mx-auto mb-4" />
+          <h3 className="text-2xl font-bold mb-2">Plano Gratuito Ativado!</h3>
+          <p className="text-gray-600 mb-6">
+            Voce ja pode comecar a usar todas as funcionalidades do plano gratuito.
+          </p>
+          <button
+            onClick={onSuccess}
+            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+          >
+            Acessar Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const createPreference = async () => {
     setLoading(true);
     setError(null);
     
     try {
-      // Formatar telefone para o formato aceito pelo MercadoPago
-      const phoneMatch = workshop.owner.phone.match(/\((\d{2})\)\s*(\d{4,5})-?(\d{4})/);
-      const areaCode = phoneMatch ? phoneMatch[1] : '11';
-      const phoneNumber = phoneMatch ? `${phoneMatch[2]}${phoneMatch[3]}` : workshop.owner.phone.replace(/\D/g, '');
-
       const response = await fetch('/api/payments/create-preference', {
         method: 'POST',
         headers: {
@@ -86,24 +81,21 @@ export default function MercadoPagoCheckout({ planType, workshop }: CheckoutProp
         },
         body: JSON.stringify({
           planType,
-          workshopId: workshop.id,
+          workshopId: 'temp-workshop-id', // Em producao, pegar do contexto de auth
           payer: {
-            name: workshop.owner.name,
-            email: workshop.owner.email,
+            name: 'Usuario Teste', // Em producao, pegar do contexto de auth
+            email: 'teste@exemplo.com',
             phone: {
-              area_code: areaCode,
-              number: phoneNumber
-            },
-            identification: workshop.owner.cpf ? {
-              type: 'CPF',
-              number: workshop.owner.cpf.replace(/\D/g, '')
-            } : undefined
+              area_code: '11',
+              number: '999999999'
+            }
           }
         })
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao processar pagamento');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erro ao processar pagamento');
       }
 
       const data = await response.json();
@@ -111,7 +103,8 @@ export default function MercadoPagoCheckout({ planType, workshop }: CheckoutProp
       
     } catch (error) {
       console.error('Erro ao criar preferencia:', error);
-      setError('Erro ao processar pagamento. Tente novamente.');
+      setError(error instanceof Error ? error.message : 'Erro ao processar pagamento. Tente novamente.');
+      onError?.();
     } finally {
       setLoading(false);
     }
@@ -123,7 +116,7 @@ export default function MercadoPagoCheckout({ planType, workshop }: CheckoutProp
       <div className="mb-6">
         <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
         <div className="flex items-baseline mb-4">
-          <span className="text-4xl font-bold text-[#0047CC]">
+          <span className="text-4xl font-bold text-blue-600">
             R$ {plan.price.toFixed(2)}
           </span>
           <span className="text-gray-600 ml-2">/mes</span>
@@ -139,13 +132,13 @@ export default function MercadoPagoCheckout({ planType, workshop }: CheckoutProp
         </ul>
       </div>
 
-      {/* Informacoes do Pagador */}
-      <div className="bg-gray-50 rounded-lg p-4 mb-6">
-        <h4 className="font-medium mb-2">Dados do pagamento</h4>
-        <div className="text-sm text-gray-600 space-y-1">
-          <p><strong>Oficina:</strong> {workshop.name}</p>
-          <p><strong>Responsavel:</strong> {workshop.owner.name}</p>
-          <p><strong>E-mail:</strong> {workshop.owner.email}</p>
+      {/* Teste de Pagamento */}
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+        <h4 className="font-medium mb-2 text-yellow-800">🧪 Modo de Teste</h4>
+        <div className="text-sm text-yellow-700 space-y-1">
+          <p><strong>Cartao de teste:</strong> 5031 4332 1540 6351</p>
+          <p><strong>Nome:</strong> APRO</p>
+          <p><strong>Validade:</strong> 11/25 | <strong>CVV:</strong> 123</p>
         </div>
       </div>
 
@@ -161,7 +154,7 @@ export default function MercadoPagoCheckout({ planType, workshop }: CheckoutProp
         <button
           onClick={createPreference}
           disabled={loading}
-          className="w-full bg-[#009EE3] hover:bg-[#0084C7] text-white py-3 px-4 rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center justify-center"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center justify-center"
         >
           {loading ? (
             <>
@@ -181,6 +174,14 @@ export default function MercadoPagoCheckout({ planType, workshop }: CheckoutProp
             initialization={{
               preferenceId: preferenceId,
               redirectMode: 'self'
+            }}
+            onReady={() => {
+              console.log('Wallet ready');
+            }}
+            onError={(error) => {
+              console.error('Wallet error:', error);
+              setError('Erro no checkout. Tente novamente.');
+              onError?.();
             }}
           />
         </div>
