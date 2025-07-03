@@ -1,221 +1,76 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import ChatComponent from "@/components/ChatComponent";
-import { createClient } from "@/lib/supabase/client";
-import { InboxIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-
-// Tipo para conversa
-interface Conversation {
-  id: string;
-  driver_id: string;
-  workshop_id: string;
-  last_message: string;
-  last_message_at: string;
-  driver?: {
-    id: string;
-    name: string;
-    avatar_url?: string;
-  };
-  workshop?: {
-    id: string;
-    name: string;
-    logo_url?: string;
-  };
-}
+import { useState } from "react";
+import { MagnifyingGlassIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 
 export default function MensagensPage() {
-  const router = useRouter();
-  const supabase = createClient();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [user, setUser] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Buscar usuario atual
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push('/auth');
-        return;
-      }
-      setUser(user);
-    };
-    getUser();
-  }, [router, supabase]);
-
-  // Buscar conversas
-  useEffect(() => {
-    if (!user) return;
-
-    const fetchConversations = async () => {
-      const { data } = await supabase
-        .from('conversations')
-        .select(`
-          *,
-          driver:profiles!conversations_driver_id_fkey(id, name, avatar_url),
-          workshop:workshops!conversations_workshop_id_fkey(id, name, logo_url)
-        `)
-        .or(`driver_id.eq.${user.id},workshop_id.in.(select id from workshops where owner_id = '${user.id}')`)
-        .order('last_message_at', { ascending: false });
-
-      if (data) {
-        setConversations(data as any);
-      }
-      setIsLoading(false);
-    };
-
-    fetchConversations();
-
-    // Configurar realtime para novas conversas
-    const channel = supabase
-      .channel('conversations-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'conversations'
-        },
-        () => {
-          fetchConversations();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user, supabase]);
-
-  // Filtrar conversas
-  const filteredConversations = conversations.filter(conv => {
-    const contact = conv.driver_id === user?.id ? conv.workshop : conv.driver;
-    return contact?.name?.toLowerCase().includes(searchTerm.toLowerCase());
-  });
-
-  // Formatar tempo da ultima mensagem
-  const formatLastMessageTime = (dateTime: string) => {
-    const date = new Date(dateTime);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return 'Agora';
-    if (diffMins < 60) return `${diffMins}min`;
-    if (diffHours < 24) return `${diffHours}h`;
-    if (diffDays < 7) return `${diffDays}d`;
-    
-    return date.toLocaleDateString('pt-BR');
-  };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Lista de conversas */}
-      <div className={`${selectedConversation ? 'hidden md:flex' : 'flex'} flex-col w-full md:w-1/3 lg:w-1/4 bg-white border-r`}>
-        {/* Header da lista */}
-        <div className="p-4 border-b">
-          <h2 className="text-xl font-bold mb-4">Mensagens</h2>
-          
-          {/* Barra de busca */}
-          <div className="relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Buscar conversas..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0047CC] focus:border-transparent"
-            />
-          </div>
-        </div>
-
-        {/* Lista de conversas */}
-        <div className="flex-1 overflow-y-auto">
-          {isLoading ? (
-            <div className="flex items-center justify-center h-32">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0047CC]"></div>
-            </div>
-          ) : filteredConversations.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-32 text-gray-500">
-              <InboxIcon className="h-12 w-12 mb-2" />
-              <p>Nenhuma conversa encontrada</p>
-            </div>
-          ) : (
-            filteredConversations.map((conv) => {
-              const contact = conv.driver_id === user?.id ? conv.workshop : conv.driver;
-              const isSelected = conv.id === selectedConversation;
-              
-              return (
-                <button
-                  key={conv.id}
-                  onClick={() => setSelectedConversation(conv.id)}
-                  className={`w-full p-4 flex items-center hover:bg-gray-50 transition-colors ${
-                    isSelected ? 'bg-blue-50 border-l-4 border-[#0047CC]' : ''
-                  }`}
-                >
-                  {/* Avatar */}
-                  <div className="relative flex-shrink-0 mr-3">
-                    <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center">
-                      <span className="text-gray-600 font-medium">
-                        {contact?.name?.substring(0, 2).toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Conteudo */}
-                  <div className="flex-1 min-w-0 text-left">
-                    <div className="flex justify-between items-baseline mb-1">
-                      <h3 className="font-medium text-gray-900 truncate">
-                        {contact?.name || 'Usuario'}
-                      </h3>
-                      <span className="text-xs text-gray-500">
-                        {formatLastMessageTime(conv.last_message_at)}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 truncate">
-                      {conv.last_message || 'Iniciar conversa...'}
-                    </p>
-                  </div>
-                </button>
-              );
-            })
-          )}
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b">
+        <div className="container mx-auto px-4 py-6">
+          <h1 className="text-2xl font-bold text-gray-900">Mensagens</h1>
+          <p className="text-gray-600 mt-1">Converse com motoristas e oficinas</p>
         </div>
       </div>
 
-      {/* Area do chat */}
-      <div className={`${selectedConversation ? 'flex' : 'hidden md:flex'} flex-1 flex-col`}>
-        {selectedConversation ? (
-          <div className="flex-1 flex items-center justify-center bg-gray-50">
-            <div className="text-center">
-              <InboxIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Chat em desenvolvimento
-              </h3>
-              <p className="text-gray-500">
-                Funcionalidade sera habilitada em breve
-              </p>
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Barra de busca */}
+          <div className="mb-6">
+            <div className="relative">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Buscar conversas..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+              />
             </div>
           </div>
-        ) : (
-          <div className="flex-1 flex items-center justify-center bg-gray-50">
-            <div className="text-center">
-              <InboxIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Selecione uma conversa
+
+          {/* Estado vazio */}
+          <div className="bg-white rounded-xl shadow-sm border p-12 text-center">
+            <div className="max-w-md mx-auto">
+              <ChatBubbleLeftRightIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Chat em Desenvolvimento
               </h3>
-              <p className="text-gray-500">
-                Escolha uma conversa ao lado para comecar
+              <p className="text-gray-600 mb-6">
+                O sistema de mensagens em tempo real será lançado em breve. 
+                Por enquanto, você pode entrar em contato via WhatsApp.
               </p>
+              
+              {/* Botões de ação */}
+              <div className="space-y-3">
+                <button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-medium transition-colors flex items-center justify-center">
+                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                  </svg>
+                  Contato via WhatsApp
+                </button>
+                
+                <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-medium transition-colors">
+                  Ver Agendamentos
+                </button>
+              </div>
             </div>
           </div>
-        )}
+
+          {/* Informações sobre o futuro chat */}
+          <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6">
+            <h4 className="font-semibold text-blue-900 mb-2">🚀 Em breve: Chat em Tempo Real</h4>
+            <ul className="text-blue-800 space-y-1 text-sm">
+              <li>• Mensagens instantâneas entre motoristas e oficinas</li>
+              <li>• Compartilhamento de fotos e documentos</li>
+              <li>• Notificações push em tempo real</li>
+              <li>• Histórico completo de conversas</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
