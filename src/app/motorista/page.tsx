@@ -13,7 +13,6 @@ import {
 } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import ChatWidget from '@/components/ChatWidget';
 
 export default function MotoristaDashboard() {
   const { user } = useAuth();
@@ -229,12 +228,6 @@ export default function MotoristaDashboard() {
           </div>
         </div>
       </motion.div>
-      
-      {/* Chat Widget */}
-      <ChatWidget
-        usuarioId="motorista-1"
-        usuarioTipo="motorista"
-      />
     </div>
   );
 }
