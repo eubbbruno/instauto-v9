@@ -29,6 +29,7 @@ const Header = () => {
     { label: "Como Funciona", href: "#como-funciona" },
     { label: "Benefícios", href: "#beneficios" },
     { label: "Serviços", href: "#servicos" },
+    { label: "Demonstração", href: "/demonstracao" },
     { label: "Dúvidas", href: "#faq" },
   ];
 
@@ -133,7 +134,7 @@ const Header = () => {
               transition={{ delay: 0.5 }}
               className="relative"
             >
-              <Link href="/oficinas/busca">
+              <Link href="/buscar-oficinas">
                 <button 
                   className="px-5 py-3 rounded-lg font-medium bg-[#FFDE59] hover:bg-[#FFD429] text-[#0047CC] font-bold transition-all shadow-lg relative overflow-hidden group"
                 >
@@ -205,7 +206,7 @@ const Header = () => {
               </Link>
               
               <Link 
-                href="/oficinas/busca"
+                href="/buscar-oficinas"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block w-full"
               >

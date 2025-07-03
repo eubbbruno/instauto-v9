@@ -19,6 +19,7 @@ const Header = () => {
     { label: "Como Funciona", href: "#como-funciona" },
     { label: "Benefícios", href: "#beneficios" },
     { label: "Planos", href: "#planos" },
+    { label: "Demonstração", href: "/demonstracao" },
     { label: "FAQ", href: "#faq" },
   ];
 

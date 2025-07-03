@@ -300,6 +300,10 @@ const Footer = () => {
                   className="group"
                 >
                   <Link href={item === "FAQ" ? "#faq" : 
+                               item === "Contato" ? "/contato" :
+                               item === "Privacidade" ? "/privacidade" :
+                               item === "Termos" ? "/termos" :
+                               item === "Ajuda" ? "/suporte" :
                                `/${item.toLowerCase().replace(/\s/g, '')}`} 
                       className="text-gray-300 hover:text-white transition-colors flex items-center group"
                   >
@@ -337,13 +341,13 @@ const Footer = () => {
                     </div>
                     <div>
                       <div className="text-xs text-gray-400">Para Profissionais</div>
-                      <div className="text-sm font-medium text-white">Cadastre-se Aqui!</div>
+                      <div className="text-sm font-medium text-white">Cadastre sua Oficina</div>
                     </div>
                   </div>
                 </motion.div>
               </Link>
               
-              <Link href="/oficinas/beneficios" target="_blank" rel="noopener noreferrer">
+              <Link href="/demonstracao" target="_blank" rel="noopener noreferrer">
                 <motion.div 
                   className="bg-white/5 border border-white/10 rounded-lg p-3 hover:border-[#FFDE59] transition-all hover:bg-white/10"
                   whileHover={{ y: -3 }}
@@ -351,12 +355,12 @@ const Footer = () => {
                   <div className="flex items-center">
                     <div className="mr-3 text-[#FFDE59]">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
                       </svg>
                     </div>
                     <div>
-                      <div className="text-xs text-gray-400">Aumente seu Faturamento</div>
-                      <div className="text-sm font-medium text-white">Veja os Benefícios</div>
+                      <div className="text-xs text-gray-400">Veja como funciona</div>
+                      <div className="text-sm font-medium text-white">Demonstração</div>
                     </div>
                   </div>
                 </motion.div>
@@ -403,6 +407,7 @@ const Footer = () => {
             <div className="flex flex-wrap gap-6">
               <Link href="/termos" className="text-gray-400 hover:text-[#FFDE59] transition-colors hover:underline">Termos</Link>
               <Link href="/privacidade" className="text-gray-400 hover:text-[#FFDE59] transition-colors hover:underline">Privacidade</Link>
+              <Link href="/politicas" className="text-gray-400 hover:text-[#FFDE59] transition-colors hover:underline">Políticas</Link>
               <Link href="/cookies" className="text-gray-400 hover:text-[#FFDE59] transition-colors hover:underline">Cookies</Link>
               <Link href="#topo" className="text-[#FFDE59] flex items-center group">
                 <span className="mr-1">Topo</span>

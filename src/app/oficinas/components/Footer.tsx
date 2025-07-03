@@ -197,7 +197,9 @@ const Footer = () => {
                   viewport={{ once: true }}
                   transition={{ delay: 0.2 + index * 0.1 }}
                 >
-                  <Link href={`/${item.toLowerCase().replace(/\s/g, '')}`} 
+                  <Link href={item === "Contato" ? "/contato" :
+                               item === "Blog" ? "/blog" :
+                               `/${item.toLowerCase().replace(/\s/g, '')}`} 
                       className="text-gray-300 hover:text-white transition-colors flex items-center group">
                     <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                     {item}
@@ -219,14 +221,19 @@ const Footer = () => {
               ></motion.span>
             </h3>
             <ul className="space-y-3">
-              {["FAQ", "Termos de Uso", "Privacidade", "Cookies", "Central de Ajuda"].map((item, index) => (
+              {["FAQ", "Termos de Uso", "Privacidade", "Políticas", "Cookies", "Central de Ajuda"].map((item, index) => (
                 <motion.li key={index}
                   initial={{ opacity: 0, x: -10 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.2 + index * 0.1 }}
                 >
-                  <Link href={item === "FAQ" ? "#faq" : 
+                  <Link href={item === "FAQ" ? "#faq" :
+                               item === "Termos de Uso" ? "/termos" :
+                               item === "Privacidade" ? "/privacidade" :
+                               item === "Políticas" ? "/politicas" :
+                               item === "Cookies" ? "/cookies" :
+                               item === "Central de Ajuda" ? "/suporte" :
                                `/${item.toLowerCase().replace(/\s/g, '')}`} 
                       className="text-gray-300 hover:text-white transition-colors flex items-center group">
                     <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
@@ -288,6 +295,7 @@ const Footer = () => {
             <div className="flex space-x-6">
               <Link href="/termos" className="text-gray-400 hover:text-white transition-colors hover:underline">Termos</Link>
               <Link href="/privacidade" className="text-gray-400 hover:text-white transition-colors hover:underline">Privacidade</Link>
+              <Link href="/politicas" className="text-gray-400 hover:text-white transition-colors hover:underline">Políticas</Link>
               <Link href="/cookies" className="text-gray-400 hover:text-white transition-colors hover:underline">Cookies</Link>
             </div>
           </div>
