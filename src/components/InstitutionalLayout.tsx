@@ -8,10 +8,9 @@ import {
   HomeIcon, 
   DocumentTextIcon, 
   ShieldCheckIcon, 
-  CookieIcon,
+  CircleStackIcon,
   EnvelopeIcon,
-  PlayCircleIcon,
-  ArrowRightIcon
+  PlayCircleIcon
 } from '@heroicons/react/24/outline';
 
 interface InstitutionalLayoutProps {
@@ -32,7 +31,7 @@ export default function InstitutionalLayout({
     { href: '/termos', label: 'Termos de Uso', icon: DocumentTextIcon },
     { href: '/politicas', label: 'Políticas', icon: ShieldCheckIcon },
     { href: '/privacidade', label: 'Privacidade', icon: ShieldCheckIcon },
-    { href: '/cookies', label: 'Cookies', icon: CookieIcon },
+    { href: '/cookies', label: 'Cookies', icon: CircleStackIcon },
     { href: '/contato', label: 'Contato', icon: EnvelopeIcon },
   ];
 
