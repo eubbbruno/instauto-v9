@@ -12,393 +12,468 @@ import {
   CheckCircleIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
-import { DiagnosticoResponse } from '@/lib/openai';
 
-interface DiagnosticoIAProps {
-  onDiagnosticoCompleto?: (diagnostico: DiagnosticoResponse) => void;
-  userId?: string;
-}
-
-interface VeiculoInfo {
+interface Veiculo {
   marca: string;
   modelo: string;
   ano: string;
-  kilometragem: string;
+  motor?: string;
+  uso?: string;
 }
 
-export default function DiagnosticoIA({ onDiagnosticoCompleto, userId }: DiagnosticoIAProps) {
-  const [sintomas, setSintomas] = useState('');
-  const [veiculo, setVeiculo] = useState<VeiculoInfo>({
+interface DiagnosticoIAProps {
+  veiculo?: Veiculo;
+  onVeiculoChange?: (veiculo: Veiculo) => void;
+  className?: string;
+}
+
+type TipoAnalise = 'diagnostico' | 'manutencao_preventiva' | 'comparacao_precos' | 'recomendacao_pecas';
+
+interface TipoAnaliseOption {
+  id: TipoAnalise;
+  nome: string;
+  descricao: string;
+  icon: string;
+  color: string;
+}
+
+const tiposAnalise: TipoAnaliseOption[] = [
+  {
+    id: 'diagnostico',
+    nome: 'Diagnóstico de Problemas',
+    descricao: 'Analisa sintomas e identifica possíveis causas',
+    icon: '🔧',
+    color: 'bg-red-500'
+  },
+  {
+    id: 'manutencao_preventiva',
+    nome: 'Manutenção Preventiva',
+    descricao: 'Cria plano personalizado de manutenção',
+    icon: '📅',
+    color: 'bg-green-500'
+  },
+  {
+    id: 'comparacao_precos',
+    nome: 'Comparação de Preços',
+    descricao: 'Compara preços entre diferentes tipos de oficinas',
+    icon: '💰',
+    color: 'bg-blue-500'
+  },
+  {
+    id: 'recomendacao_pecas',
+    nome: 'Recomendação de Peças',
+    descricao: 'Sugere as melhores opções de peças',
+    icon: '🔩',
+    color: 'bg-purple-500'
+  }
+];
+
+export default function DiagnosticoIA({ veiculo, onVeiculoChange, className = "" }: DiagnosticoIAProps) {
+  const [tipoSelecionado, setTipoSelecionado] = useState<TipoAnalise>('diagnostico');
+  const [veiculoLocal, setVeiculoLocal] = useState<Veiculo>(veiculo || {
     marca: '',
     modelo: '',
     ano: '',
-    kilometragem: ''
+    motor: '',
+    uso: 'urbano'
   });
-  const [contexto, setContexto] = useState('');
+  const [sintomas, setSintomas] = useState('');
+  const [quilometragem, setQuilometragem] = useState('');
+  const [ultimaManutencao, setUltimaManutencao] = useState('');
+  const [orcamento, setOrcamento] = useState('');
+  const [localizacao, setLocalizacao] = useState('São Paulo, SP');
   const [loading, setLoading] = useState(false);
-  const [diagnostico, setDiagnostico] = useState<DiagnosticoResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [resultado, setResultado] = useState<Record<string, unknown> | null>(null);
+  const [erro, setErro] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (sintomas.length < 10) {
-      setError('Descreva os sintomas com mais detalhes (mínimo 10 caracteres)');
+  const handleVeiculoChange = (field: keyof Veiculo, value: string) => {
+    const novoVeiculo = { ...veiculoLocal, [field]: value };
+    setVeiculoLocal(novoVeiculo);
+    onVeiculoChange?.(novoVeiculo);
+  };
+
+  const handleAnalise = async () => {
+    if (!veiculoLocal.marca || !veiculoLocal.modelo || !veiculoLocal.ano) {
+      setErro('Preencha as informações básicas do veículo');
       return;
     }
 
-    if (!veiculo.marca || !veiculo.modelo || !veiculo.ano) {
-      setError('Preencha todas as informações obrigatórias do veículo');
+    if (!sintomas.trim()) {
+      const campos = {
+        diagnostico: 'sintomas do problema',
+        manutencao_preventiva: 'tipo de uso do veículo',
+        comparacao_precos: 'serviço desejado',
+        recomendacao_pecas: 'peça necessária'
+      };
+      setErro(`Descreva ${campos[tipoSelecionado]}`);
       return;
     }
 
     setLoading(true);
-    setError(null);
+    setErro('');
+    setResultado(null);
 
     try {
       const response = await fetch('/api/ai/diagnostico', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          tipo: tipoSelecionado,
+          veiculo: veiculoLocal,
           sintomas,
-          veiculo: {
-            ...veiculo,
-            ano: parseInt(veiculo.ano),
-            kilometragem: veiculo.kilometragem ? parseInt(veiculo.kilometragem) : undefined
-          },
-          contexto,
-          userId
+          quilometragem,
+          ultimaManutencao,
+          orcamento,
+          localizacao
         })
       });
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Erro ao processar diagnóstico');
+      if (!data.success) {
+        throw new Error(data.error || 'Erro na análise');
       }
 
-      setDiagnostico(data.diagnostico);
-      onDiagnosticoCompleto?.(data.diagnostico);
-
+      setResultado(data.data);
+      
     } catch (error) {
-      console.error('Erro no diagnóstico:', error);
-      setError(error instanceof Error ? error.message : 'Erro ao processar diagnóstico');
+      console.error('Erro na análise IA:', error);
+      setErro(error instanceof Error ? error.message : 'Erro inesperado');
     } finally {
       setLoading(false);
     }
   };
 
-  const getUrgenciaColor = (urgencia: string) => {
-    switch (urgencia) {
-      case 'critica': return 'text-red-600 bg-red-50 border-red-200';
-      case 'alta': return 'text-orange-600 bg-orange-50 border-orange-200';
-      case 'media': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      case 'baixa': return 'text-green-600 bg-green-50 border-green-200';
-      default: return 'text-gray-600 bg-gray-50 border-gray-200';
-    }
-  };
-
-  const getProbabilidadeIcon = (probabilidade: string) => {
-    switch (probabilidade) {
-      case 'alta': return '🎯';
-      case 'media': return '🤔';
-      case 'baixa': return '❓';
-      default: return '🔍';
-    }
-  };
-
-  const resetForm = () => {
-    setSintomas('');
-    setVeiculo({ marca: '', modelo: '', ano: '', kilometragem: '' });
-    setContexto('');
-    setDiagnostico(null);
-    setError(null);
-  };
-
-  if (diagnostico) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-xl shadow-sm border p-6"
-      >
-        {/* Header do Resultado */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-              <SparklesIcon className="h-6 w-6 text-blue-600" />
-            </div>
+  const renderCampoEspecifico = () => {
+    switch (tipoSelecionado) {
+      case 'diagnostico':
+        return (
+          <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">Diagnóstico IA Completo</h3>
-              <p className="text-sm text-gray-600">
-                {veiculo.marca} {veiculo.modelo} {veiculo.ano}
-              </p>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Descreva os sintomas do problema *
+              </label>
+              <textarea
+                value={sintomas}
+                onChange={(e) => setSintomas(e.target.value)}
+                placeholder="Ex: Carro está fazendo barulho estranho no motor quando acelero..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows={4}
+                required
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Quilometragem atual
+                </label>
+                <input
+                  type="text"
+                  value={quilometragem}
+                  onChange={(e) => setQuilometragem(e.target.value)}
+                  placeholder="Ex: 85.000 km"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Última manutenção
+                </label>
+                <input
+                  type="text"
+                  value={ultimaManutencao}
+                  onChange={(e) => setUltimaManutencao(e.target.value)}
+                  placeholder="Ex: Revisão há 6 meses"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
             </div>
           </div>
-          <button
-            onClick={resetForm}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <XMarkIcon className="h-5 w-5 text-gray-400" />
-          </button>
-        </div>
+        );
 
-        {/* Problemas Possíveis */}
-        <div className="mb-6">
-          <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
-            <WrenchScrewdriverIcon className="h-5 w-5 mr-2 text-blue-600" />
-            Problemas Possíveis ({diagnostico.problemasPossiveis.length})
-          </h4>
-          
-          <div className="space-y-3">
-            {diagnostico.problemasPossiveis.map((problema, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="border rounded-lg p-4 hover:shadow-sm transition-shadow"
+      case 'manutencao_preventiva':
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tipo de uso do veículo *
+              </label>
+              <select
+                value={sintomas}
+                onChange={(e) => setSintomas(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                required
               >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center">
-                    <span className="text-lg mr-2">
-                      {getProbabilidadeIcon(problema.probabilidade)}
-                    </span>
-                    <h5 className="font-medium text-gray-900">{problema.nome}</h5>
-                  </div>
-                  <div className="flex space-x-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getUrgenciaColor(problema.urgencia)}`}>
-                      {problema.urgencia}
-                    </span>
-                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                      {problema.probabilidade}
-                    </span>
-                  </div>
-                </div>
-                
-                <p className="text-gray-600 text-sm mb-3">{problema.descricao}</p>
-                
-                <div className="flex items-center text-sm text-gray-500">
-                  <CurrencyDollarIcon className="h-4 w-4 mr-1" />
-                  <span>
-                    Custo estimado: R$ {problema.custoEstimado.min} - R$ {problema.custoEstimado.max}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Recomendações */}
-        {diagnostico.recomendacoes.length > 0 && (
-          <div className="mb-6">
-            <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
-              <LightBulbIcon className="h-5 w-5 mr-2 text-yellow-600" />
-              Recomendações
-            </h4>
-            <ul className="space-y-2">
-              {diagnostico.recomendacoes.map((recomendacao, index) => (
-                <li key={index} className="flex items-start text-sm text-gray-600">
-                  <CheckCircleIcon className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-                  {recomendacao}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Próximos Passos */}
-        {diagnostico.proximosPassos.length > 0 && (
-          <div className="mb-6">
-            <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
-              <ClockIcon className="h-5 w-5 mr-2 text-blue-600" />
-              Próximos Passos
-            </h4>
-            <ol className="space-y-2">
-              {diagnostico.proximosPassos.map((passo, index) => (
-                <li key={index} className="flex items-start text-sm text-gray-600">
-                  <span className="w-5 h-5 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold mt-0.5 mr-2 flex-shrink-0">
-                    {index + 1}
-                  </span>
-                  {passo}
-                </li>
-              ))}
-            </ol>
-          </div>
-        )}
-
-        {/* Aviso Legal */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <div className="flex items-start">
-            <ExclamationTriangleIcon className="h-5 w-5 text-yellow-600 mt-0.5 mr-2 flex-shrink-0" />
-            <div>
-              <h5 className="font-medium text-yellow-800 mb-1">Aviso Importante</h5>
-              <p className="text-sm text-yellow-700">{diagnostico.avisoLegal}</p>
+                <option value="">Selecione o tipo de uso</option>
+                <option value="urbano_leve">Urbano leve (até 30 km/dia)</option>
+                <option value="urbano_intenso">Urbano intenso (mais de 50 km/dia)</option>
+                <option value="rodoviario">Rodoviário (viagens longas)</option>
+                <option value="misto">Misto (urbano + rodoviário)</option>
+                <option value="severo">Severo (taxi, uber, delivery)</option>
+              </select>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Quilometragem atual *
+                </label>
+                <input
+                  type="text"
+                  value={quilometragem}
+                  onChange={(e) => setQuilometragem(e.target.value)}
+                  placeholder="Ex: 85.000 km"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Localização
+                </label>
+                <input
+                  type="text"
+                  value={localizacao}
+                  onChange={(e) => setLocalizacao(e.target.value)}
+                  placeholder="Cidade, Estado"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                />
+              </div>
             </div>
           </div>
-        </div>
+        );
 
-        {/* Ações */}
-        <div className="mt-6 flex flex-col sm:flex-row gap-3">
-          <button
-            onClick={() => window.location.href = '/buscar-oficinas'}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center"
-          >
-            <WrenchScrewdriverIcon className="h-5 w-5 mr-2" />
-            Buscar Oficinas
-          </button>
-          <button
-            onClick={resetForm}
-            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-medium transition-colors"
-          >
-            Novo Diagnóstico
-          </button>
-        </div>
-      </motion.div>
-    );
-  }
+      case 'comparacao_precos':
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Serviço ou reparo desejado *
+              </label>
+              <input
+                type="text"
+                value={sintomas}
+                onChange={(e) => setSintomas(e.target.value)}
+                placeholder="Ex: Troca de pastilhas de freio, revisão dos 60 mil km..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Orçamento disponível
+                </label>
+                <input
+                  type="text"
+                  value={orcamento}
+                  onChange={(e) => setOrcamento(e.target.value)}
+                  placeholder="Ex: 1500"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Localização
+                </label>
+                <input
+                  type="text"
+                  value={localizacao}
+                  onChange={(e) => setLocalizacao(e.target.value)}
+                  placeholder="Cidade, Estado"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'recomendacao_pecas':
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Peça necessária *
+              </label>
+              <input
+                type="text"
+                value={sintomas}
+                onChange={(e) => setSintomas(e.target.value)}
+                placeholder="Ex: Pastilhas de freio dianteiras, filtro de ar..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Orçamento disponível
+              </label>
+              <input
+                type="text"
+                value={orcamento}
+                onChange={(e) => setOrcamento(e.target.value)}
+                placeholder="Ex: 300"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-xl shadow-sm border p-6"
-    >
-      {/* Header */}
-      <div className="text-center mb-6">
-        <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-          <SparklesIcon className="h-8 w-8 text-white" />
-        </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Diagnóstico Automotivo IA</h2>
-        <p className="text-gray-600">
-          Descreva os problemas do seu veículo e receba um diagnóstico preliminar inteligente
-        </p>
+    <div className={`bg-white rounded-xl shadow-sm border p-6 ${className}`}>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">🤖 Assistente IA Automotivo</h2>
+        <p className="text-gray-600">Análise inteligente com tecnologia GPT-4 especializada em veículos</p>
       </div>
 
-      {/* Formulário */}
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Sintomas */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Descreva os sintomas *
-          </label>
-          <textarea
-            value={sintomas}
-            onChange={(e) => setSintomas(e.target.value)}
-            placeholder="Ex: Carro faz barulho estranho ao frear, vibração no volante, fumaça no escapamento..."
-            rows={4}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-            required
-          />
-          <p className="text-xs text-gray-500 mt-1">
-            {sintomas.length}/500 caracteres (mínimo 10)
-          </p>
-        </div>
-
-        {/* Informações do Veículo */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            Informações do Veículo *
-          </label>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input
-              type="text"
-              placeholder="Marca (ex: Honda)"
-              value={veiculo.marca}
-              onChange={(e) => setVeiculo({...veiculo, marca: e.target.value})}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Modelo (ex: Civic)"
-              value={veiculo.modelo}
-              onChange={(e) => setVeiculo({...veiculo, modelo: e.target.value})}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-            <input
-              type="number"
-              placeholder="Ano (ex: 2020)"
-              value={veiculo.ano}
-              onChange={(e) => setVeiculo({...veiculo, ano: e.target.value})}
-              min="1980"
-              max="2025"
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-            <input
-              type="number"
-              placeholder="Quilometragem (opcional)"
-              value={veiculo.kilometragem}
-              onChange={(e) => setVeiculo({...veiculo, kilometragem: e.target.value})}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-        </div>
-
-        {/* Contexto Adicional */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Contexto Adicional (opcional)
-          </label>
-          <textarea
-            value={contexto}
-            onChange={(e) => setContexto(e.target.value)}
-            placeholder="Quando o problema começou? Em que situações acontece? Há quanto tempo o veículo não passa por revisão?"
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-          />
-        </div>
-
-        {/* Error */}
-        <AnimatePresence>
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="bg-red-50 border border-red-200 rounded-lg p-3"
+      {/* Seleção do tipo de análise */}
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Tipo de Análise</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          {tiposAnalise.map((tipo) => (
+            <motion.button
+              key={tipo.id}
+              onClick={() => setTipoSelecionado(tipo.id)}
+              className={`p-4 rounded-lg border-2 transition-all text-left ${
+                tipoSelecionado === tipo.id
+                  ? 'border-gray-900 bg-gray-50'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <p className="text-sm text-red-700">{error}</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <div className="flex items-center mb-2">
+                <span className="text-2xl mr-2">{tipo.icon}</span>
+                <div className={`w-3 h-3 rounded-full ${tipo.color} ${
+                  tipoSelecionado === tipo.id ? 'opacity-100' : 'opacity-40'
+                }`}></div>
+              </div>
+              <h4 className="font-semibold text-gray-900 text-sm mb-1">{tipo.nome}</h4>
+              <p className="text-xs text-gray-600">{tipo.descricao}</p>
+            </motion.button>
+          ))}
+        </div>
+      </div>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 px-4 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-        >
-          {loading ? (
-            <>
-              <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
-              Analisando sintomas...
-            </>
-          ) : (
-            <>
-              <SparklesIcon className="h-5 w-5 mr-2" />
-              Diagnosticar com IA
-            </>
-          )}
-        </button>
-      </form>
-
-      {/* Disclaimer */}
-      <div className="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <div className="flex items-start">
-          <ExclamationTriangleIcon className="h-5 w-5 text-gray-500 mt-0.5 mr-2 flex-shrink-0" />
+      {/* Informações do veículo */}
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Informações do Veículo</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <p className="text-sm text-gray-600">
-              <strong>Importante:</strong> Este diagnóstico é preliminar e baseado em inteligência artificial. 
-              Sempre consulte um mecânico qualificado para confirmação e reparo seguro.
-            </p>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Marca *</label>
+            <input
+              type="text"
+              value={veiculoLocal.marca}
+              onChange={(e) => handleVeiculoChange('marca', e.target.value)}
+              placeholder="Ex: Volkswagen"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Modelo *</label>
+            <input
+              type="text"
+              value={veiculoLocal.modelo}
+              onChange={(e) => handleVeiculoChange('modelo', e.target.value)}
+              placeholder="Ex: Gol"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Ano *</label>
+            <input
+              type="text"
+              value={veiculoLocal.ano}
+              onChange={(e) => handleVeiculoChange('ano', e.target.value)}
+              placeholder="Ex: 2018"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              required
+            />
           </div>
         </div>
       </div>
-    </motion.div>
+
+      {/* Campos específicos por tipo */}
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          {tiposAnalise.find(t => t.id === tipoSelecionado)?.nome}
+        </h3>
+        {renderCampoEspecifico()}
+      </div>
+
+      {/* Botão de análise */}
+      <motion.button
+        onClick={handleAnalise}
+        disabled={loading}
+        className={`w-full py-4 px-6 rounded-lg font-semibold text-white transition-all ${
+          loading
+            ? 'bg-gray-400 cursor-not-allowed'
+            : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800'
+        }`}
+        whileHover={!loading ? { scale: 1.02 } : undefined}
+        whileTap={!loading ? { scale: 0.98 } : undefined}
+      >
+        {loading ? (
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+            Analisando com IA...
+          </div>
+        ) : (
+          `🚀 Analisar com IA`
+        )}
+      </motion.button>
+
+      {/* Erro */}
+      <AnimatePresence>
+        {erro && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg"
+          >
+            <p className="text-red-700 text-sm">❌ {erro}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Resultado */}
+      <AnimatePresence>
+        {resultado && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="mt-6 p-6 bg-gray-50 rounded-lg border"
+          >
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <span className="mr-2">{tiposAnalise.find(t => t.id === tipoSelecionado)?.icon}</span>
+              Resultado da Análise IA
+            </h3>
+            <div className="prose prose-sm max-w-none">
+              <div 
+                className="text-gray-700 whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{ 
+                  __html: resultado.resposta
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\n/g, '<br/>')
+                }}
+              />
+            </div>
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <p className="text-xs text-gray-500">
+                Análise gerada em: {new Date(resultado.timestamp).toLocaleString('pt-BR')}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 } 

@@ -1,72 +1,55 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
-import { OficinaBase } from '@/types';
-import useGeolocation from '@/hooks/useGeolocation';
 
-interface GoogleMapViewProps {
-  oficinas: OficinaBase[];
-  height?: string;
-  width?: string;
-  className?: string;
-  onOficinaSelecionada?: (oficina: OficinaBase) => void;
-  centerLat?: number;
-  centerLng?: number;
-  zoom?: number;
+interface Oficina {
+  id: string;
+  nome: string;
+  endereco: string;
+  avaliacao: number;
+  distancia: string;
+  telefone: string;
+  servicos: string[];
+  precoMedio: number;
+  tempoMedio: string;
+  coords: {
+    lat: number;
+    lng: number;
+  };
 }
 
-// Função para criar ícone personalizado da oficina
-const createOficinaIcon = (isSelected: boolean = false) => {
-  return {
-    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-      <svg width="40" height="50" viewBox="0 0 40 50" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20 0C8.954 0 0 8.954 0 20c0 20 20 30 20 30s20-10 20-30C40 8.954 31.046 0 20 0z" fill="${isSelected ? '#FFDE59' : '#0047CC'}"/>
-        <circle cx="20" cy="20" r="12" fill="white"/>
-        <path d="M15 15h2v5h3v2h-5v-7zm0-3h5v2h-5v-2z" fill="${isSelected ? '#0047CC' : '#0047CC'}"/>
-      </svg>
-    `)}`,
-    scaledSize: new google.maps.Size(40, 50),
-    anchor: new google.maps.Point(20, 50)
-  };
-};
+interface GoogleMapViewProps {
+  oficinas: Oficina[];
+  onOficinaSelect?: (oficina: Oficina) => void;
+  className?: string;
+  showRoutes?: boolean;
+  selectedOficinaId?: string;
+}
 
-// Função para criar ícone personalizado do usuário
-const createUserIcon = () => {
-  return {
-    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-      <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="15" cy="15" r="15" fill="#FFDE59" stroke="#0047CC" stroke-width="3"/>
-        <circle cx="15" cy="15" r="8" fill="#0047CC"/>
-        <circle cx="15" cy="15" r="3" fill="white"/>
-      </svg>
-    `)}`,
-    scaledSize: new google.maps.Size(30, 30),
-    anchor: new google.maps.Point(15, 15)
-  };
-};
-
-export default function GoogleMapView({
-  oficinas = [],
-  height = '400px',
-  width = '100%',
-  className = '',
-  onOficinaSelecionada,
-  centerLat,
-  centerLng,
-  zoom = 13
+export default function GoogleMapView({ 
+  oficinas, 
+  onOficinaSelect, 
+  className = "",
+  showRoutes = true,
+  selectedOficinaId 
 }: GoogleMapViewProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [markers, setMarkers] = useState<google.maps.Marker[]>([]);
-  const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow | null>(null);
-  const [selectedOficina, setSelectedOficina] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [directionsService, setDirectionsService] = useState<google.maps.DirectionsService | null>(null);
+  const [directionsRenderer, setDirectionsRenderer] = useState<google.maps.DirectionsRenderer | null>(null);
+  const [routeInfo, setRouteInfo] = useState<{
+    distance: string;
+    duration: string;
+    oficina: Oficina;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedTransportMode, setSelectedTransportMode] = useState<google.maps.TravelMode>(google.maps.TravelMode.DRIVING);
   
-  const { latitude, longitude, error: geoError, loading: geoLoading } = useGeolocation();
+  const markersRef = useRef<google.maps.Marker[]>([]);
+  const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
 
-  // Inicializar Google Maps
   useEffect(() => {
     const initMap = async () => {
       try {
@@ -77,225 +60,368 @@ export default function GoogleMapView({
         });
 
         await loader.load();
-
+        
         if (!mapRef.current) return;
 
-        const center = {
-          lat: centerLat || latitude || -23.5505,
-          lng: centerLng || longitude || -46.6333
-        };
-
-        const mapInstance = new google.maps.Map(mapRef.current, {
-          center,
-          zoom,
-          styles: [
-            {
-              "featureType": "poi",
-              "elementType": "labels",
-              "stylers": [{ "visibility": "off" }]
+        // Obter localização do usuário
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const userPos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+              };
+              setUserLocation(userPos);
+              initializeMap(userPos);
+            },
+            () => {
+              // Fallback para São Paulo
+              const fallbackPos = { lat: -23.5505, lng: -46.6333 };
+              setUserLocation(fallbackPos);
+              initializeMap(fallbackPos);
             }
-          ],
-          mapTypeControl: false,
-          streetViewControl: false,
-          fullscreenControl: true,
-          zoomControl: true,
-          gestureHandling: 'greedy'
-        });
-
-        setMap(mapInstance);
-        
-        const infoWindowInstance = new google.maps.InfoWindow();
-        setInfoWindow(infoWindowInstance);
-        
-        setIsLoading(false);
-      } catch (err) {
-        console.error('Erro ao carregar Google Maps:', err);
-        setError('Erro ao carregar o mapa. Tente recarregar a página.');
-        setIsLoading(false);
+          );
+        } else {
+          const fallbackPos = { lat: -23.5505, lng: -46.6333 };
+          setUserLocation(fallbackPos);
+          initializeMap(fallbackPos);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar Google Maps:', error);
+        setLoading(false);
       }
+    };
+
+    const initializeMap = (center: { lat: number; lng: number }) => {
+      const mapInstance = new google.maps.Map(mapRef.current!, {
+        center,
+        zoom: 13,
+        styles: [
+          {
+            featureType: 'poi',
+            elementType: 'labels',
+            stylers: [{ visibility: 'off' }]
+          }
+        ],
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: true,
+        zoomControl: true,
+        gestureHandling: 'cooperative'
+      });
+
+      setMap(mapInstance);
+
+      // Inicializar serviços de rota
+      const directionsServiceInstance = new google.maps.DirectionsService();
+      const directionsRendererInstance = new google.maps.DirectionsRenderer({
+        suppressMarkers: false,
+        polylineOptions: {
+          strokeColor: '#0047CC',
+          strokeWeight: 4,
+          strokeOpacity: 0.8
+        }
+      });
+      
+      directionsRendererInstance.setMap(mapInstance);
+      setDirectionsService(directionsServiceInstance);
+      setDirectionsRenderer(directionsRendererInstance);
+
+      // Criar marcador do usuário
+      createUserMarker(mapInstance, center);
+      
+      // Criar marcadores das oficinas
+      createOfficeMarkers(mapInstance);
+      
+      // Ajustar bounds
+      adjustMapBounds(mapInstance, center);
+      
+      setLoading(false);
     };
 
     initMap();
-  }, [centerLat, centerLng, latitude, longitude, zoom]);
 
-  // Limpar marcadores
-  const clearMarkers = useCallback(() => {
-    markers.forEach(marker => marker.setMap(null));
-    setMarkers([]);
-  }, [markers]);
+    return () => {
+      clearMarkers();
+    };
+  }, []);
 
-  // Adicionar marcador do usuário
+  // Atualizar rota quando oficina for selecionada
   useEffect(() => {
-    if (!map || !latitude || !longitude) return;
+    if (selectedOficinaId && userLocation && directionsService && directionsRenderer) {
+      const selectedOficina = oficinas.find(o => o.id === selectedOficinaId);
+      if (selectedOficina) {
+        calculateRoute(selectedOficina);
+      }
+    } else if (directionsRenderer) {
+      // Limpar rota se nenhuma oficina selecionada
+      directionsRenderer.setDirections({ routes: [] } as any);
+      setRouteInfo(null);
+    }
+  }, [selectedOficinaId, userLocation, directionsService, directionsRenderer]);
 
+  const createUserMarker = (mapInstance: google.maps.Map, position: { lat: number; lng: number }) => {
+    // Marcador personalizado do usuário
     const userMarker = new google.maps.Marker({
-      position: { lat: latitude, lng: longitude },
-      map,
-      icon: createUserIcon(),
-      title: 'Sua localização',
-      zIndex: 1000
+      position,
+      map: mapInstance,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 12,
+        fillColor: '#FFDE59',
+        fillOpacity: 1,
+        strokeColor: '#0047CC',
+        strokeWeight: 3
+      },
+      title: 'Sua localização'
     });
 
     // Círculo de raio de busca
-    const searchCircle = new google.maps.Circle({
-      center: { lat: latitude, lng: longitude },
-      radius: 10000, // 10km
+    new google.maps.Circle({
       strokeColor: '#0047CC',
-      strokeOpacity: 0.8,
+      strokeOpacity: 0.3,
       strokeWeight: 2,
       fillColor: '#0047CC',
       fillOpacity: 0.1,
-      map
+      map: mapInstance,
+      center: position,
+      radius: 10000 // 10km
     });
 
-    return () => {
-      userMarker.setMap(null);
-      searchCircle.setMap(null);
-    };
-  }, [map, latitude, longitude]);
+    markersRef.current.push(userMarker);
+  };
 
-  // Adicionar marcadores das oficinas
-  useEffect(() => {
-    if (!map || !oficinas.length) return;
-
-    clearMarkers();
-
-    const newMarkers = oficinas.map((oficina) => {
+  const createOfficeMarkers = (mapInstance: google.maps.Map) => {
+    oficinas.forEach((oficina) => {
       const marker = new google.maps.Marker({
-        position: { lat: oficina.latitude, lng: oficina.longitude },
-        map,
-        icon: createOficinaIcon(selectedOficina === oficina.id),
-        title: oficina.nome,
-        animation: google.maps.Animation.DROP
+        position: oficina.coords,
+        map: mapInstance,
+        icon: {
+          url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+            <svg width="32" height="40" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16 2c-7.7 0-14 6.3-14 14 0 10.5 14 22 14 22s14-11.5 14-22c0-7.7-6.3-14-14-14z" 
+                    fill="#0047CC" stroke="#fff" stroke-width="2"/>
+              <circle cx="16" cy="15" r="6" fill="#FFDE59"/>
+              <path d="M13 15l2 2 4-4" stroke="#0047CC" stroke-width="2" fill="none" stroke-linecap="round"/>
+            </svg>
+          `),
+          scaledSize: new google.maps.Size(32, 40),
+          anchor: new google.maps.Point(16, 40)
+        },
+        title: oficina.nome
       });
+
+      // InfoWindow rica
+      const infoContent = `
+        <div style="max-width: 300px; padding: 8px;">
+          <h3 style="margin: 0 0 8px 0; color: #0047CC; font-size: 16px; font-weight: bold;">
+            ${oficina.nome}
+          </h3>
+          <p style="margin: 0 0 8px 0; color: #666; font-size: 14px;">
+            📍 ${oficina.endereco}
+          </p>
+          <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="color: #FFD700; margin-right: 4px;">⭐</span>
+            <span style="font-weight: bold; margin-right: 8px;">${oficina.avaliacao}</span>
+            <span style="color: #666; font-size: 12px;">• ${oficina.distancia}</span>
+          </div>
+          <p style="margin: 0 0 8px 0; color: #666; font-size: 12px;">
+            💰 Preço médio: R$ ${oficina.precoMedio} • ⏱️ ${oficina.tempoMedio}
+          </p>
+          <div style="margin: 8px 0;">
+            <button onclick="window.calculateRouteToOficina('${oficina.id}')" 
+                    style="background: #0047CC; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-right: 8px; font-size: 12px;">
+              🗺️ Ver Rota
+            </button>
+            <button onclick="window.openInGoogleMaps(${oficina.coords.lat}, ${oficina.coords.lng})" 
+                    style="background: #FFDE59; color: #0047CC; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">
+              📱 Navegar
+            </button>
+          </div>
+        </div>
+      `;
 
       marker.addListener('click', () => {
-        if (infoWindow) {
-          const content = `
-            <div class="p-4 max-w-sm">
-              <h3 class="text-lg font-bold text-gray-900 mb-1">${oficina.nome}</h3>
-              <div class="flex items-center mb-2">
-                ${Array.from({length: 5}, (_, i) => 
-                  `<svg class="w-4 h-4 ${i < Math.floor(oficina.avaliacao) ? 'text-yellow-400' : 'text-gray-300'}" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                  </svg>`
-                ).join('')}
-                <span class="ml-1 text-sm text-gray-600">${oficina.avaliacao.toFixed(1)}</span>
-              </div>
-              <p class="text-sm text-gray-600 mb-2">${oficina.endereco}</p>
-              ${oficina.distancia ? `<p class="text-xs text-blue-600 font-medium mb-3">${oficina.distancia.toFixed(1)}km de distância</p>` : ''}
-              <div class="flex space-x-2">
-                <button 
-                  onclick="window.open('tel:${oficina.telefone}', '_self')"
-                  class="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-                >
-                  Ligar
-                </button>
-                <button 
-                  onclick="document.dispatchEvent(new CustomEvent('selectOficina', { detail: '${oficina.id}' }))"
-                  class="flex-1 bg-yellow-500 text-gray-900 px-3 py-2 rounded-lg text-sm font-medium hover:bg-yellow-600 transition-colors"
-                >
-                  Ver Detalhes
-                </button>
-              </div>
-            </div>
-          `;
-
-          infoWindow.setContent(content);
-          infoWindow.open(map, marker);
-          setSelectedOficina(oficina.id);
-          
-          // Atualizar ícone para destacar oficina selecionada
-          marker.setIcon(createOficinaIcon(true));
+        if (infoWindowRef.current) {
+          infoWindowRef.current.close();
         }
+        
+        infoWindowRef.current = new google.maps.InfoWindow({
+          content: infoContent
+        });
+        
+        infoWindowRef.current.open(mapInstance, marker);
+        
+        onOficinaSelect?.(oficina);
       });
 
-      return marker;
+      markersRef.current.push(marker);
     });
+  };
 
-    setMarkers(newMarkers);
+  const calculateRoute = async (oficina: Oficina) => {
+    if (!directionsService || !directionsRenderer || !userLocation) return;
 
-    // Ajustar bounds para mostrar todas as oficinas
-    if (newMarkers.length > 0) {
-      const bounds = new google.maps.LatLngBounds();
-      
-      if (latitude && longitude) {
-        bounds.extend({ lat: latitude, lng: longitude });
+    try {
+      const request: google.maps.DirectionsRequest = {
+        origin: userLocation,
+        destination: oficina.coords,
+        travelMode: selectedTransportMode,
+        unitSystem: google.maps.UnitSystem.METRIC,
+        avoidHighways: false,
+        avoidTolls: false
+      };
+
+      const result = await directionsService.route(request);
+      directionsRenderer.setDirections(result);
+
+      const route = result.routes[0];
+      if (route) {
+        setRouteInfo({
+          distance: route.legs[0].distance?.text || '',
+          duration: route.legs[0].duration?.text || '',
+          oficina
+        });
       }
-      
-      newMarkers.forEach(marker => {
-        const position = marker.getPosition();
-        if (position) {
-          bounds.extend(position);
-        }
-      });
-
-      map.fitBounds(bounds);
-      
-      // Garantir zoom mínimo
-      google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
-        if (map.getZoom()! > 15) {
-          map.setZoom(15);
-        }
-      });
+    } catch (error) {
+      console.error('Erro ao calcular rota:', error);
     }
+  };
 
-    return () => clearMarkers();
-  }, [map, oficinas, selectedOficina, infoWindow, latitude, longitude, clearMarkers]);
+  const adjustMapBounds = (mapInstance: google.maps.Map, userPos: { lat: number; lng: number }) => {
+    const bounds = new google.maps.LatLngBounds();
+    
+    // Incluir posição do usuário
+    bounds.extend(userPos);
+    
+    // Incluir todas as oficinas
+    oficinas.forEach(oficina => {
+      bounds.extend(oficina.coords);
+    });
+    
+    mapInstance.fitBounds(bounds);
+    
+    // Limitar zoom máximo
+    const listener = google.maps.event.addListener(mapInstance, 'bounds_changed', () => {
+      if (mapInstance.getZoom()! > 15) {
+        mapInstance.setZoom(15);
+      }
+      google.maps.event.removeListener(listener);
+    });
+  };
 
-  // Listener para evento customizado de seleção de oficina
+  const clearMarkers = () => {
+    markersRef.current.forEach(marker => {
+      marker.setMap(null);
+    });
+    markersRef.current = [];
+    
+    if (infoWindowRef.current) {
+      infoWindowRef.current.close();
+    }
+  };
+
+  const changeTravelMode = (mode: google.maps.TravelMode) => {
+    setSelectedTransportMode(mode);
+    if (selectedOficinaId && userLocation) {
+      const selectedOficina = oficinas.find(o => o.id === selectedOficinaId);
+      if (selectedOficina) {
+        calculateRoute(selectedOficina);
+      }
+    }
+  };
+
+  // Funções globais para InfoWindow
   useEffect(() => {
-    const handleSelectOficina = (event: CustomEvent) => {
-      const oficinaId = event.detail;
+    (window as any).calculateRouteToOficina = (oficinaId: string) => {
       const oficina = oficinas.find(o => o.id === oficinaId);
-      if (oficina && onOficinaSelecionada) {
-        onOficinaSelecionada(oficina);
+      if (oficina) {
+        calculateRoute(oficina);
       }
     };
 
-    document.addEventListener('selectOficina', handleSelectOficina as EventListener);
-    
-    return () => {
-      document.removeEventListener('selectOficina', handleSelectOficina as EventListener);
+    (window as any).openInGoogleMaps = (lat: number, lng: number) => {
+      const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
+      window.open(url, '_blank');
     };
-  }, [oficinas, onOficinaSelecionada]);
 
-  if (isLoading || geoLoading) {
+    return () => {
+      delete (window as any).calculateRouteToOficina;
+      delete (window as any).openInGoogleMaps;
+    };
+  }, [oficinas]);
+
+  if (loading) {
     return (
-      <div className={`flex items-center justify-center bg-gray-100 rounded-lg ${className}`} style={{ height, width }}>
+      <div className={`bg-gray-100 rounded-lg flex items-center justify-center ${className}`}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#0047CC] mx-auto mb-2"></div>
-          <p className="text-gray-600">Carregando mapa...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || geoError) {
-    return (
-      <div className={`flex items-center justify-center bg-gray-100 rounded-lg ${className}`} style={{ height, width }}>
-        <div className="text-center p-5">
-          <div className="bg-red-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <h3 className="text-red-600 font-medium mb-1">Erro ao carregar o mapa</h3>
-          <p className="text-gray-600 text-sm">{error || geoError}</p>
-          <button 
-            className="mt-3 px-4 py-2 bg-[#0047CC] text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
-            onClick={() => window.location.reload()}
-          >
-            Tentar novamente
-          </button>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+          <p className="text-sm text-gray-600">Carregando mapa...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`rounded-lg overflow-hidden shadow-lg ${className}`} style={{ height, width }}>
-      <div ref={mapRef} style={{ height: '100%', width: '100%' }} />
+    <div className="relative">
+      {/* Controles de Transporte */}
+      {showRoutes && (
+        <div className="absolute top-4 left-4 z-10 bg-white rounded-lg shadow-md p-2 flex space-x-2">
+          <button
+            onClick={() => changeTravelMode(google.maps.TravelMode.DRIVING)}
+            className={`p-2 rounded ${selectedTransportMode === google.maps.TravelMode.DRIVING ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+            title="Carro"
+          >
+            🚗
+          </button>
+          <button
+            onClick={() => changeTravelMode(google.maps.TravelMode.WALKING)}
+            className={`p-2 rounded ${selectedTransportMode === google.maps.TravelMode.WALKING ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+            title="A pé"
+          >
+            🚶
+          </button>
+          <button
+            onClick={() => changeTravelMode(google.maps.TravelMode.TRANSIT)}
+            className={`p-2 rounded ${selectedTransportMode === google.maps.TravelMode.TRANSIT ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+            title="Transporte público"
+          >
+            🚌
+          </button>
+        </div>
+      )}
+
+      {/* Informações da Rota */}
+      {routeInfo && (
+        <div className="absolute top-4 right-4 z-10 bg-white rounded-lg shadow-md p-4 max-w-xs">
+          <h4 className="font-semibold text-gray-900 mb-2">Rota para {routeInfo.oficina.nome}</h4>
+          <div className="space-y-1 text-sm">
+            <div className="flex items-center">
+              <span className="text-gray-600">📍 Distância:</span>
+              <span className="ml-2 font-medium">{routeInfo.distance}</span>
+            </div>
+            <div className="flex items-center">
+              <span className="text-gray-600">⏱️ Tempo:</span>
+              <span className="ml-2 font-medium">{routeInfo.duration}</span>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              const url = `https://www.google.com/maps/dir/?api=1&destination=${routeInfo.oficina.coords.lat},${routeInfo.oficina.coords.lng}&travelmode=driving`;
+              window.open(url, '_blank');
+            }}
+            className="mt-3 w-full bg-blue-600 text-white py-2 px-3 rounded text-sm hover:bg-blue-700 transition-colors"
+          >
+            Navegar no Google Maps
+          </button>
+        </div>
+      )}
+
+      <div 
+        ref={mapRef} 
+        className={`rounded-lg border ${className}`}
+        style={{ minHeight: '400px' }}
+      />
     </div>
   );
 }
