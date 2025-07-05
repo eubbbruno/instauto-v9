@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { payment } from '@/lib/mercadopago';
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,7 +9,15 @@ export async function POST(request: NextRequest) {
 
     console.log('Webhook MercadoPago recebido:', { type, action, data });
 
-    const supabase = createClient();
+    const supabase = createServerClient();
+
+    if (!supabase) {
+      console.error('Supabase não configurado');
+      return NextResponse.json(
+        { error: 'Erro de configuração do banco de dados' },
+        { status: 500 }
+      );
+    }
 
     // Processar diferentes tipos de notificação
     switch (type) {

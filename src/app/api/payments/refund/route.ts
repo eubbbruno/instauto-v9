@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createRefund } from '@/lib/mercadopago';
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,9 +21,17 @@ export async function POST(request: NextRequest) {
     const refund = await createRefund(paymentId, amount);
 
     // Salvar no banco de dados
-    const supabase = createClient();
+    const supabase = createServerClient();
     
-    const { data: refundRecord, error: dbError } = await supabase
+    if (!supabase) {
+      console.error('Supabase não configurado');
+      return NextResponse.json(
+        { error: 'Erro de configuração do banco de dados' },
+        { status: 500 }
+      );
+    }
+
+    const { error: dbError } = await supabase
       .from('refunds')
       .insert({
         payment_id: paymentId,
@@ -33,9 +41,7 @@ export async function POST(request: NextRequest) {
         reason: reason || 'Estorno solicitado pelo sistema',
         workshop_id: workshopId,
         created_at: new Date().toISOString()
-      })
-      .select()
-      .single();
+      });
 
     if (dbError) {
       console.error('Erro ao salvar estorno no banco:', dbError);
