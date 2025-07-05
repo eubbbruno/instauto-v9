@@ -148,7 +148,7 @@ const Header = () => {
       <div className="container-custom flex justify-between items-center relative">
         {/* Logo SVG animada */}
         <div className="flex items-center">
-          <Link href="/oficinas" className="flex items-center relative group">
+          <Link href="/" className="flex items-center relative group">
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -251,7 +251,7 @@ const Header = () => {
             >
               <div className="flex flex-col h-full p-6">
                 <div className="flex items-center justify-between mb-8">
-                  <Link href="/oficinas" className="flex items-center" onClick={() => setMobileMenuOpen(false)}>
+                  <Link href="/" className="flex items-center" onClick={() => setMobileMenuOpen(false)}>
                     <Image 
                       src="/images/logo-of-dark.svg" 
                       alt="Instauto Logo" 

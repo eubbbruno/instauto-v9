@@ -54,7 +54,14 @@ export default function HeroSection() {
 
   const handleAddressSelect = (address: AddressSuggestion) => {
     console.log('Endereço selecionado:', address);
-    // Aqui você pode redirecionar para a página de resultados ou fazer a busca
+    // Redirecionar para a página de busca de oficinas com o endereço selecionado
+    const searchParams = new URLSearchParams();
+    searchParams.set('endereco', address.display);
+    if (address.cep) searchParams.set('cep', address.cep);
+    if (address.localidade) searchParams.set('cidade', address.localidade);
+    if (address.uf) searchParams.set('estado', address.uf);
+    
+    window.location.href = `/buscar-oficinas?${searchParams.toString()}`;
   };
 
   return (
@@ -218,7 +225,7 @@ export default function HeroSection() {
                 className="flex flex-col sm:flex-row gap-4"
               >
                 <a 
-                  href="/oficinas/busca" 
+                  href="/buscar-oficinas" 
                   className="btn-primary flex items-center justify-center py-2.5"
                 >
                   Encontrar Oficinas

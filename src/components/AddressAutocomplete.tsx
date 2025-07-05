@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { MapPin, Search, Navigation, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { brazilianCities, brazilianNeighborhoods } from "@/data/brazilian-locations";
 
 interface AddressSuggestion {
   cep: string;
@@ -46,18 +47,10 @@ export default function AddressAutocomplete({
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Lista de cidades populares como fallback
-  const popularCities = [
-    "São Paulo, SP",
-    "Rio de Janeiro, RJ", 
-    "Belo Horizonte, MG",
-    "Brasília, DF",
-    "Salvador, BA",
-    "Fortaleza, CE",
-    "Curitiba, PR",
-    "Recife, PE",
-    "Porto Alegre, RS",
-    "Goiânia, GO"
-  ];
+  const popularCities = brazilianCities;
+
+  // Bairros populares expandidos - PRINCIPAIS BAIRROS DO BRASIL
+  const popularNeighborhoods = brazilianNeighborhoods;
 
   // Buscar CEP na API do ViaCEP
   const searchCEP = async (cep: string): Promise<AddressSuggestion | null> => {
@@ -111,7 +104,7 @@ export default function AddressAutocomplete({
     }
   };
 
-  // Buscar sugestões baseadas na query
+  // Buscar sugestões baseadas na query - MELHORADO
   const fetchSuggestions = async (searchQuery: string) => {
     if (searchQuery.length < 2) {
       setSuggestions([]);
@@ -135,13 +128,14 @@ export default function AddressAutocomplete({
       else if (cleanQuery.includes(',')) {
         results = await searchAddress(cleanQuery);
       }
-      // Buscar em cidades populares
+      // Buscar em cidades populares e bairros
       else {
-        const filtered = popularCities
+        // Buscar cidades
+        const cityMatches = popularCities
           .filter(city => 
             city.toLowerCase().includes(cleanQuery.toLowerCase())
           )
-          .slice(0, 5)
+          .slice(0, 4)
           .map(city => {
             const [localidade, uf] = city.split(', ');
             return {
@@ -155,8 +149,31 @@ export default function AddressAutocomplete({
               display: city
             };
           });
+
+        // Buscar bairros populares
+        const neighborhoodMatches = popularNeighborhoods
+          .filter(neighborhood => 
+            neighborhood.toLowerCase().includes(cleanQuery.toLowerCase())
+          )
+          .slice(0, 3)
+          .map(neighborhood => {
+            const parts = neighborhood.split(', ');
+            const bairro = parts[0];
+            const cidade = parts[1];
+            const uf = parts[2];
+            return {
+              cep: '',
+              logradouro: '',
+              bairro,
+              localidade: cidade,
+              uf,
+              ibge: '',
+              type: 'district' as const,
+              display: neighborhood
+            };
+          });
         
-        results = filtered;
+        results = [...cityMatches, ...neighborhoodMatches];
       }
 
       setSuggestions(results);
@@ -174,7 +191,7 @@ export default function AddressAutocomplete({
     if (navigator.geolocation) {
       setIsLoading(true);
       navigator.geolocation.getCurrentPosition(
-        async (_position) => {
+        async () => {
           try {
             // Usar reverse geocoding para obter endereço
             // Aqui você pode integrar com uma API de reverse geocoding

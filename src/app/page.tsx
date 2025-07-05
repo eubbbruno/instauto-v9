@@ -11,16 +11,15 @@ import Footer from "./motoristas/components/Footer";
 // Componentes da página
 import HeroSection from "./motoristas/components/HeroSection";
 import BenefitsSection from "./motoristas/components/BenefitsSection";
+import PartnersCarousel from "./motoristas/components/PartnersCarousel";
 import HowItWorksSection from "./motoristas/components/HowItWorksSection";
 import TestimonialsSection from "./motoristas/components/TestimonialsSection";
 import FeaturesSection from "./motoristas/components/FeaturesSection";
+import CoverageSimpleSection from "./motoristas/components/CoverageSimpleSection";
 import PartnersSection from "./motoristas/components/PartnersSection";
-import PlatformAccessSection from "./motoristas/components/DownloadAppSection";
+import DownloadAppSection from "./motoristas/components/DownloadAppSection";
 import FaqSection from "./motoristas/components/FaqSection";
 import CtaSection from "./motoristas/components/CtaSection";
-import VehiclesSection from "./motoristas/components/VehiclesSection";
-import ServicesSection from "./motoristas/components/ServicesSection";
-import CoverageSimpleSection from "./motoristas/components/CoverageSimpleSection";
 
 export default function HomePage() {
   // Inicializa as animações AOS
@@ -40,15 +39,14 @@ export default function HomePage() {
       <Header />
       
       <HeroSection />
+      <PartnersCarousel />
       <BenefitsSection />
       <HowItWorksSection />
-      <VehiclesSection />
-      <ServicesSection />
       <TestimonialsSection />
       <FeaturesSection />
       <CoverageSimpleSection />
       <PartnersSection />
-      <PlatformAccessSection />
+      <DownloadAppSection />
       <FaqSection />
       <CtaSection />
 

@@ -1,245 +1,302 @@
 import { useState, useEffect, useCallback } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/contexts/SupabaseAuthContext';
 
-interface Notificacao {
+export interface Notificacao {
   id: string;
-  tipo: 'agendamento' | 'mensagem' | 'promocao' | 'sistema' | 'avaliacao';
+  tipo: 'info' | 'success' | 'warning' | 'error' | 'payment' | 'appointment';
   titulo: string;
-  conteudo: string;
-  lida: boolean;
-  criadaEm: string;
-  dados?: Record<string, any>;
-  icone?: string;
-  cor?: string;
+  mensagem: string;
+  read: boolean;
+  created_at: string;
+  metadata?: {
+    payment_id?: string;
+    appointment_id?: string;
+    amount?: number;
+    [key: string]: any;
+  };
 }
 
-const useNotificacoes = () => {
+export function useNotificacoes() {
   const [notificacoes, setNotificacoes] = useState<Notificacao[]>([]);
-  const [carregando, setCarregando] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [permissaoNotificacao, setPermissaoNotificacao] = useState<NotificationPermission>('default');
+  const { user } = useAuth();
+  const supabase = createClient();
 
-  // Carregar notificações do localStorage
+  // Verificar permissão de notificação
   useEffect(() => {
-    const notificacoesStorage = localStorage.getItem('notificacoes');
-    if (notificacoesStorage) {
-      try {
-        const notificacoesParsed = JSON.parse(notificacoesStorage);
-        setNotificacoes(notificacoesParsed);
-      } catch (error) {
-        console.error('Erro ao carregar notificações:', error);
-      }
-    } else {
-      // Notificações iniciais de exemplo
-      const notificacoesIniciais: Notificacao[] = [
-        {
-          id: '1',
-          tipo: 'agendamento',
-          titulo: 'Agendamento confirmado',
-          conteudo: 'Seu agendamento na Auto Center Silva foi confirmado para amanhã às 14:00',
-          lida: false,
-          criadaEm: new Date().toISOString(),
-          dados: { agendamentoId: 'ag-1', oficinaId: 'of-1' },
-          icone: '📅',
-          cor: 'blue'
-        },
-        {
-          id: '2',
-          tipo: 'mensagem',
-          titulo: 'Nova mensagem',
-          conteudo: 'Auto Center Silva enviou uma mensagem sobre seu agendamento',
-          lida: false,
-          criadaEm: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 min atrás
-          dados: { conversaId: 'conv-1', oficinaId: 'of-1' },
-          icone: '💬',
-          cor: 'green'
-        },
-        {
-          id: '3',
-          tipo: 'promocao',
-          titulo: 'Oferta especial!',
-          conteudo: 'Mecânica Express está oferecendo 20% de desconto em revisões',
-          lida: true,
-          criadaEm: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2h atrás
-          dados: { oficinaId: 'of-2', promocaoId: 'promo-1' },
-          icone: '🎉',
-          cor: 'yellow'
-        }
-      ];
-      setNotificacoes(notificacoesIniciais);
+    if ('Notification' in window) {
+      setPermissaoNotificacao(Notification.permission);
     }
-    setCarregando(false);
-  }, []);
-
-  // Salvar notificações no localStorage
-  useEffect(() => {
-    if (!carregando) {
-      localStorage.setItem('notificacoes', JSON.stringify(notificacoes));
-    }
-  }, [notificacoes, carregando]);
-
-  // Adicionar nova notificação
-  const adicionarNotificacao = useCallback((notificacao: Omit<Notificacao, 'id' | 'criadaEm' | 'lida'>) => {
-    const novaNotificacao: Notificacao = {
-      ...notificacao,
-      id: Date.now().toString(),
-      criadaEm: new Date().toISOString(),
-      lida: false
-    };
-
-    setNotificacoes(prev => [novaNotificacao, ...prev]);
-    
-    // Mostrar notificação do navegador se permitido
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification(notificacao.titulo, {
-        body: notificacao.conteudo,
-        icon: '/favicon.ico'
-      });
-    }
-
-    return novaNotificacao;
-  }, []);
-
-  // Marcar como lida
-  const marcarComoLida = useCallback((id: string) => {
-    setNotificacoes(prev => 
-      prev.map(notif => 
-        notif.id === id ? { ...notif, lida: true } : notif
-      )
-    );
-  }, []);
-
-  // Marcar todas como lidas
-  const marcarTodasComoLidas = useCallback(() => {
-    setNotificacoes(prev => 
-      prev.map(notif => ({ ...notif, lida: true }))
-    );
-  }, []);
-
-  // Remover notificação
-  const removerNotificacao = useCallback((id: string) => {
-    setNotificacoes(prev => prev.filter(notif => notif.id !== id));
-  }, []);
-
-  // Limpar todas as notificações
-  const limparTodas = useCallback(() => {
-    setNotificacoes([]);
   }, []);
 
   // Solicitar permissão para notificações
-  const solicitarPermissaoNotificacao = useCallback(async () => {
+  const solicitarPermissao = useCallback(async () => {
     if ('Notification' in window) {
       const permission = await Notification.requestPermission();
+      setPermissaoNotificacao(permission);
       return permission === 'granted';
     }
     return false;
   }, []);
 
-  // Notificações específicas por tipo
-  const criarNotificacaoAgendamento = useCallback((
-    titulo: string, 
-    conteudo: string, 
-    agendamentoId: string, 
-    oficinaId: string
-  ) => {
-    return adicionarNotificacao({
-      tipo: 'agendamento',
-      titulo,
-      conteudo,
-      dados: { agendamentoId, oficinaId },
-      icone: '📅',
-      cor: 'blue'
-    });
-  }, [adicionarNotificacao]);
+  // Carregar notificações do Supabase
+  const carregarNotificacoes = useCallback(async () => {
+    if (!user?.id) return;
 
-  const criarNotificacaoMensagem = useCallback((
-    titulo: string, 
-    conteudo: string, 
-    conversaId: string, 
-    remetenteId: string
-  ) => {
-    return adicionarNotificacao({
-      tipo: 'mensagem',
-      titulo,
-      conteudo,
-      dados: { conversaId, remetenteId },
-      icone: '💬',
-      cor: 'green'
-    });
-  }, [adicionarNotificacao]);
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(50);
 
-  const criarNotificacaoPromocao = useCallback((
-    titulo: string, 
-    conteudo: string, 
-    oficinaId: string, 
-    promocaoId?: string
-  ) => {
-    return adicionarNotificacao({
-      tipo: 'promocao',
-      titulo,
-      conteudo,
-      dados: { oficinaId, promocaoId },
-      icone: '🎉',
-      cor: 'yellow'
-    });
-  }, [adicionarNotificacao]);
+      if (error) {
+        console.error('Erro ao carregar notificações:', error);
+        return;
+      }
 
-  const criarNotificacaoSistema = useCallback((
-    titulo: string, 
-    conteudo: string, 
-    dados?: Record<string, any>
-  ) => {
-    return adicionarNotificacao({
-      tipo: 'sistema',
-      titulo,
-      conteudo,
-      dados,
-      icone: '🔔',
-      cor: 'gray'
-    });
-  }, [adicionarNotificacao]);
+      const notificacoesFormatadas = data?.map(notification => ({
+        id: notification.id,
+        tipo: mapTipoNotificacao(notification.type),
+        titulo: notification.title,
+        mensagem: notification.message,
+        read: notification.read,
+        created_at: notification.created_at,
+        metadata: notification.metadata
+      })) || [];
 
-  // Estatísticas
-  const naoLidas = notificacoes.filter(n => !n.lida).length;
-  const porTipo = notificacoes.reduce((acc, notif) => {
-    acc[notif.tipo] = (acc[notif.tipo] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+      setNotificacoes(notificacoesFormatadas);
+    } catch (error) {
+      console.error('Erro ao carregar notificações:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id, supabase]);
 
-  // Formatação de tempo
-  const formatarTempo = useCallback((timestamp: string) => {
-    const agora = new Date();
-    const data = new Date(timestamp);
-    const diffMs = agora.getTime() - data.getTime();
-    const diffMinutos = Math.floor(diffMs / (1000 * 60));
-    const diffHoras = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  // Configurar realtime para notificações
+  useEffect(() => {
+    if (!user?.id) return;
 
-    if (diffMinutos < 1) return 'Agora';
-    if (diffMinutos < 60) return `${diffMinutos}m atrás`;
-    if (diffHoras < 24) return `${diffHoras}h atrás`;
-    if (diffDias < 7) return `${diffDias}d atrás`;
-    return data.toLocaleDateString('pt-BR');
+    const channel = supabase
+      .channel('notifications')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          const newNotification = payload.new as any;
+          const notificacaoFormatada: Notificacao = {
+            id: newNotification.id,
+            tipo: mapTipoNotificacao(newNotification.type),
+            titulo: newNotification.title,
+            mensagem: newNotification.message,
+            read: newNotification.read,
+            created_at: newNotification.created_at,
+            metadata: newNotification.metadata
+          };
+
+          // Adicionar à lista
+          setNotificacoes(prev => [notificacaoFormatada, ...prev]);
+
+          // Mostrar notificação push se permitido
+          if (permissaoNotificacao === 'granted') {
+            showNotificationPush(notificacaoFormatada);
+          }
+
+          // Mostrar notificação web se a página estiver em foco
+          showWebNotification(notificacaoFormatada);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, permissaoNotificacao, supabase]);
+
+  // Carregar notificações quando o usuário estiver logado
+  useEffect(() => {
+    carregarNotificacoes();
+  }, [carregarNotificacoes]);
+
+  // Mostrar notificação push
+  const showNotificationPush = useCallback((notificacao: Notificacao) => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      const notification = new Notification(notificacao.titulo, {
+        body: notificacao.mensagem,
+        icon: '/logo-instauto.svg',
+        badge: '/logo-instauto.svg',
+        tag: notificacao.id,
+        requireInteraction: notificacao.tipo === 'error' || notificacao.tipo === 'payment',
+        data: {
+          id: notificacao.id,
+          type: notificacao.tipo,
+          metadata: notificacao.metadata
+        }
+      });
+
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+        
+        // Navegar baseado no tipo
+        if (notificacao.tipo === 'payment') {
+          window.location.href = '/dashboard/financeiro';
+        } else if (notificacao.tipo === 'appointment') {
+          window.location.href = '/dashboard/agendamentos';
+        }
+      };
+
+      // Auto-close após 5 segundos para notificações normais
+      if (notificacao.tipo !== 'error' && notificacao.tipo !== 'payment') {
+        setTimeout(() => notification.close(), 5000);
+      }
+    }
   }, []);
+
+  // Mostrar notificação web (in-app)
+  const showWebNotification = useCallback((notificacao: Notificacao) => {
+    // Aqui você pode integrar com uma biblioteca de toast como react-hot-toast
+    console.log('Nova notificação:', notificacao);
+  }, []);
+
+  // Marcar notificação como lida
+  const marcarComoLida = useCallback(async (notificacaoId: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('id', notificacaoId);
+
+      if (error) {
+        console.error('Erro ao marcar notificação como lida:', error);
+        return;
+      }
+
+      setNotificacoes(prev => 
+        prev.map(notif => 
+          notif.id === notificacaoId 
+            ? { ...notif, read: true }
+            : notif
+        )
+      );
+    } catch (error) {
+      console.error('Erro ao marcar notificação como lida:', error);
+    }
+  }, [supabase]);
+
+  // Marcar todas como lidas
+  const marcarTodasComoLidas = useCallback(async () => {
+    if (!user?.id) return;
+
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('user_id', user.id)
+        .eq('read', false);
+
+      if (error) {
+        console.error('Erro ao marcar todas como lidas:', error);
+        return;
+      }
+
+      setNotificacoes(prev => 
+        prev.map(notif => ({ ...notif, read: true }))
+      );
+    } catch (error) {
+      console.error('Erro ao marcar todas como lidas:', error);
+    }
+  }, [user?.id, supabase]);
+
+  // Criar nova notificação (para uso interno)
+  const criarNotificacao = useCallback(async (
+    titulo: string, 
+    mensagem: string, 
+    tipo: Notificacao['tipo'] = 'info',
+    metadata?: any
+  ) => {
+    if (!user?.id) return;
+
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: user.id,
+          title: titulo,
+          message: mensagem,
+          type: mapTipoParaDatabase(tipo),
+          read: false,
+          metadata,
+          created_at: new Date().toISOString()
+        });
+
+      if (error) {
+        console.error('Erro ao criar notificação:', error);
+      }
+    } catch (error) {
+      console.error('Erro ao criar notificação:', error);
+    }
+  }, [user?.id, supabase]);
+
+  const notificacoesNaoLidas = notificacoes.filter(n => !n.read);
 
   return {
     notificacoes,
-    carregando,
-    naoLidas,
-    porTipo,
-    
-    // Ações
-    adicionarNotificacao,
+    notificacoesNaoLidas,
+    loading,
+    permissaoNotificacao,
+    solicitarPermissao,
     marcarComoLida,
     marcarTodasComoLidas,
-    removerNotificacao,
-    limparTodas,
-    solicitarPermissaoNotificacao,
-    
-    // Helpers específicos
-    criarNotificacaoAgendamento,
-    criarNotificacaoMensagem,
-    criarNotificacaoPromocao,
-    criarNotificacaoSistema,
-    formatarTempo
+    criarNotificacao,
+    carregarNotificacoes
   };
-};
+}
 
-export default useNotificacoes; 
+// Mapear tipos de notificação
+function mapTipoNotificacao(type: string): Notificacao['tipo'] {
+  switch (type) {
+    case 'payment_approved':
+    case 'payment_refunded':
+      return 'payment';
+    case 'appointment_confirmed':
+    case 'appointment_cancelled':
+      return 'appointment';
+    case 'payment_failed':
+    case 'error':
+      return 'error';
+    case 'payment_pending':
+    case 'warning':
+      return 'warning';
+    case 'success':
+      return 'success';
+    default:
+      return 'info';
+  }
+}
+
+function mapTipoParaDatabase(tipo: Notificacao['tipo']): string {
+  switch (tipo) {
+    case 'payment':
+      return 'payment_info';
+    case 'appointment':
+      return 'appointment_info';
+    case 'error':
+      return 'error';
+    case 'warning':
+      return 'warning';
+    case 'success':
+      return 'success';
+    default:
+      return 'info';
+  }
+} 

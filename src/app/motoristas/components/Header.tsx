@@ -50,7 +50,7 @@ const Header = () => {
       <div className="container-custom relative z-10">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/motorista" className="relative z-50">
+          <Link href="/" className="relative z-50">
             <div className="flex items-center">
               <div className="relative overflow-hidden rounded-lg mr-2">
                 <motion.div 

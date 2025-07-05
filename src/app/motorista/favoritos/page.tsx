@@ -156,7 +156,7 @@ export default function FavoritosPage() {
             </p>
             {!busca && (
               <Link 
-                href="/oficinas/busca"
+                href="/buscar-oficinas"
                 className="inline-flex items-center px-6 py-3 bg-[#0047CC] text-white font-medium rounded-xl hover:bg-[#003DA6] transition-colors"
               >
                 <MagnifyingGlassIcon className="h-5 w-5 mr-2" />

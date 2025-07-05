@@ -47,7 +47,7 @@ export default function MotoristaDashboard() {
               Novo Veículo
             </button>
           </Link>
-          <Link href="/oficinas/busca" className="flex-1 sm:flex-none">
+          <Link href="/buscar-oficinas" className="flex-1 sm:flex-none">
             <button className="w-full sm:w-auto bg-[#FFDE59] hover:bg-[#FFDE59]/90 text-[#0047CC] px-6 py-4 rounded-lg font-medium transition-colors flex items-center justify-center min-h-[48px]">
               <CalendarIcon className="h-5 w-5 mr-2" />
               Agendar Serviço

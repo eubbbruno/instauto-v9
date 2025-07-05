@@ -1,10 +1,102 @@
 "use client";
 
-import { useState } from "react";
-import { MagnifyingGlassIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
+import { useState, useEffect } from "react";
+import { MagnifyingGlassIcon, ChatBubbleLeftRightIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { motion } from "framer-motion";
+import { useMessages } from "@/hooks/useSupabase";
+
+// Mock de dados para demonstração
+const mockConversas = [
+  {
+    id: "conv-1",
+    nome: "Auto Center Silva",
+    tipo: "oficina",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
+    ultimaMensagem: "Seu agendamento foi confirmado para amanhã às 14h",
+    horario: "14:30",
+    naoLidas: 2,
+    online: true
+  },
+  {
+    id: "conv-2", 
+    nome: "Oficina Costa & Cia",
+    tipo: "oficina",
+    avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=50&h=50&fit=crop&crop=face",
+    ultimaMensagem: "O orçamento para troca dos freios ficou em R$ 320",
+    horario: "12:15",
+    naoLidas: 0,
+    online: false
+  },
+  {
+    id: "conv-3",
+    nome: "Mecânica do João",
+    tipo: "oficina", 
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face",
+    ultimaMensagem: "Você: Obrigado pelo atendimento!",
+    horario: "Ontem",
+    naoLidas: 0,
+    online: true
+  }
+];
+
+const mockMensagens = [
+  {
+    id: "msg-1",
+    conversaId: "conv-1",
+    remetente: "oficina",
+    conteudo: "Olá! Recebi sua solicitação de agendamento.",
+    horario: "14:25",
+    lida: true
+  },
+  {
+    id: "msg-2", 
+    conversaId: "conv-1",
+    remetente: "usuario",
+    conteudo: "Oi! Gostaria de agendar uma revisão para meu Honda Civic.",
+    horario: "14:26",
+    lida: true
+  },
+  {
+    id: "msg-3",
+    conversaId: "conv-1", 
+    remetente: "oficina",
+    conteudo: "Seu agendamento foi confirmado para amanhã às 14h",
+    horario: "14:30",
+    lida: false
+  }
+];
 
 export default function MensagensPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [conversaSelecionada, setConversaSelecionada] = useState<string | null>(null);
+  const [mensagens, setMensagens] = useState(mockMensagens);
+  const [novaMensagem, setNovaMensagem] = useState("");
+
+  // Hook para mensagens em tempo real
+  const { messages, loading } = useMessages(conversaSelecionada || undefined);
+
+  const conversasFiltradas = mockConversas.filter(conversa =>
+    conversa.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const conversaAtual = mockConversas.find(c => c.id === conversaSelecionada);
+  const mensagensConversa = mensagens.filter(m => m.conversaId === conversaSelecionada);
+
+  const enviarMensagem = () => {
+    if (!novaMensagem.trim() || !conversaSelecionada) return;
+
+    const mensagem = {
+      id: `msg-${Date.now()}`,
+      conversaId: conversaSelecionada,
+      remetente: "usuario",
+      conteudo: novaMensagem,
+      horario: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      lida: true
+    };
+
+    setMensagens(prev => [...prev, mensagem]);
+    setNovaMensagem("");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -17,58 +109,172 @@ export default function MensagensPage() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Barra de busca */}
-          <div className="mb-6">
-            <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Buscar conversas..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-              />
-            </div>
-          </div>
+        <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-sm border overflow-hidden h-[calc(100vh-200px)]">
+          <div className="flex h-full">
+            {/* Lista de conversas */}
+            <div className={`w-full md:w-1/3 border-r border-gray-200 flex flex-col ${
+              conversaSelecionada ? 'hidden md:flex' : 'flex'
+            }`}>
+              {/* Header da lista */}
+              <div className="p-4 border-b border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Conversas</h2>
+                  <button className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">
+                    <PlusIcon className="h-5 w-5" />
+                  </button>
+                </div>
 
-          {/* Estado vazio */}
-          <div className="bg-white rounded-xl shadow-sm border p-12 text-center">
-            <div className="max-w-md mx-auto">
-              <ChatBubbleLeftRightIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Chat em Desenvolvimento
-              </h3>
-              <p className="text-gray-600 mb-6">
-                O sistema de mensagens em tempo real será lançado em breve. 
-                Por enquanto, você pode entrar em contato via WhatsApp.
-              </p>
-              
-              {/* Botões de ação */}
-              <div className="space-y-3">
-                <button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-medium transition-colors flex items-center justify-center">
-                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
-                  </svg>
-                  Contato via WhatsApp
-                </button>
-                
-                <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-medium transition-colors">
-                  Ver Agendamentos
-                </button>
+                <div className="relative">
+                  <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Buscar conversas..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* Lista de conversas */}
+              <div className="flex-1 overflow-y-auto">
+                {conversasFiltradas.map((conversa) => (
+                  <motion.div
+                    key={conversa.id}
+                    whileHover={{ backgroundColor: "#f9fafb" }}
+                    onClick={() => setConversaSelecionada(conversa.id)}
+                    className={`p-4 border-b border-gray-100 cursor-pointer transition-colors ${
+                      conversaSelecionada === conversa.id ? 'bg-blue-50 border-r-4 border-r-blue-600' : ''
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="relative">
+                        <img
+                          src={conversa.avatar}
+                          alt={conversa.nome}
+                          className="h-12 w-12 rounded-full object-cover"
+                        />
+                        {conversa.online && (
+                          <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-500 border-2 border-white rounded-full"></div>
+                        )}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-medium text-gray-900 truncate">{conversa.nome}</h3>
+                          <span className="text-xs text-gray-500">{conversa.horario}</span>
+                        </div>
+                        <p className={`text-sm truncate mt-1 ${
+                          conversa.naoLidas > 0 ? 'font-medium text-gray-900' : 'text-gray-500'
+                        }`}>
+                          {conversa.ultimaMensagem}
+                        </p>
+                      </div>
+                      
+                      {conversa.naoLidas > 0 && (
+                        <div className="bg-blue-600 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-medium">
+                          {conversa.naoLidas}
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </div>
-          </div>
 
-          {/* Informações sobre o futuro chat */}
-          <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6">
-            <h4 className="font-semibold text-blue-900 mb-2">🚀 Em breve: Chat em Tempo Real</h4>
-            <ul className="text-blue-800 space-y-1 text-sm">
-              <li>• Mensagens instantâneas entre motoristas e oficinas</li>
-              <li>• Compartilhamento de fotos e documentos</li>
-              <li>• Notificações push em tempo real</li>
-              <li>• Histórico completo de conversas</li>
-            </ul>
+            {/* Área de chat */}
+            <div className={`flex-1 flex flex-col ${
+              conversaSelecionada ? 'flex' : 'hidden md:flex'
+            }`}>
+              {conversaAtual ? (
+                <>
+                  {/* Header do chat */}
+                  <div className="p-4 border-b border-gray-200 bg-white">
+                    <div className="flex items-center space-x-3">
+                      <button
+                        onClick={() => setConversaSelecionada(null)}
+                        className="md:hidden p-2 hover:bg-gray-100 rounded-full"
+                      >
+                        ←
+                      </button>
+                      <img
+                        src={conversaAtual.avatar}
+                        alt={conversaAtual.nome}
+                        className="h-10 w-10 rounded-full object-cover"
+                      />
+                      <div>
+                        <h3 className="font-medium text-gray-900">{conversaAtual.nome}</h3>
+                        <p className="text-sm text-gray-500">
+                          {conversaAtual.online ? 'Online agora' : 'Visto por último hoje'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mensagens */}
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+                    {mensagensConversa.map((mensagem) => (
+                      <div
+                        key={mensagem.id}
+                        className={`flex ${
+                          mensagem.remetente === 'usuario' ? 'justify-end' : 'justify-start'
+                        }`}
+                      >
+                        <div
+                          className={`max-w-[70%] p-3 rounded-2xl ${
+                            mensagem.remetente === 'usuario'
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-white text-gray-900 shadow-sm'
+                          }`}
+                        >
+                          <p className="text-sm">{mensagem.conteudo}</p>
+                          <p className={`text-xs mt-1 text-right ${
+                            mensagem.remetente === 'usuario' ? 'text-blue-100' : 'text-gray-400'
+                          }`}>
+                            {mensagem.horario}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Input de mensagem */}
+                  <div className="p-4 border-t border-gray-200 bg-white">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="text"
+                        placeholder="Digite sua mensagem..."
+                        value={novaMensagem}
+                        onChange={(e) => setNovaMensagem(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && enviarMensagem()}
+                        className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                      />
+                      <button
+                        onClick={enviarMensagem}
+                        disabled={!novaMensagem.trim()}
+                        className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex-1 flex items-center justify-center bg-gray-50">
+                  <div className="text-center">
+                    <ChatBubbleLeftRightIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      Selecione uma conversa
+                    </h3>
+                    <p className="text-gray-600">
+                      Escolha uma conversa para começar a trocar mensagens
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

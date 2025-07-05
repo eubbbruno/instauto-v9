@@ -188,7 +188,7 @@ export default function OficinaDetalhes({ params }: { params: { id: string } }) 
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <Link 
-            href="/oficinas/busca" 
+            href="/buscar-oficinas" 
             className="flex items-center text-[#0047CC] hover:text-[#003DA6] text-sm font-medium"
           >
             <ArrowLeftIcon className="h-4 w-4 mr-2" />
