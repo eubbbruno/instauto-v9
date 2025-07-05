@@ -27,4 +27,4 @@ import Footer from "../motoristas/components/Footer";
 // ... (copiar todo o restante da lógica e JSX da antiga page.tsx, exceto o export default da page)
 
 // No final:
-export default BuscarOficinasPage; 
+export default BuscarOficinasClient; 
