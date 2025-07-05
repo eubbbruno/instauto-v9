@@ -179,6 +179,13 @@ export default function AuthOficinaPage() {
       setMessage('❌ Sistema temporariamente indisponível')
       return
     }
+    
+    // VALIDAÇÃO: Exigir nome da oficina para OAuth
+    if (!formData.businessName.trim()) {
+      setMessage('❌ Nome da oficina é obrigatório para login com Google!')
+      return
+    }
+    
     setLoading(true)
     setMessage('🔄 Redirecionando para Google...')
     try {
@@ -195,7 +202,7 @@ export default function AuthOficinaPage() {
           queryParams: { 
             type: 'oficina', 
             plan_type: formData.planType,
-            business_name: formData.businessName || 'Oficina'
+            business_name: formData.businessName
           }
         }
       })
@@ -211,6 +218,13 @@ export default function AuthOficinaPage() {
       setMessage('❌ Sistema temporariamente indisponível')
       return
     }
+    
+    // VALIDAÇÃO: Exigir nome da oficina para OAuth
+    if (!formData.businessName.trim()) {
+      setMessage('❌ Nome da oficina é obrigatório para login com Facebook!')
+      return
+    }
+    
     setLoading(true)
     setMessage('🔄 Redirecionando para Facebook...')
     try {
@@ -227,7 +241,7 @@ export default function AuthOficinaPage() {
           queryParams: { 
             type: 'oficina', 
             plan_type: formData.planType,
-            business_name: formData.businessName || 'Oficina'
+            business_name: formData.businessName
           }
         }
       })

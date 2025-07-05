@@ -14,7 +14,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/SupabaseAuthContext";
 import MiniCalendar from "@/components/MiniCalendar";
 import DashboardChart from "@/components/DashboardChart";
 import QuickDiagnosticAI from "@/components/QuickDiagnosticAI";
@@ -22,6 +23,26 @@ import OpportunitiesPanel from "@/components/OpportunitiesPanel";
 
 export default function DashboardPage() {
   const [currentPeriod, setCurrentPeriod] = useState("thisMonth");
+  const { user } = useAuth();
+  
+  // Verificar se o usuário é uma oficina PRO
+  // Nota: Estamos usando uma lógica temporária aqui, que deve ser substituída
+  // pela verificação real do plano quando disponível no backend
+  const [isProPlan, setIsProPlan] = useState(false);
+  
+  useEffect(() => {
+    // Lógica temporária: verificar se é uma oficina verificada
+    // Em produção, isso deve ser substituído pela verificação real do plano
+    if (user?.type === 'oficina' && user?.verified === true) {
+      setIsProPlan(true);
+    } else {
+      // Verificar se há um valor no localStorage (para fins de teste)
+      const storedPlanType = localStorage.getItem('workshop_plan_type');
+      if (storedPlanType === 'pro') {
+        setIsProPlan(true);
+      }
+    }
+  }, [user]);
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -91,7 +112,7 @@ export default function DashboardPage() {
             <div>
               <h2 className="text-2xl font-bold mb-2 flex items-center">
                 <SparklesIcon className="h-6 w-6 mr-2 text-[#FFDE59]" />
-                Olá, Carlos!
+                Olá, {user?.name || 'Carlos'}!
               </h2>
               <p className="text-white/80 max-w-lg">
                 Bem-vindo ao seu painel de controle. Aqui está o resumo do seu negócio hoje.
@@ -271,14 +292,38 @@ export default function DashboardPage() {
               />
             </motion.div>
             
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="h-[420px]"
-            >
-              <QuickDiagnosticAI />
-            </motion.div>
+            {/* Mostrar o Diagnóstico IA apenas para oficinas PRO */}
+            {isProPlan && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="h-[420px]"
+              >
+                <QuickDiagnosticAI />
+              </motion.div>
+            )}
+            
+            {/* Mensagem para oficinas FREE */}
+            {!isProPlan && user?.type === 'oficina' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="bg-white rounded-xl shadow-sm border p-6 flex flex-col items-center justify-center h-[420px]"
+              >
+                <div className="bg-gray-100 rounded-full p-4 mb-4">
+                  <SparklesIcon className="h-8 w-8 text-[#0047CC]" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Diagnóstico com IA</h3>
+                <p className="text-gray-600 text-center mb-4 max-w-md">
+                  Desbloqueie o poder da Inteligência Artificial para diagnósticos rápidos e precisos com o plano PRO.
+                </p>
+                <button className="bg-[#0047CC] hover:bg-[#0055EB] text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                  Fazer upgrade para PRO
+                </button>
+              </motion.div>
+            )}
           </div>
           
           {/* Coluna 2: Calendário e Oportunidades */}
@@ -336,19 +381,19 @@ export default function DashboardPage() {
                       <div className="flex w-16 md:w-20 items-center">
                         <span className="text-xs md:text-sm text-gray-600">{rating.stars}</span>
                         <StarIconSolid className="h-3 w-3 md:h-4 md:w-4 text-yellow-400 ml-1" />
-            </div>
+                      </div>
                       <div className="flex-1 h-1.5 md:h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-[#0047CC] rounded-full"
                           style={{ width: `${rating.percentage}%` }}
                         ></div>
-              </div>
+                      </div>
                       <div className="w-10 md:w-12 text-right">
                         <span className="text-xs md:text-sm text-gray-600">{rating.percentage}%</span>
                       </div>
                     </div>
-                      ))}
-                    </div>
+                  ))}
+                </div>
               </div>
             </motion.div>
           </div>
