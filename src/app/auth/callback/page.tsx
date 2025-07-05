@@ -9,23 +9,10 @@ function AuthCallbackContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  // Função para redirecionar baseado no tipo de usuário - MELHORADA
-  const redirectUserByType = (userType: string, planType?: string, needsProfileCompletion?: boolean) => {
-    console.log('🔄 Redirecionando usuário:', { userType, planType, needsProfileCompletion })
+  // Função para redirecionar baseado no tipo de usuário - SIMPLIFICADA
+  const redirectUserByType = (userType: string, planType?: string) => {
+    console.log('🔄 Redirecionando usuário:', { userType, planType })
     
-    // Se precisa completar perfil após OAuth, redireciona para página de perfil
-    if (needsProfileCompletion) {
-      if (userType === 'motorista') {
-        console.log('→ Redirecionando para completar perfil motorista')
-        router.push('/auth/motorista?step=profile&oauth=true')
-      } else if (userType === 'oficina') {
-        console.log('→ Redirecionando para completar perfil oficina')
-        router.push('/auth/oficina?step=profile&oauth=true')
-      }
-      return
-    }
-
-    // Fluxo normal após perfil completo
     if (userType === 'motorista') {
       console.log('→ Redirecionando motorista para dashboard')
       router.push('/motorista')
@@ -83,65 +70,33 @@ function AuthCallbackContent() {
               .single()
 
             if (profileError) {
-              console.warn('Perfil não encontrado, criando baseado nos metadados:', profileError)
-              // Pegar tipo dos query params do OAuth ou metadata
+              console.warn('Perfil não encontrado, usando tipo dos parâmetros:', profileError)
+              // Pegar tipo dos query params do OAuth
               const urlParams = new URLSearchParams(window.location.search)
               const typeFromUrl = urlParams.get('type')
               const userType = typeFromUrl || sessionData.session.user.user_metadata?.type || 'motorista'
               
-              console.log('Criando perfil para tipo:', userType)
-              
-              // Criar perfil básico primeiro
-              const { error: createProfileError } = await supabase.from('profiles').upsert({
-                id: sessionData.session.user.id,
-                email: sessionData.session.user.email,
-                name: sessionData.session.user.user_metadata?.name || sessionData.session.user.user_metadata?.full_name || '',
-                type: userType,
-                updated_at: new Date().toISOString()
-              })
-              
-              if (createProfileError) {
-                console.error('Erro ao criar perfil:', createProfileError)
-              }
-              
+              console.log('Redirecionando baseado no tipo:', userType)
               setTimeout(() => {
-                redirectUserByType(userType, undefined, true) // needsProfileCompletion = true
+                redirectUserByType(userType)
               }, 2000)
             } else {
               let planType = undefined
-              let isProfileComplete = false
               
-              // Verificar se os dados específicos estão completos
-              if (profile.type === 'motorista') {
-                // Para motorista: verificar se existe registro na tabela drivers com CPF
-                const { data: driver } = await supabase
-                  .from('drivers')
-                  .select('cpf')
-                  .eq('profile_id', sessionData.session.user.id)
-                  .single()
-                
-                isProfileComplete = !!(driver && driver.cpf && driver.cpf.trim())
-              } else if (profile.type === 'oficina') {
-                // Para oficina: verificar se existe registro na tabela workshops completo
+              // Para oficinas, verificar plano
+              if (profile.type === 'oficina') {
                 const { data: workshop } = await supabase
                   .from('workshops')
-                  .select('plan_type, business_name, cnpj')
+                  .select('plan_type')
                   .eq('profile_id', sessionData.session.user.id)
                   .single()
                 
-                planType = workshop?.plan_type
-                isProfileComplete = !!(workshop && workshop.plan_type && workshop.business_name && workshop.cnpj && workshop.cnpj.trim())
+                planType = workshop?.plan_type || 'free'
               }
               
-              if (!isProfileComplete) {
-                setTimeout(() => {
-                  redirectUserByType(profile.type, planType, true) // needsProfileCompletion = true
-                }, 2000)
-              } else {
-                setTimeout(() => {
-                  redirectUserByType(profile.type, planType, false) // Profile completo
-                }, 2000)
-              }
+              setTimeout(() => {
+                redirectUserByType(profile.type, planType)
+              }, 2000)
             }
             return
           }
@@ -170,79 +125,41 @@ function AuthCallbackContent() {
             .single()
 
           if (profileError) {
-            console.warn('Perfil não encontrado, criando baseado nos metadados (segunda checagem):', profileError)
-            // Pegar tipo dos query params do OAuth ou metadata
+            console.warn('Perfil não encontrado, usando tipo padrão:', profileError)
             const urlParams = new URLSearchParams(window.location.search)
             const typeFromUrl = urlParams.get('type')
             const userType = typeFromUrl || data.session.user.user_metadata?.type || 'motorista'
             
-            console.log('Criando perfil para tipo (segunda checagem):', userType)
-            
-            // Criar perfil básico primeiro
-            const { error: createProfileError } = await supabase.from('profiles').upsert({
-              id: data.session.user.id,
-              email: data.session.user.email,
-              name: data.session.user.user_metadata?.name || data.session.user.user_metadata?.full_name || '',
-              type: userType,
-              updated_at: new Date().toISOString()
-            })
-            
-            if (createProfileError) {
-              console.error('Erro ao criar perfil (segunda checagem):', createProfileError)
-            }
-            
             setTimeout(() => {
-              redirectUserByType(userType, undefined, true) // needsProfileCompletion = true
+              redirectUserByType(userType)
             }, 2000)
           } else {
             let planType = undefined
-            let isProfileComplete = false
             
-            // Verificar se os dados específicos estão completos
-            if (profile.type === 'motorista') {
-              // Para motorista: verificar se existe registro na tabela drivers com CPF
-              const { data: driver } = await supabase
-                .from('drivers')
-                .select('cpf')
-                .eq('profile_id', data.session.user.id)
-                .single()
-              
-              isProfileComplete = !!(driver && driver.cpf && driver.cpf.trim())
-            } else if (profile.type === 'oficina') {
-              // Para oficina: verificar se existe registro na tabela workshops completo
+            // Para oficinas, verificar plano
+            if (profile.type === 'oficina') {
               const { data: workshop } = await supabase
                 .from('workshops')
-                .select('plan_type, business_name, cnpj')
+                .select('plan_type')
                 .eq('profile_id', data.session.user.id)
                 .single()
               
-              planType = workshop?.plan_type
-              isProfileComplete = !!(workshop && workshop.plan_type && workshop.business_name && workshop.cnpj && workshop.cnpj.trim())
+              planType = workshop?.plan_type || 'free'
             }
             
-            if (!isProfileComplete) {
-              setTimeout(() => {
-                redirectUserByType(profile.type, planType, true) // needsProfileCompletion = true
-              }, 2000)
-            } else {
-              setTimeout(() => {
-                redirectUserByType(profile.type, planType, false) // Profile completo
-              }, 2000)
-            }
+            setTimeout(() => {
+              redirectUserByType(profile.type, planType)
+            }, 2000)
           }
-          return
+        } else {
+          setStatus('❌ Nenhuma sessão encontrada')
+          setTimeout(() => {
+            router.push('/auth')
+          }, 3000)
         }
-        
-        // Se chegou até aqui, não há sessão válida
-        setStatus('❌ Nenhuma sessão válida encontrada')
-        setTimeout(() => {
-          router.push('/auth')
-        }, 3000)
-
       } catch (error) {
-        console.error('Erro no callback:', error)
-        setStatus(`❌ Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
-        
+        console.error('Erro geral no callback:', error)
+        setStatus(`❌ Erro inesperado: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
         setTimeout(() => {
           router.push('/auth')
         }, 3000)
@@ -253,29 +170,52 @@ function AuthCallbackContent() {
   }, [router, searchParams])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-      <div className="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md">
-        <div className="text-6xl mb-4">🚗</div>
-        <h1 className="text-2xl font-bold mb-4 text-gray-900">Instauto</h1>
-        <div className="text-lg mb-4 text-gray-700">{status}</div>
-        
-        {status.includes('sucesso') && (
-          <div className="text-sm text-gray-600">
-            Redirecionando para seu dashboard...
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 flex items-center justify-center">
+      <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+        <div className="text-center">
+          <div className="text-6xl mb-4">
+            {status.includes('✅') ? '🎉' : status.includes('❌') ? '😞' : '⏳'}
           </div>
-        )}
-        
-        {status.includes('❌') && (
-          <div className="text-sm text-gray-600">
-            Redirecionando para login...
-          </div>
-        )}
-
-        {status.includes('🔄') && (
-          <div className="mt-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          </div>
-        )}
+          
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            {status.includes('✅') ? 'Sucesso!' : status.includes('❌') ? 'Ops!' : 'Aguarde...'}
+          </h1>
+          
+          <p className={`text-lg font-semibold mb-6 ${
+            status.includes('✅') ? 'text-green-600' : 
+            status.includes('❌') ? 'text-red-600' : 
+            'text-blue-600'
+          }`}>
+            {status}
+          </p>
+          
+          {status.includes('✅') && (
+            <div className="space-y-2 text-sm text-gray-600">
+              <p>🔄 Redirecionando para seu dashboard...</p>
+              <p>Se não for redirecionado automaticamente, <a href="/auth" className="text-blue-600 hover:text-blue-800 font-semibold">clique aqui</a></p>
+            </div>
+          )}
+          
+          {status.includes('❌') && (
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                Algo deu errado durante o login. Você será redirecionado para tentar novamente.
+              </p>
+              <a 
+                href="/auth" 
+                className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+              >
+                Tentar Novamente
+              </a>
+            </div>
+          )}
+          
+          {status.includes('🔄') && (
+            <div className="flex justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -283,13 +223,12 @@ function AuthCallbackContent() {
 
 function LoadingFallback() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-      <div className="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md">
-        <div className="text-6xl mb-4">🚗</div>
-        <h1 className="text-2xl font-bold mb-4 text-gray-900">Instauto</h1>
-        <div className="text-lg mb-4 text-gray-700">🔄 Carregando...</div>
-        <div className="mt-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 flex items-center justify-center">
+      <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 text-center">
+        <div className="text-6xl mb-4">⏳</div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">Carregando...</h1>
+        <div className="flex justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
       </div>
     </div>
