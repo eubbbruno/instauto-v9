@@ -9,17 +9,19 @@ import {
   ClockIcon,
   UserGroupIcon,
   CheckCircleIcon,
-  XMarkIcon,
   PhoneIcon,
   ChatBubbleLeftIcon,
   ChartBarIcon,
   WrenchScrewdriverIcon,
   BellIcon,
   ArrowUpIcon,
-  ArrowDownIcon,
-  EyeIcon
+  SparklesIcon,
+  LockClosedIcon,
+  GiftIcon,
+  StarIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/SupabaseAuthContext';
 
 // Dados mockados para o dashboard
 const mockData = {
@@ -108,6 +110,8 @@ const mockData = {
 export default function OficinaDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  const { user } = useAuth();
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -139,7 +143,13 @@ export default function OficinaDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 gap-3">
             <div className="flex-1">
-              <h1 className="text-xl md:text-2xl font-bold text-gray-900">Dashboard da Oficina</h1>
+              <div className="flex items-center gap-2 mb-2">
+                <h1 className="text-xl md:text-2xl font-bold text-gray-900">Dashboard Oficina</h1>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  <GiftIcon className="h-3 w-3 mr-1" />
+                  Plano Gratuito
+                </span>
+              </div>
               <p className="text-sm md:text-base text-gray-600 capitalize">{formatDate(currentTime)}</p>
             </div>
             
@@ -163,6 +173,67 @@ export default function OficinaDashboard() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+        {/* Welcome Card para Plano Gratuito */}
+        <motion.div 
+          className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg p-6 mb-6 text-white relative overflow-hidden"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-[30px]"></div>
+          <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-yellow-400/20 rounded-full blur-[30px]"></div>
+          
+          <div className="flex flex-col lg:flex-row justify-between items-start gap-4 relative">
+            <div className="flex-1">
+              <h2 className="text-xl md:text-2xl font-bold mb-2 flex items-center">
+                <SparklesIcon className="h-6 w-6 mr-2 text-yellow-400" />
+                Bem-vindo, {user?.name || 'Oficina'}!
+              </h2>
+              <p className="text-white/90 mb-4">
+                Você está no <strong>Plano Gratuito</strong>. Gerencie seus agendamentos básicos e comece a crescer seu negócio.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link 
+                  href="/oficinas/planos"
+                  className="bg-yellow-400 hover:bg-yellow-300 text-blue-900 px-6 py-3 rounded-lg text-sm font-bold transition-all duration-300 flex items-center justify-center shadow-lg min-h-[44px]"
+                >
+                  <StarIcon className="h-4 w-4 mr-2" />
+                  Upgrade para PRO
+                </Link>
+                <Link href="/oficina-basica/perfil" className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300 border border-white/30 backdrop-blur-sm flex items-center justify-center min-h-[44px]">
+                  Completar Perfil
+                </Link>
+              </div>
+            </div>
+            
+            <div className="bg-white/10 backdrop-blur-sm border border-white/30 rounded-lg p-4 min-w-[200px]">
+              <h3 className="text-sm font-bold mb-3 flex items-center">
+                <GiftIcon className="h-4 w-4 mr-1 text-yellow-400" />
+                Plano Gratuito
+              </h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center">
+                  <CheckCircleIcon className="h-4 w-4 mr-2 text-green-400" />
+                  <span>Até 10 agendamentos/mês</span>
+                </div>
+                <div className="flex items-center">
+                  <CheckCircleIcon className="h-4 w-4 mr-2 text-green-400" />
+                  <span>Chat básico com clientes</span>
+                </div>
+                <div className="flex items-center text-white/60">
+                  <LockClosedIcon className="h-4 w-4 mr-2" />
+                  <span>Analytics avançados</span>
+                </div>
+                <div className="flex items-center text-white/60">
+                  <LockClosedIcon className="h-4 w-4 mr-2" />
+                  <span>IA para diagnósticos</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Cards de Estatísticas - Mobile Optimized */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
           {/* Ordens Hoje */}
@@ -195,23 +266,24 @@ export default function OficinaDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white rounded-xl shadow-sm p-6 border"
+            className="bg-white rounded-xl shadow-sm p-4 md:p-6 border"
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Agendamentos Hoje</p>
-                <p className="text-3xl font-bold text-gray-900">{mockData.stats.agendamentosHoje.value}</p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex-1">
+                <p className="text-xs md:text-sm font-medium text-gray-600">Agendamentos</p>
+                <p className="text-2xl md:text-3xl font-bold text-gray-900">{mockData.stats.agendamentosHoje.value}</p>
+                <p className="text-xs text-gray-500 mt-1">Limite: 10/mês no plano gratuito</p>
               </div>
-              <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <CalendarDaysIcon className="h-6 w-6 text-green-600" />
+              <div className="h-10 w-10 md:h-12 md:w-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <CalendarDaysIcon className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
               </div>
             </div>
-            <div className="mt-4 flex items-center">
-              <ArrowUpIcon className="h-4 w-4 text-green-500 mr-1" />
-              <span className="text-sm text-green-600 font-medium">
+            <div className="mt-3 md:mt-4 flex items-center">
+              <ArrowUpIcon className="h-3 w-3 md:h-4 md:w-4 text-green-500 mr-1" />
+              <span className="text-xs md:text-sm text-green-600 font-medium">
                 +{mockData.stats.agendamentosHoje.percentage}%
               </span>
-              <span className="text-sm text-gray-500 ml-1">vs ontem</span>
+              <span className="text-xs md:text-sm text-gray-500 ml-1">vs ontem</span>
             </div>
           </motion.div>
 
@@ -220,25 +292,25 @@ export default function OficinaDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white rounded-xl shadow-sm p-6 border"
+            className="bg-white rounded-xl shadow-sm p-4 md:p-6 border"
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Receita Hoje</p>
-                <p className="text-3xl font-bold text-gray-900">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex-1">
+                <p className="text-xs md:text-sm font-medium text-gray-600">Receita Hoje</p>
+                <p className="text-2xl md:text-3xl font-bold text-gray-900">
                   R$ {mockData.stats.receitaHoje.value.toLocaleString()}
                 </p>
               </div>
-              <div className="h-12 w-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <CurrencyDollarIcon className="h-6 w-6 text-yellow-600" />
+              <div className="h-10 w-10 md:h-12 md:w-12 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <CurrencyDollarIcon className="h-5 w-5 md:h-6 md:w-6 text-yellow-600" />
               </div>
             </div>
-            <div className="mt-4 flex items-center">
-              <ArrowUpIcon className="h-4 w-4 text-green-500 mr-1" />
-              <span className="text-sm text-green-600 font-medium">
+            <div className="mt-3 md:mt-4 flex items-center">
+              <ArrowUpIcon className="h-3 w-3 md:h-4 md:w-4 text-green-500 mr-1" />
+              <span className="text-xs md:text-sm text-green-600 font-medium">
                 +{mockData.stats.receitaHoje.percentage}%
               </span>
-              <span className="text-sm text-gray-500 ml-1">vs ontem</span>
+              <span className="text-xs md:text-sm text-gray-500 ml-1">vs ontem</span>
             </div>
           </motion.div>
 
@@ -247,23 +319,23 @@ export default function OficinaDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-white rounded-xl shadow-sm p-6 border"
+            className="bg-white rounded-xl shadow-sm p-4 md:p-6 border"
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Clientes Ativos</p>
-                <p className="text-3xl font-bold text-gray-900">{mockData.stats.clientesAtivos.value}</p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex-1">
+                <p className="text-xs md:text-sm font-medium text-gray-600">Clientes Ativos</p>
+                <p className="text-2xl md:text-3xl font-bold text-gray-900">{mockData.stats.clientesAtivos.value}</p>
               </div>
-              <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <UserGroupIcon className="h-6 w-6 text-purple-600" />
+              <div className="h-10 w-10 md:h-12 md:w-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <UserGroupIcon className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
               </div>
             </div>
-            <div className="mt-4 flex items-center">
-              <ArrowUpIcon className="h-4 w-4 text-green-500 mr-1" />
-              <span className="text-sm text-green-600 font-medium">
+            <div className="mt-3 md:mt-4 flex items-center">
+              <ArrowUpIcon className="h-3 w-3 md:h-4 md:w-4 text-green-500 mr-1" />
+              <span className="text-xs md:text-sm text-green-600 font-medium">
                 +{mockData.stats.clientesAtivos.percentage}%
               </span>
-              <span className="text-sm text-gray-500 ml-1">vs ontem</span>
+              <span className="text-xs md:text-sm text-gray-500 ml-1">vs ontem</span>
             </div>
           </motion.div>
         </div>

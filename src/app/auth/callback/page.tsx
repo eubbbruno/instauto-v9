@@ -9,25 +9,25 @@ function AuthCallbackContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  // Função para redirecionar baseado no tipo de usuário - SIMPLIFICADA
+  // Função para redirecionar baseado no tipo de usuário - CORRIGIDA
   const redirectUserByType = (userType: string, planType?: string) => {
-    console.log('🔄 Redirecionando usuário:', { userType, planType })
+    console.log('🔄 [CALLBACK] Redirecionando usuário:', { userType, planType })
     
     if (userType === 'motorista') {
-      console.log('→ Redirecionando motorista para dashboard')
+      console.log('→ [CALLBACK] Redirecionando motorista para /motorista')
       router.push('/motorista')
     } else if (userType === 'oficina') {
-      // Se tem plano PRO vai para dashboard completo, senão vai para básico
+      // Para oficinas, verificar o plano
       if (planType === 'pro') {
-        console.log('→ Redirecionando oficina PRO para dashboard')
+        console.log('→ [CALLBACK] Redirecionando oficina PRO para /dashboard')
         router.push('/dashboard')
       } else {
-        console.log('→ Redirecionando oficina FREE para oficina-basica')
+        console.log('→ [CALLBACK] Redirecionando oficina FREE para /oficina-basica')
         router.push('/oficina-basica')
       }
     } else {
       // Fallback: se não conseguir determinar o tipo, vai para página de seleção
-      console.log('⚠️ Tipo não identificado, redirecionando para auth')
+      console.log('⚠️ [CALLBACK] Tipo não identificado, redirecionando para /auth')
       router.push('/auth')
     }
   }
@@ -51,7 +51,7 @@ function AuthCallbackContent() {
           const { data: sessionData, error: sessionError } = await supabase.auth.exchangeCodeForSession(code)
           
           if (sessionError) {
-            console.error('Erro ao trocar código por sessão:', sessionError)
+            console.error('❌ [CALLBACK] Erro ao trocar código por sessão:', sessionError)
             setStatus(`❌ Erro: ${sessionError.message}`)
             setTimeout(() => {
               router.push('/auth')
@@ -61,45 +61,59 @@ function AuthCallbackContent() {
 
           if (sessionData.session && sessionData.session.user) {
             setStatus('✅ Login realizado com sucesso!')
+            console.log('✅ [CALLBACK] Sessão criada para usuário:', sessionData.session.user.id)
             
-            // Buscar perfil do usuário para redirecionamento correto
+            // ESTRATÉGIA ROBUSTA: Tentar múltiplas fontes para determinar tipo e plano
+            let userType = 'motorista' // padrão
+            let planType = 'free' // padrão
+            
+            // 1. Tentar buscar do perfil no banco
             const { data: profile, error: profileError } = await supabase
               .from('profiles')
               .select('type')
               .eq('id', sessionData.session.user.id)
               .single()
 
-            if (profileError) {
-              console.warn('Perfil não encontrado, usando tipo dos parâmetros:', profileError)
-                          // Pegar tipo e plano dos query params do OAuth
-            const urlParams = new URLSearchParams(window.location.search)
-            const typeFromUrl = urlParams.get('type')
-            const planFromUrl = urlParams.get('plan_type')
-            const userType = typeFromUrl || sessionData.session.user.user_metadata?.type || 'motorista'
-            const planType = planFromUrl || sessionData.session.user.user_metadata?.plan_type || 'free'
-            
-            console.log('Redirecionando baseado no tipo e plano:', { userType, planType })
-            setTimeout(() => {
-              redirectUserByType(userType, planType)
-            }, 2000)
-            } else {
-              let planType = undefined
+            if (profile && !profileError) {
+              userType = profile.type
+              console.log('✅ [CALLBACK] Tipo encontrado no perfil:', userType)
               
-              // Para oficinas, verificar plano
-              if (profile.type === 'oficina') {
-                const { data: workshop } = await supabase
+              // Se é oficina, buscar o plano
+              if (userType === 'oficina') {
+                const { data: workshop, error: workshopError } = await supabase
                   .from('workshops')
                   .select('plan_type')
                   .eq('profile_id', sessionData.session.user.id)
                   .single()
                 
-                planType = workshop?.plan_type || 'free'
+                if (workshop && !workshopError) {
+                  planType = workshop.plan_type || 'free'
+                  console.log('✅ [CALLBACK] Plano encontrado na oficina:', planType)
+                }
               }
+            } else {
+              console.warn('⚠️ [CALLBACK] Perfil não encontrado, usando metadados')
               
-              setTimeout(() => {
-                redirectUserByType(profile.type, planType)
-              }, 2000)
+              // 2. Fallback: usar metadados do usuário
+              const metadata = sessionData.session.user.user_metadata || {}
+              userType = metadata.type || 'motorista'
+              planType = metadata.plan_type || 'free'
+              
+              // 3. Fallback: usar query params da URL
+              const urlParams = new URLSearchParams(window.location.search)
+              const typeFromUrl = urlParams.get('type')
+              const planFromUrl = urlParams.get('plan_type')
+              
+              if (typeFromUrl) userType = typeFromUrl
+              if (planFromUrl) planType = planFromUrl
+              
+              console.log('⚠️ [CALLBACK] Usando fallback:', { userType, planType, metadata })
             }
+            
+            // Aguardar um pouco para o banco processar
+            setTimeout(() => {
+              redirectUserByType(userType, planType)
+            }, 1500)
             return
           }
         }
@@ -108,7 +122,7 @@ function AuthCallbackContent() {
         const { data, error } = await supabase.auth.getSession()
         
         if (error) {
-          console.error('Erro ao obter sessão:', error)
+          console.error('❌ [CALLBACK] Erro ao obter sessão:', error)
           setStatus(`❌ Erro: ${error.message}`)
           setTimeout(() => {
             router.push('/auth')
@@ -118,30 +132,22 @@ function AuthCallbackContent() {
 
         if (data.session && data.session.user) {
           setStatus('✅ Login realizado com sucesso!')
+          console.log('✅ [CALLBACK] Sessão ativa encontrada:', data.session.user.id)
           
-          // Buscar perfil do usuário
+          // Mesma lógica robusta para sessão existente
+          let userType = 'motorista'
+          let planType = 'free'
+          
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('type')
             .eq('id', data.session.user.id)
             .single()
 
-          if (profileError) {
-            console.warn('Perfil não encontrado, usando tipo padrão:', profileError)
-            const urlParams = new URLSearchParams(window.location.search)
-            const typeFromUrl = urlParams.get('type')
-            const planFromUrl = urlParams.get('plan_type')
-            const userType = typeFromUrl || data.session.user.user_metadata?.type || 'motorista'
-            const planType = planFromUrl || data.session.user.user_metadata?.plan_type || 'free'
+          if (profile && !profileError) {
+            userType = profile.type
             
-            setTimeout(() => {
-              redirectUserByType(userType, planType)
-            }, 2000)
-          } else {
-            let planType = undefined
-            
-            // Para oficinas, verificar plano
-            if (profile.type === 'oficina') {
+            if (userType === 'oficina') {
               const { data: workshop } = await supabase
                 .from('workshops')
                 .select('plan_type')
@@ -150,11 +156,15 @@ function AuthCallbackContent() {
               
               planType = workshop?.plan_type || 'free'
             }
-            
-            setTimeout(() => {
-              redirectUserByType(profile.type, planType)
-            }, 2000)
+          } else {
+            const metadata = data.session.user.user_metadata || {}
+            userType = metadata.type || 'motorista'
+            planType = metadata.plan_type || 'free'
           }
+          
+          setTimeout(() => {
+            redirectUserByType(userType, planType)
+          }, 1500)
         } else {
           setStatus('❌ Nenhuma sessão encontrada')
           setTimeout(() => {
@@ -162,7 +172,7 @@ function AuthCallbackContent() {
           }, 3000)
         }
       } catch (error) {
-        console.error('Erro geral no callback:', error)
+        console.error('❌ [CALLBACK] Erro geral:', error)
         setStatus(`❌ Erro inesperado: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
         setTimeout(() => {
           router.push('/auth')

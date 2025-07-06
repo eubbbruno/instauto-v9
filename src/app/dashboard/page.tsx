@@ -2,15 +2,14 @@
 
 import { 
   ArrowUpIcon,
-  ArrowDownIcon,
   PlusIcon,
   SparklesIcon,
   ClockIcon,
-  ArrowTrendingUpIcon,
   CalendarIcon,
   CurrencyDollarIcon,
   StarIcon,
-  WrenchScrewdriverIcon
+  WrenchScrewdriverIcon,
+  CheckCircleIcon
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
 import { motion } from "framer-motion";
@@ -26,22 +25,11 @@ export default function DashboardPage() {
   const { user } = useAuth();
   
   // Verificar se o usuário é uma oficina PRO
-  // Nota: Estamos usando uma lógica temporária aqui, que deve ser substituída
-  // pela verificação real do plano quando disponível no backend
-  const [isProPlan, setIsProPlan] = useState(false);
+  const [isProPlan, setIsProPlan] = useState(true); // Assumindo PRO por estar nesta página
   
   useEffect(() => {
-    // Lógica temporária: verificar se é uma oficina verificada
-    // Em produção, isso deve ser substituído pela verificação real do plano
-    if (user?.type === 'oficina' && user?.verified === true) {
-      setIsProPlan(true);
-    } else {
-      // Verificar se há um valor no localStorage (para fins de teste)
-      const storedPlanType = localStorage.getItem('workshop_plan_type');
-      if (storedPlanType === 'pro') {
-        setIsProPlan(true);
-      }
-    }
+    // Lógica para verificar plano PRO
+    setIsProPlan(true);
   }, [user]);
 
   const fadeInUp = {
@@ -89,9 +77,9 @@ export default function DashboardPage() {
     <>
       {/* Content */}
       <div className="p-6 bg-gray-50">
-        {/* Welcome Card */}
+        {/* Welcome Card PRO */}
         <motion.div 
-          className="bg-gradient-to-r from-[#0047CC] to-[#0055EB] rounded-xl shadow-md p-6 mb-6 text-white relative overflow-hidden"
+          className="bg-gradient-to-r from-[#0047CC] to-[#0055EB] rounded-xl shadow-lg p-6 mb-6 text-white relative overflow-hidden"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -108,49 +96,54 @@ export default function DashboardPage() {
             </svg>
           </div>
           
-          <div className="flex justify-between items-start relative">
-            <div>
-              <h2 className="text-2xl font-bold mb-2 flex items-center">
-                <SparklesIcon className="h-6 w-6 mr-2 text-[#FFDE59]" />
-                Olá, {user?.name || 'Carlos'}!
+          <div className="flex flex-col lg:flex-row justify-between items-start gap-4 relative">
+            <div className="flex-1">
+              <h2 className="text-xl md:text-2xl font-bold mb-2 flex items-center">
+                <StarIconSolid className="h-6 w-6 mr-2 text-[#FFDE59]" />
+                Dashboard PRO - {user?.name || 'Oficina'}
               </h2>
-              <p className="text-white/80 max-w-lg">
-                Bem-vindo ao seu painel de controle. Aqui está o resumo do seu negócio hoje.
+              <p className="text-white/90 mb-4">
+                Você está no <strong>Plano PRO</strong>! Aproveite todas as funcionalidades avançadas para maximizar seus resultados.
               </p>
-              <div className="mt-4 flex gap-2">
-                <button className="bg-white/10 hover:bg-white/20 text-white px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 border border-white/30 backdrop-blur-sm flex items-center justify-center min-h-[44px] w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300 border border-white/30 backdrop-blur-sm flex items-center justify-center min-h-[44px]">
                   <ClockIcon className="h-4 w-4 mr-2" />
                   Atividade Recente
                 </button>
-                <button className="bg-[#FFDE59] hover:bg-[#FFD327] text-[#0047CC] px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center shadow-md min-h-[44px] w-full sm:w-auto">
+                <button className="bg-[#FFDE59] hover:bg-[#FFD327] text-[#0047CC] px-6 py-3 rounded-lg text-sm font-bold transition-all duration-300 flex items-center justify-center shadow-lg min-h-[44px]">
                   <PlusIcon className="h-4 w-4 mr-2" />
                   Nova Ordem
                 </button>
               </div>
             </div>
             
-            <div className="hidden md:block">
-              <motion.div 
-                className="p-3 bg-white/10 backdrop-blur-sm border border-white/30 rounded-lg"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-              >
-                <div className="text-sm font-medium mb-1 flex items-center">
-                  <ArrowTrendingUpIcon className="h-4 w-4 mr-1 text-[#FFDE59]" />
-                  <span>Desempenho rápido</span>
+            <div className="bg-white/10 backdrop-blur-sm border border-white/30 rounded-lg p-4 min-w-[220px]">
+              <h3 className="text-sm font-bold mb-3 flex items-center">
+                <StarIconSolid className="h-4 w-4 mr-1 text-[#FFDE59]" />
+                Plano PRO Ativo
+              </h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center">
+                  <CheckCircleIcon className="h-4 w-4 mr-2 text-green-400" />
+                  <span>Agendamentos ilimitados</span>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold">12</div>
-                    <div className="text-xs text-white/70">Ordens Abertas</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-[#FFDE59]">+15%</div>
-                    <div className="text-xs text-white/70">Este mês</div>
-                  </div>
+                <div className="flex items-center">
+                  <CheckCircleIcon className="h-4 w-4 mr-2 text-green-400" />
+                  <span>IA para diagnósticos</span>
                 </div>
-              </motion.div>
+                <div className="flex items-center">
+                  <CheckCircleIcon className="h-4 w-4 mr-2 text-green-400" />
+                  <span>Analytics avançados</span>
+                </div>
+                <div className="flex items-center">
+                  <CheckCircleIcon className="h-4 w-4 mr-2 text-green-400" />
+                  <span>Chat premium</span>
+                </div>
+                <div className="flex items-center">
+                  <CheckCircleIcon className="h-4 w-4 mr-2 text-green-400" />
+                  <span>Suporte prioritário</span>
+                </div>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -199,75 +192,91 @@ export default function DashboardPage() {
           initial="hidden"
           animate="visible"
         >
-          {[
-            { 
-              label: "Ordens Abertas", 
-              value: "12", 
-              change: "+2 hoje",
-              trend: "up",
-              color: "from-amber-500 to-amber-400",
-              iconColor: "bg-amber-100 text-amber-600",
-              icon: <WrenchScrewdriverIcon className="h-5 w-5" />
-            },
-            { 
-              label: "Faturamento do Mês", 
-              value: "R$ 25.840", 
-              change: "+15% vs. mês anterior",
-              trend: "up",
-              color: "from-green-500 to-green-400",
-              iconColor: "bg-green-100 text-green-600",
-              icon: <CurrencyDollarIcon className="h-5 w-5" />
-            },
-            { 
-              label: "Agendamentos", 
-              value: "8", 
-              change: "para hoje",
-              trend: "neutral",
-              color: "from-blue-500 to-blue-400",
-              iconColor: "bg-blue-100 text-blue-600",
-              icon: <CalendarIcon className="h-5 w-5" />
-            },
-            { 
-              label: "Avaliação Média", 
-              value: "4.8", 
-              change: "-0.1 esta semana",
-              trend: "down",
-              color: "from-purple-500 to-purple-400",
-              iconColor: "bg-purple-100 text-purple-600",
-              icon: <StarIcon className="h-5 w-5" />
-            },
-          ].map((stat, i) => (
-            <motion.div 
-              key={i} 
-              variants={fadeInUp}
-              className="bg-white rounded-xl shadow-sm overflow-hidden"
-            >
-              <div className="px-4 md:px-6 py-4 md:py-5">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="flex-1">
-                    <p className="text-xs md:text-sm text-gray-500">{stat.label}</p>
-                    <h4 className="text-xl md:text-2xl font-bold mt-1 text-gray-800">{stat.value}</h4>
-                  </div>
-                  <div className={`p-2 md:p-3 rounded-full ${stat.iconColor} w-fit`}>
-                    {stat.icon}
+          <motion.div 
+            className="bg-white rounded-xl shadow-sm p-6 border"
+            variants={fadeInUp}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Faturamento Hoje</p>
+                <p className="text-3xl font-bold text-gray-900">R$ 4.250</p>
+              </div>
+              <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <CurrencyDollarIcon className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center">
+              <ArrowUpIcon className="h-4 w-4 text-green-500 mr-1" />
+              <span className="text-sm text-green-600 font-medium">+12.5%</span>
+              <span className="text-sm text-gray-500 ml-1">vs ontem</span>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            className="bg-white rounded-xl shadow-sm p-6 border"
+            variants={fadeInUp}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Ordens Ativas</p>
+                <p className="text-3xl font-bold text-gray-900">18</p>
+              </div>
+              <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <WrenchScrewdriverIcon className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center">
+              <ArrowUpIcon className="h-4 w-4 text-green-500 mr-1" />
+              <span className="text-sm text-green-600 font-medium">+3</span>
+              <span className="text-sm text-gray-500 ml-1">novas hoje</span>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            className="bg-white rounded-xl shadow-sm p-6 border"
+            variants={fadeInUp}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Agendamentos</p>
+                <p className="text-3xl font-bold text-gray-900">24</p>
+                <p className="text-xs text-green-600 font-medium">✨ Ilimitado no PRO</p>
+              </div>
+              <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <CalendarIcon className="h-6 w-6 text-purple-600" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center">
+              <ArrowUpIcon className="h-4 w-4 text-green-500 mr-1" />
+              <span className="text-sm text-green-600 font-medium">+8.2%</span>
+              <span className="text-sm text-gray-500 ml-1">vs semana passada</span>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            className="bg-white rounded-xl shadow-sm p-6 border"
+            variants={fadeInUp}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Avaliação</p>
+                <div className="flex items-center">
+                  <p className="text-3xl font-bold text-gray-900">4.8</p>
+                  <div className="flex ml-2">
+                    {[...Array(5)].map((_, i) => (
+                      <StarIconSolid key={i} className="h-5 w-5 text-yellow-400" />
+                    ))}
                   </div>
                 </div>
-                
-                <div className="mt-3 md:mt-4 flex items-center text-xs md:text-sm">
-                  {stat.trend === "up" && <ArrowUpIcon className="h-3 w-3 md:h-4 md:w-4 text-green-500 mr-1" />}
-                  {stat.trend === "down" && <ArrowDownIcon className="h-3 w-3 md:h-4 md:w-4 text-red-500 mr-1" />}
-                  <span className={`${
-                    stat.trend === "up" ? "text-green-600" : 
-                    stat.trend === "down" ? "text-red-600" : 
-                    "text-gray-600"
-                  }`}>
-                    {stat.change}
-                  </span>
-                  </div>
               </div>
-              <div className={`h-1 bg-gradient-to-r ${stat.color}`}></div>
-            </motion.div>
-          ))}
+              <div className="h-12 w-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <StarIcon className="h-6 w-6 text-yellow-600" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center">
+              <span className="text-sm text-gray-500">Baseado em 156 avaliações</span>
+            </div>
+          </motion.div>
         </motion.div>
         
         {/* Layout principal de 3 colunas - Mobile Responsive */}
