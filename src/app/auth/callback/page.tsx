@@ -71,15 +71,17 @@ function AuthCallbackContent() {
 
             if (profileError) {
               console.warn('Perfil não encontrado, usando tipo dos parâmetros:', profileError)
-              // Pegar tipo dos query params do OAuth
-              const urlParams = new URLSearchParams(window.location.search)
-              const typeFromUrl = urlParams.get('type')
-              const userType = typeFromUrl || sessionData.session.user.user_metadata?.type || 'motorista'
-              
-              console.log('Redirecionando baseado no tipo:', userType)
-              setTimeout(() => {
-                redirectUserByType(userType)
-              }, 2000)
+                          // Pegar tipo e plano dos query params do OAuth
+            const urlParams = new URLSearchParams(window.location.search)
+            const typeFromUrl = urlParams.get('type')
+            const planFromUrl = urlParams.get('plan_type')
+            const userType = typeFromUrl || sessionData.session.user.user_metadata?.type || 'motorista'
+            const planType = planFromUrl || sessionData.session.user.user_metadata?.plan_type || 'free'
+            
+            console.log('Redirecionando baseado no tipo e plano:', { userType, planType })
+            setTimeout(() => {
+              redirectUserByType(userType, planType)
+            }, 2000)
             } else {
               let planType = undefined
               
@@ -128,10 +130,12 @@ function AuthCallbackContent() {
             console.warn('Perfil não encontrado, usando tipo padrão:', profileError)
             const urlParams = new URLSearchParams(window.location.search)
             const typeFromUrl = urlParams.get('type')
+            const planFromUrl = urlParams.get('plan_type')
             const userType = typeFromUrl || data.session.user.user_metadata?.type || 'motorista'
+            const planType = planFromUrl || data.session.user.user_metadata?.plan_type || 'free'
             
             setTimeout(() => {
-              redirectUserByType(userType)
+              redirectUserByType(userType, planType)
             }, 2000)
           } else {
             let planType = undefined
