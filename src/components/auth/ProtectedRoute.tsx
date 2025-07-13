@@ -46,6 +46,21 @@ export default function ProtectedRoute({
   }, []);
 
   useEffect(() => {
+    // CORREÇÃO CLAUDE WEB: Fallback de emergência para casos edge
+    if (!loading && !user) {
+      // Tentar recuperar sessão diretamente
+      if (isSupabaseConfigured() && supabase) {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session) {
+            console.log('🚨 [PROTECTED] Contexto perdeu sessão! Recarregando...');
+            window.location.reload(); // Force reload para resincronizar
+          }
+        });
+      }
+    }
+  }, [loading, user]);
+
+  useEffect(() => {
     // Aguardar tanto o contexto quanto a verificação direta do Supabase
     if (!loading && !supabaseLoading) {
       console.log('🔍 [PROTECTED] Estado completo:', { 

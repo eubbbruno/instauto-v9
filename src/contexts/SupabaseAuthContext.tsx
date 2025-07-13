@@ -91,72 +91,74 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const router = useRouter();
 
   useEffect(() => {
-    // Verificar autenticação local primeiro (login fixo)
-    const checkLocalAuth = () => {
-      const localUser = localStorage.getItem('instauto_user');
-      if (localUser) {
-        try {
-          const userData = JSON.parse(localUser);
-          // Simular objeto User para compatibilidade
-          const mockUser: User = {
-            id: userData.email,
-            email: userData.email,
-            name: userData.name,
-            type: userData.type,
-            avatar: userData.type === 'motorista' ? '🚗' : '🔧'
-          };
-          
-          setUser(mockUser);
-          setLoading(false);
-          return true;
-        } catch (error) {
-          console.error('Erro ao parsear dados locais:', error);
-          localStorage.removeItem('instauto_user');
-          return false;
+    // CORREÇÃO CLAUDE WEB: Carregar sessão inicial IMEDIATAMENTE
+    const initializeAuth = async () => {
+      try {
+        // Verificar auth local primeiro (login fixo)
+        const localUser = localStorage.getItem('instauto_user');
+        if (localUser) {
+          try {
+            const userData = JSON.parse(localUser);
+            const mockUser: User = {
+              id: userData.email,
+              email: userData.email,
+              name: userData.name,
+              type: userData.type,
+              avatar: userData.type === 'motorista' ? '🚗' : '🔧'
+            };
+            setUser(mockUser);
+            setLoading(false);
+            return;
+          } catch (error) {
+            console.error('Erro ao parsear dados locais:', error);
+            localStorage.removeItem('instauto_user');
+          }
         }
-      }
-      return false;
-    };
 
-    // Se não há autenticação local, verificar Supabase (apenas se configurado)
-    const getInitialSession = async () => {
-      const hasLocalAuth = checkLocalAuth();
-      
-      if (!hasLocalAuth && isSupabaseConfigured() && supabase) {
-        try {
+        // Se não tem auth local E Supabase está configurado
+        if (isSupabaseConfigured() && supabase) {
           const { data: { session } } = await supabase.auth.getSession();
+          
           if (session?.user) {
+            console.log('🚀 [CONTEXT] Sessão inicial encontrada:', session.user.id);
             await loadUserProfile(session.user);
           }
-        } catch (error) {
-          console.error('Erro ao verificar sessão Supabase:', error);
         }
+        
+        setLoading(false);
+      } catch (error) {
+        console.error('❌ [CONTEXT] Erro ao inicializar:', error);
+        setLoading(false);
       }
-      
-      setLoading(false);
     };
 
-    getInitialSession();
+    initializeAuth();
 
-    // Escutar mudanças de autenticação do Supabase (apenas se configurado)
+    // CORREÇÃO CLAUDE WEB: Listener para mudanças com logs detalhados
     let subscription: { unsubscribe: () => void } | null = null;
     
     if (isSupabaseConfigured() && supabase) {
-      const { data } = supabase.auth.onAuthStateChange(
+      const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(
         async (event, session) => {
-          // Se não é autenticação local, usar sessão do Supabase
+          console.log('🔄 [CONTEXT] Auth state change:', event, session?.user?.id);
+          
+          // Não processar se tem auth local
           const localUser = localStorage.getItem('instauto_user');
-          if (!localUser) {
-            if (session?.user) {
-              await loadUserProfile(session.user);
-            } else {
-              setUser(null);
-            }
-            setLoading(false);
+          if (localUser) {
+            console.log('📱 [CONTEXT] Auth local detectado, ignorando Supabase');
+            return;
+          }
+          
+          if (event === 'SIGNED_IN' && session?.user) {
+            console.log('✅ [CONTEXT] SIGNED_IN event - carregando profile');
+            await loadUserProfile(session.user);
+          } else if (event === 'SIGNED_OUT') {
+            console.log('🚪 [CONTEXT] SIGNED_OUT event - limpando user');
+            setUser(null);
           }
         }
       );
-      subscription = data;
+      subscription = { unsubscribe: () => authSubscription.unsubscribe() };
     }
 
     return () => {
@@ -164,7 +166,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         subscription.unsubscribe();
       }
     };
-  }, []);
+  }, [supabase]); // IMPORTANTE: Dependência do supabase
 
   // Carregar perfil do usuário
   const loadUserProfile = async (supabaseUser: SupabaseUser) => {

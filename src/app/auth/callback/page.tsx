@@ -100,9 +100,15 @@ function AuthCallbackContent() {
               const planType = planFromUrl || 'free'
               
               console.log('🚀 [CALLBACK] Redirecionando com dados da URL...')
-              setTimeout(async () => {
-                await redirectUserByType(userType, planType)
-              }, 500)
+              
+              // CORREÇÃO CLAUDE WEB: Force refresh da sessão e aguarde sincronização
+              await supabase.auth.refreshSession();
+              console.log('🔄 [CALLBACK] Sessão refreshed');
+              
+              // Aguarde mais tempo para sincronização
+              await new Promise(resolve => setTimeout(resolve, 2000));
+              
+              await redirectUserByType(userType, planType)
               return
             }
             
@@ -160,9 +166,10 @@ function AuthCallbackContent() {
               const userType = typeFromUrl
               const planType = planFromUrl || 'free'
               
-              setTimeout(async () => {
-                await redirectUserByType(userType, planType)
-              }, 500)
+              // CORREÇÃO CLAUDE WEB: Force refresh e aguarde sincronização
+              await supabase.auth.refreshSession();
+              await new Promise(resolve => setTimeout(resolve, 2000));
+              await redirectUserByType(userType, planType)
             } else {
               // Buscar no banco
               const { data: profile } = await supabase
@@ -185,14 +192,16 @@ function AuthCallbackContent() {
                   planType = workshop?.plan_type || 'free'
                 }
                 
-                setTimeout(() => {
-                  redirectUserByType(userType, planType)
-                }, 500)
-              } else {
-                setTimeout(() => {
-                  redirectUserByType('motorista', 'free')
-                }, 500)
-              }
+                // CORREÇÃO CLAUDE WEB: Force refresh e aguarde
+                await supabase.auth.refreshSession();
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                await redirectUserByType(userType, planType)
+                              } else {
+                  // CORREÇÃO CLAUDE WEB: Fallback com refresh
+                  await supabase.auth.refreshSession();
+                  await new Promise(resolve => setTimeout(resolve, 2000));
+                  await redirectUserByType('motorista', 'free')
+                }
             }
           } else {
             console.log('❌ [CALLBACK] Nenhuma sessão encontrada')
