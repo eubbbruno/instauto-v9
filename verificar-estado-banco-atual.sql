@@ -1,149 +1,254 @@
--- 🔍 SCRIPT PARA VERIFICAR ESTADO ATUAL DO BANCO
--- Execute este script no Supabase SQL Editor para ver o que já existe
+-- 🔍 VERIFICAÇÃO COMPLETA DO ESTADO DO BANCO
+-- Execute este script para diagnosticar problemas de redirecionamento
 
 -- ==================================================
--- 📊 VERIFICAR TABELAS EXISTENTES
+-- 📊 STEP 1: VERIFICAR ESTRUTURA BÁSICA
 -- ==================================================
 
+-- Verificar se as tabelas existem
 SELECT 
     '📋 TABELAS EXISTENTES' as categoria,
-    table_name as nome,
-    table_type as tipo
+    table_name,
+    CASE 
+        WHEN table_name IN ('profiles', 'drivers', 'workshops') THEN '✅ ESSENCIAL'
+        ELSE '📦 ADICIONAL'
+    END as status
 FROM information_schema.tables 
 WHERE table_schema = 'public'
 ORDER BY table_name;
 
--- ==================================================
--- 🔍 VERIFICAR COLUNAS DA TABELA PROFILES
--- ==================================================
-
+-- Verificar se a função handle_new_user existe
 SELECT 
-    '👤 PROFILES - COLUNAS' as categoria,
-    column_name as nome,
-    data_type as tipo,
-    is_nullable as nullable,
-    column_default as padrao
-FROM information_schema.columns 
-WHERE table_name = 'profiles' AND table_schema = 'public'
-ORDER BY ordinal_position;
+    '⚙️ FUNÇÃO HANDLE_NEW_USER' as categoria,
+    CASE 
+        WHEN EXISTS(
+            SELECT 1 FROM information_schema.routines 
+            WHERE routine_name = 'handle_new_user' AND routine_schema = 'public'
+        ) THEN '✅ EXISTE'
+        ELSE '❌ NÃO EXISTE'
+    END as status;
 
--- ==================================================
--- 🔍 VERIFICAR COLUNAS DA TABELA WORKSHOPS
--- ==================================================
-
+-- Verificar se o trigger existe
 SELECT 
-    '🔧 WORKSHOPS - COLUNAS' as categoria,
-    column_name as nome,
-    data_type as tipo,
-    is_nullable as nullable,
-    column_default as padrao
-FROM information_schema.columns 
-WHERE table_name = 'workshops' AND table_schema = 'public'
-ORDER BY ordinal_position;
+    '🔗 TRIGGER AUTH' as categoria,
+    CASE 
+        WHEN EXISTS(
+            SELECT 1 FROM information_schema.triggers 
+            WHERE trigger_name = 'on_auth_user_created'
+        ) THEN '✅ ATIVO'
+        ELSE '❌ INATIVO'
+    END as status;
 
 -- ==================================================
--- 🔍 VERIFICAR COLUNAS DA TABELA DRIVERS
+-- 👥 STEP 2: VERIFICAR USUÁRIOS EXISTENTES
 -- ==================================================
 
+-- Contar usuários por tipo
 SELECT 
-    '🚗 DRIVERS - COLUNAS' as categoria,
-    column_name as nome,
-    data_type as tipo,
-    is_nullable as nullable,
-    column_default as padrao
-FROM information_schema.columns 
-WHERE table_name = 'drivers' AND table_schema = 'public'
-ORDER BY ordinal_position;
+    '👥 USUÁRIOS POR TIPO' as categoria,
+    COALESCE(p.type, 'SEM_PROFILE') as tipo,
+    COUNT(*) as quantidade
+FROM auth.users u
+LEFT JOIN public.profiles p ON u.id = p.id
+GROUP BY p.type
+ORDER BY quantidade DESC;
 
--- ==================================================
--- ⚙️ VERIFICAR FUNÇÕES EXISTENTES
--- ==================================================
-
+-- Verificar usuários com problemas (sem profile)
 SELECT 
-    '⚙️ FUNÇÕES' as categoria,
-    routine_name as nome,
-    routine_type as tipo
-FROM information_schema.routines 
-WHERE routine_schema = 'public'
-ORDER BY routine_name;
+    '⚠️ USUÁRIOS SEM PROFILE' as categoria,
+    u.id,
+    u.email,
+    u.created_at,
+    u.raw_user_meta_data
+FROM auth.users u
+LEFT JOIN public.profiles p ON u.id = p.id
+WHERE p.id IS NULL
+ORDER BY u.created_at DESC;
 
--- ==================================================
--- 🔗 VERIFICAR TRIGGERS EXISTENTES
--- ==================================================
-
+-- Verificar oficinas sem workshop
 SELECT 
-    '🔗 TRIGGERS' as categoria,
-    trigger_name as nome,
-    event_manipulation as evento,
-    event_object_table as tabela
-FROM information_schema.triggers
-WHERE trigger_schema = 'public'
-ORDER BY trigger_name;
+    '⚠️ OFICINAS SEM WORKSHOP' as categoria,
+    p.id,
+    p.email,
+    p.name,
+    p.type
+FROM public.profiles p
+LEFT JOIN public.workshops w ON p.id = w.profile_id
+WHERE p.type = 'oficina' AND w.id IS NULL
+ORDER BY p.created_at DESC;
+
+-- Verificar motoristas sem driver
+SELECT 
+    '⚠️ MOTORISTAS SEM DRIVER' as categoria,
+    p.id,
+    p.email,
+    p.name,
+    p.type
+FROM public.profiles p
+LEFT JOIN public.drivers d ON p.id = d.profile_id
+WHERE p.type = 'motorista' AND d.id IS NULL
+ORDER BY p.created_at DESC;
 
 -- ==================================================
--- 🔒 VERIFICAR POLÍTICAS RLS
+-- 🎯 STEP 3: VERIFICAR PLANOS DE OFICINAS
 -- ==================================================
 
+-- Verificar planos das oficinas
+SELECT 
+    '📊 PLANOS DAS OFICINAS' as categoria,
+    COALESCE(w.plan_type, 'SEM_PLANO') as plano,
+    COUNT(*) as quantidade
+FROM public.profiles p
+LEFT JOIN public.workshops w ON p.id = w.profile_id
+WHERE p.type = 'oficina'
+GROUP BY w.plan_type
+ORDER BY quantidade DESC;
+
+-- Listar oficinas com seus planos
+SELECT 
+    '🏢 OFICINAS E PLANOS' as categoria,
+    p.email,
+    p.name,
+    COALESCE(w.plan_type, 'SEM_PLANO') as plano,
+    w.created_at
+FROM public.profiles p
+LEFT JOIN public.workshops w ON p.id = w.profile_id
+WHERE p.type = 'oficina'
+ORDER BY w.created_at DESC;
+
+-- ==================================================
+-- 🔒 STEP 4: VERIFICAR POLÍTICAS RLS
+-- ==================================================
+
+-- Contar políticas RLS
 SELECT 
     '🔒 POLÍTICAS RLS' as categoria,
-    tablename as tabela,
-    policyname as nome,
-    permissive as permissiva,
+    schemaname,
+    tablename,
+    COUNT(*) as quantidade_politicas
+FROM pg_policies 
+WHERE schemaname = 'public'
+GROUP BY schemaname, tablename
+ORDER BY tablename;
+
+-- Listar todas as políticas
+SELECT 
+    '📋 LISTA DE POLÍTICAS' as categoria,
+    schemaname || '.' || tablename as tabela,
+    policyname as politica,
     cmd as comando
 FROM pg_policies 
 WHERE schemaname = 'public'
 ORDER BY tablename, policyname;
 
 -- ==================================================
--- 📊 VERIFICAR DADOS EXISTENTES
+-- 🚨 STEP 5: IDENTIFICAR PROBLEMAS ESPECÍFICOS
 -- ==================================================
 
--- Contar registros em cada tabela principal
-DO $$
-DECLARE
-    table_count INTEGER;
-BEGIN
-    -- Profiles
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'profiles') THEN
-        SELECT COUNT(*) INTO table_count FROM public.profiles;
-        RAISE NOTICE '📊 PROFILES: % registros', table_count;
-    ELSE
-        RAISE NOTICE '📊 PROFILES: tabela não existe';
-    END IF;
-    
-    -- Drivers
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'drivers') THEN
-        SELECT COUNT(*) INTO table_count FROM public.drivers;
-        RAISE NOTICE '📊 DRIVERS: % registros', table_count;
-    ELSE
-        RAISE NOTICE '📊 DRIVERS: tabela não existe';
-    END IF;
-    
-    -- Workshops
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'workshops') THEN
-        SELECT COUNT(*) INTO table_count FROM public.workshops;
-        RAISE NOTICE '📊 WORKSHOPS: % registros', table_count;
-    ELSE
-        RAISE NOTICE '📊 WORKSHOPS: tabela não existe';
-    END IF;
-END $$;
-
--- ==================================================
--- 🔍 VERIFICAR EXTENSÕES HABILITADAS
--- ==================================================
-
+-- Verificar se há usuários com metadata incorreto
 SELECT 
-    '🔌 EXTENSÕES' as categoria,
-    extname as nome,
-    extversion as versao
-FROM pg_extension
-ORDER BY extname;
+    '🔍 METADATA INCORRETO' as categoria,
+    u.id,
+    u.email,
+    u.raw_user_meta_data->>'type' as metadata_type,
+    p.type as profile_type,
+    CASE 
+        WHEN u.raw_user_meta_data->>'type' != p.type THEN '❌ INCONSISTENTE'
+        WHEN u.raw_user_meta_data->>'type' IS NULL THEN '⚠️ SEM METADATA'
+        ELSE '✅ OK'
+    END as status
+FROM auth.users u
+LEFT JOIN public.profiles p ON u.id = p.id
+WHERE p.id IS NOT NULL
+ORDER BY u.created_at DESC;
 
--- ==================================================
--- 📝 RESUMO FINAL
--- ==================================================
-
+-- Verificar oficinas sem plan_type
 SELECT 
-    '🎯 RESUMO' as categoria,
-    'Verificação completa do banco realizada' as resultado,
-    'Veja os resultados acima para entender o estado atual' as instrucao; 
+    '🏢 OFICINAS SEM PLAN_TYPE' as categoria,
+    p.id,
+    p.email,
+    p.name,
+    w.plan_type
+FROM public.profiles p
+JOIN public.workshops w ON p.id = w.profile_id
+WHERE p.type = 'oficina' AND (w.plan_type IS NULL OR w.plan_type = '')
+ORDER BY p.created_at DESC;
+
+-- ==================================================
+-- 💡 STEP 6: RECOMENDAÇÕES DE CORREÇÃO
+-- ==================================================
+
+-- Gerar relatório final
+SELECT 
+    '📋 RELATÓRIO FINAL' as categoria,
+    'Verifique os resultados acima para identificar problemas' as instrucao,
+    'Execute as correções necessárias baseadas nos achados' as proxima_acao;
+
+-- Verificar se precisa executar limpeza total
+SELECT 
+    '🧹 RECOMENDAÇÃO' as categoria,
+    CASE 
+        WHEN EXISTS(
+            SELECT 1 FROM auth.users u
+            LEFT JOIN public.profiles p ON u.id = p.id
+            WHERE p.id IS NULL
+        ) THEN '❌ EXECUTE: limpeza-total-banco.sql'
+        ELSE '✅ BANCO PARECE OK'
+    END as acao_recomendada;
+
+-- ==================================================
+-- 🔧 STEP 7: QUERIES PARA CORREÇÃO MANUAL
+-- ==================================================
+
+-- Template para corrigir usuários sem profile
+/*
+-- EXECUTE APENAS SE NECESSÁRIO:
+INSERT INTO public.profiles (id, email, name, type)
+SELECT 
+    u.id,
+    u.email,
+    COALESCE(u.raw_user_meta_data->>'name', split_part(u.email, '@', 1)),
+    COALESCE(u.raw_user_meta_data->>'type', 'motorista')
+FROM auth.users u
+LEFT JOIN public.profiles p ON u.id = p.id
+WHERE p.id IS NULL;
+*/
+
+-- Template para corrigir oficinas sem workshop
+/*
+-- EXECUTE APENAS SE NECESSÁRIO:
+INSERT INTO public.workshops (profile_id, plan_type)
+SELECT 
+    p.id,
+    'free'
+FROM public.profiles p
+LEFT JOIN public.workshops w ON p.id = w.profile_id
+WHERE p.type = 'oficina' AND w.id IS NULL;
+*/
+
+-- Template para corrigir motoristas sem driver
+/*
+-- EXECUTE APENAS SE NECESSÁRIO:
+INSERT INTO public.drivers (profile_id)
+SELECT 
+    p.id
+FROM public.profiles p
+LEFT JOIN public.drivers d ON p.id = d.profile_id
+WHERE p.type = 'motorista' AND d.id IS NULL;
+*/
+
+/*
+🎯 COMO USAR ESTE SCRIPT:
+
+1. Execute no Supabase SQL Editor
+2. Analise os resultados de cada seção
+3. Identifique problemas específicos
+4. Use as queries de correção se necessário
+5. Ou execute limpeza-total-banco.sql se muitos problemas
+
+🚨 PROBLEMAS COMUNS:
+- Usuários sem profile → Função handle_new_user não funcionou
+- Oficinas sem workshop → Lógica de criação com erro
+- Motoristas sem driver → Mesmo problema acima
+- Planos incorretos → Metadata não foi processado corretamente
+*/ 

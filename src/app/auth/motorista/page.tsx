@@ -113,7 +113,7 @@ export default function MotoristaAuthPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/callback?type=motorista`,
           queryParams: { 
             type: 'motorista'
           }
@@ -141,7 +141,7 @@ export default function MotoristaAuthPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/callback?type=motorista`,
           queryParams: { 
             type: 'motorista'
           }

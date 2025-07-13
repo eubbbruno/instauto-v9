@@ -9,7 +9,7 @@ function AuthCallbackContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  // Função para redirecionar baseado no tipo de usuário - CORRIGIDA
+  // Função para redirecionar baseado no tipo de usuário - SUPER ROBUSTA
   const redirectUserByType = (userType: string, planType?: string) => {
     console.log('🔄 [CALLBACK] Redirecionando usuário:', { userType, planType })
     
@@ -43,6 +43,13 @@ function AuthCallbackContent() {
           return
         }
 
+        // PRIORIDADE 1: Verificar query params da URL PRIMEIRO
+        const urlParams = new URLSearchParams(window.location.search)
+        const typeFromUrl = urlParams.get('type')
+        const planFromUrl = urlParams.get('plan_type')
+        
+        console.log('🔍 [CALLBACK] Query params da URL:', { typeFromUrl, planFromUrl })
+
         // Verificar se há um código de autorização na URL
         const code = searchParams.get('code')
         if (code) {
@@ -63,57 +70,56 @@ function AuthCallbackContent() {
             setStatus('✅ Login realizado com sucesso!')
             console.log('✅ [CALLBACK] Sessão criada para usuário:', sessionData.session.user.id)
             
-            // ESTRATÉGIA ROBUSTA: Tentar múltiplas fontes para determinar tipo e plano
-            let userType = 'motorista' // padrão
-            let planType = 'free' // padrão
+            // ESTRATÉGIA SUPER ROBUSTA: Priorizar query params da URL
+            let userType = typeFromUrl || 'motorista' // URL tem prioridade
+            let planType = planFromUrl || 'free' // URL tem prioridade
             
-            // 1. Tentar buscar do perfil no banco
-            const { data: profile, error: profileError } = await supabase
-              .from('profiles')
-              .select('type')
-              .eq('id', sessionData.session.user.id)
-              .single()
+            console.log('🎯 [CALLBACK] Tipos iniciais (da URL):', { userType, planType })
+            
+            // Se não veio da URL, tentar buscar do banco
+            if (!typeFromUrl) {
+              console.log('🔍 [CALLBACK] Buscando tipo no banco...')
+              const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('type')
+                .eq('id', sessionData.session.user.id)
+                .single()
 
-            if (profile && !profileError) {
-              userType = profile.type
-              console.log('✅ [CALLBACK] Tipo encontrado no perfil:', userType)
-              
-              // Se é oficina, buscar o plano
-              if (userType === 'oficina') {
-                const { data: workshop, error: workshopError } = await supabase
-                  .from('workshops')
-                  .select('plan_type')
-                  .eq('profile_id', sessionData.session.user.id)
-                  .single()
+              if (profile && !profileError) {
+                userType = profile.type
+                console.log('✅ [CALLBACK] Tipo encontrado no perfil:', userType)
                 
-                if (workshop && !workshopError) {
-                  planType = workshop.plan_type || 'free'
-                  console.log('✅ [CALLBACK] Plano encontrado na oficina:', planType)
+                // Se é oficina, buscar o plano
+                if (userType === 'oficina' && !planFromUrl) {
+                  const { data: workshop, error: workshopError } = await supabase
+                    .from('workshops')
+                    .select('plan_type')
+                    .eq('profile_id', sessionData.session.user.id)
+                    .single()
+                  
+                  if (workshop && !workshopError) {
+                    planType = workshop.plan_type || 'free'
+                    console.log('✅ [CALLBACK] Plano encontrado na oficina:', planType)
+                  }
                 }
+              } else {
+                console.warn('⚠️ [CALLBACK] Perfil não encontrado, usando metadados')
+                
+                // Fallback final: usar metadados do usuário
+                const metadata = sessionData.session.user.user_metadata || {}
+                userType = metadata.type || 'motorista'
+                planType = metadata.plan_type || 'free'
+                
+                console.log('⚠️ [CALLBACK] Usando metadados:', { userType, planType, metadata })
               }
-            } else {
-              console.warn('⚠️ [CALLBACK] Perfil não encontrado, usando metadados')
-              
-              // 2. Fallback: usar metadados do usuário
-              const metadata = sessionData.session.user.user_metadata || {}
-              userType = metadata.type || 'motorista'
-              planType = metadata.plan_type || 'free'
-              
-              // 3. Fallback: usar query params da URL
-              const urlParams = new URLSearchParams(window.location.search)
-              const typeFromUrl = urlParams.get('type')
-              const planFromUrl = urlParams.get('plan_type')
-              
-              if (typeFromUrl) userType = typeFromUrl
-              if (planFromUrl) planType = planFromUrl
-              
-              console.log('⚠️ [CALLBACK] Usando fallback:', { userType, planType, metadata })
             }
             
-            // Aguardar um pouco para o banco processar
+            console.log('🎯 [CALLBACK] Tipos finais para redirecionamento:', { userType, planType })
+            
+            // Aguardar um pouco para o banco processar e redirecionar
             setTimeout(() => {
               redirectUserByType(userType, planType)
-            }, 1500)
+            }, 1000) // Reduzido de 1500ms para 1000ms
             return
           }
         }
@@ -134,37 +140,39 @@ function AuthCallbackContent() {
           setStatus('✅ Login realizado com sucesso!')
           console.log('✅ [CALLBACK] Sessão ativa encontrada:', data.session.user.id)
           
-          // Mesma lógica robusta para sessão existente
-          let userType = 'motorista'
-          let planType = 'free'
+          // Para sessão existente, usar a mesma lógica robusta
+          let userType = typeFromUrl || 'motorista'
+          let planType = planFromUrl || 'free'
           
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('type')
-            .eq('id', data.session.user.id)
-            .single()
+          if (!typeFromUrl) {
+            const { data: profile, error: profileError } = await supabase
+              .from('profiles')
+              .select('type')
+              .eq('id', data.session.user.id)
+              .single()
 
-          if (profile && !profileError) {
-            userType = profile.type
-            
-            if (userType === 'oficina') {
-              const { data: workshop } = await supabase
-                .from('workshops')
-                .select('plan_type')
-                .eq('profile_id', data.session.user.id)
-                .single()
+            if (profile && !profileError) {
+              userType = profile.type
               
-              planType = workshop?.plan_type || 'free'
+              if (userType === 'oficina' && !planFromUrl) {
+                const { data: workshop } = await supabase
+                  .from('workshops')
+                  .select('plan_type')
+                  .eq('profile_id', data.session.user.id)
+                  .single()
+                
+                planType = workshop?.plan_type || 'free'
+              }
+            } else {
+              const metadata = data.session.user.user_metadata || {}
+              userType = metadata.type || 'motorista'
+              planType = metadata.plan_type || 'free'
             }
-          } else {
-            const metadata = data.session.user.user_metadata || {}
-            userType = metadata.type || 'motorista'
-            planType = metadata.plan_type || 'free'
           }
           
           setTimeout(() => {
             redirectUserByType(userType, planType)
-          }, 1500)
+          }, 1000)
         } else {
           setStatus('❌ Nenhuma sessão encontrada')
           setTimeout(() => {

@@ -259,7 +259,7 @@ BEGIN
         ON CONFLICT (profile_id) DO NOTHING;
         
         RAISE LOG '🚗 [AUTH] Driver criado para: %', NEW.email;
-    ELSE
+    ELSIF user_type_value = 'oficina' THEN
         INSERT INTO public.workshops (profile_id, plan_type)
         VALUES (NEW.id, plan_type_value)
         ON CONFLICT (profile_id) DO UPDATE SET
