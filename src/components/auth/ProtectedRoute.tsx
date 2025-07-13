@@ -48,22 +48,35 @@ export default function ProtectedRoute({
   useEffect(() => {
     // Aguardar tanto o contexto quanto a verificação direta do Supabase
     if (!loading && !supabaseLoading) {
-      console.log('🔍 [PROTECTED] Estado:', { 
+      console.log('🔍 [PROTECTED] Estado completo:', { 
         user: !!user, 
+        userName: user?.name,
+        userType: user?.type,
         hasSupabaseSession, 
-        requiredUserType 
+        requiredUserType,
+        currentPath: window.location.pathname,
+        fallbackPath
       });
 
       // Se tem sessão Supabase mas não tem user no contexto, aguardar mais um pouco
       if (hasSupabaseSession && !user) {
-        console.log('⏳ [PROTECTED] Aguardando contexto carregar usuário...');
+        console.log('⏳ [PROTECTED] RACE CONDITION DETECTADA: Aguardando contexto carregar usuário...');
+        console.log('📊 [PROTECTED] Debugging info:', {
+          hasSupabaseSession,
+          userFromContext: !!user,
+          loadingContext: loading,
+          loadingSupabase: supabaseLoading
+        });
+        
         setTimeout(() => {
           // Verificar novamente após delay
           if (!user) {
-            console.log('⚠️ [PROTECTED] Contexto não carregou, redirecionando...');
+            console.log('⚠️ [PROTECTED] TIMEOUT: Contexto não carregou após 3 segundos, redirecionando...');
             router.push(fallbackPath);
+          } else {
+            console.log('✅ [PROTECTED] Contexto carregou com sucesso após delay!');
           }
-        }, 2000); // Aguardar 2 segundos para contexto carregar
+        }, 3000); // Aumentar para 3 segundos
         return;
       }
 

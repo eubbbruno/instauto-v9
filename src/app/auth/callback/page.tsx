@@ -10,24 +10,45 @@ function AuthCallbackContent() {
   const searchParams = useSearchParams()
 
   // Função para redirecionar - ULTRA SIMPLES
-  const redirectUserByType = (userType: string, planType?: string) => {
+  const redirectUserByType = async (userType: string, planType?: string) => {
+    console.log('🔵 [CALLBACK] Callback iniciado');
+    console.log('Session check iniciando...');
+    console.log('User type:', userType);
+    console.log('Plan type:', planType);
+    
+    // Verificar se a sessão está sendo salva no cliente
+    if (supabase) {
+      const { data: { session: clientSession } } = await supabase.auth.getSession();
+      console.log('🟢 Session no cliente após callback:', clientSession);
+    }
+    
+    // Force um delay para ver se é race condition
+    console.log('⏳ Aguardando 1 segundo para debug...');
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
     console.log('🔄 [CALLBACK] Redirecionando usuário:', { userType, planType })
     
+    let redirectUrl = '/auth'; // fallback
+    
     if (userType === 'motorista') {
+      redirectUrl = '/motorista';
       console.log('→ [CALLBACK] Redirecionando motorista para /motorista')
-      window.location.href = '/motorista' // Usar window.location para forçar
     } else if (userType === 'oficina') {
       if (planType === 'pro') {
+        redirectUrl = '/dashboard';
         console.log('→ [CALLBACK] Redirecionando oficina PRO para /dashboard')
-        window.location.href = '/dashboard'
       } else {
+        redirectUrl = '/oficina-basica';
         console.log('→ [CALLBACK] Redirecionando oficina FREE para /oficina-basica')
-        window.location.href = '/oficina-basica'
       }
     } else {
       console.log('⚠️ [CALLBACK] Tipo não identificado, redirecionando para /auth')
-      window.location.href = '/auth'
     }
+    
+    console.log('Redirect URL:', redirectUrl);
+    
+    // ✅ Use window.location.href em vez de router.push()
+    window.location.href = redirectUrl;
   }
 
   useEffect(() => {
@@ -79,8 +100,8 @@ function AuthCallbackContent() {
               const planType = planFromUrl || 'free'
               
               console.log('🚀 [CALLBACK] Redirecionando com dados da URL...')
-              setTimeout(() => {
-                redirectUserByType(userType, planType)
+              setTimeout(async () => {
+                await redirectUserByType(userType, planType)
               }, 500)
               return
             }
@@ -95,7 +116,7 @@ function AuthCallbackContent() {
 
             if (profile) {
               console.log('✅ [CALLBACK] Profile encontrado:', profile.type)
-              let userType = profile.type
+              const userType = profile.type
               let planType = 'free'
               
               if (userType === 'oficina') {
@@ -139,8 +160,8 @@ function AuthCallbackContent() {
               const userType = typeFromUrl
               const planType = planFromUrl || 'free'
               
-              setTimeout(() => {
-                redirectUserByType(userType, planType)
+              setTimeout(async () => {
+                await redirectUserByType(userType, planType)
               }, 500)
             } else {
               // Buscar no banco
@@ -151,7 +172,7 @@ function AuthCallbackContent() {
                 .single()
 
               if (profile) {
-                let userType = profile.type
+                const userType = profile.type
                 let planType = 'free'
                 
                 if (userType === 'oficina') {
