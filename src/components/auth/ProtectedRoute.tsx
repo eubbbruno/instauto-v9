@@ -2,8 +2,9 @@
 
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect, ReactNode } from 'react';
+import { useEffect, ReactNode, useState } from 'react';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -18,34 +19,95 @@ export default function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [supabaseLoading, setSupabaseLoading] = useState(true);
+  const [hasSupabaseSession, setHasSupabaseSession] = useState(false);
+
+  // Verificar sessão Supabase diretamente (para OAuth)
+  useEffect(() => {
+    const checkSupabaseSession = async () => {
+      if (!isSupabaseConfigured() || !supabase) {
+        setSupabaseLoading(false);
+        return;
+      }
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('🔍 [PROTECTED] Verificando sessão Supabase:', !!session);
+        setHasSupabaseSession(!!session);
+      } catch (error) {
+        console.error('❌ [PROTECTED] Erro ao verificar sessão:', error);
+        setHasSupabaseSession(false);
+      } finally {
+        setSupabaseLoading(false);
+      }
+    };
+
+    checkSupabaseSession();
+  }, []);
 
   useEffect(() => {
-    if (!loading) {
-      // Se não estiver logado, redireciona para login
-      if (!user) {
+    // Aguardar tanto o contexto quanto a verificação direta do Supabase
+    if (!loading && !supabaseLoading) {
+      console.log('🔍 [PROTECTED] Estado:', { 
+        user: !!user, 
+        hasSupabaseSession, 
+        requiredUserType 
+      });
+
+      // Se tem sessão Supabase mas não tem user no contexto, aguardar mais um pouco
+      if (hasSupabaseSession && !user) {
+        console.log('⏳ [PROTECTED] Aguardando contexto carregar usuário...');
+        setTimeout(() => {
+          // Verificar novamente após delay
+          if (!user) {
+            console.log('⚠️ [PROTECTED] Contexto não carregou, redirecionando...');
+            router.push(fallbackPath);
+          }
+        }, 2000); // Aguardar 2 segundos para contexto carregar
+        return;
+      }
+
+      // Se não tem sessão Supabase E não tem user no contexto, redirecionar
+      if (!hasSupabaseSession && !user) {
+        console.log('❌ [PROTECTED] Sem autenticação, redirecionando para:', fallbackPath);
         router.push(fallbackPath);
         return;
       }
 
-      // Se há restrição de tipo de usuário e não corresponde
-      if (requiredUserType && user.type !== requiredUserType) {
-        // Redireciona para a página apropriada do usuário
+      // Se tem user mas tipo não corresponde
+      if (user && requiredUserType && user.type !== requiredUserType) {
+        console.log('⚠️ [PROTECTED] Tipo incorreto, redirecionando...');
         const userDashboard = user.type === 'oficina' ? '/oficina-basica' : '/motorista';
         router.push(userDashboard);
         return;
       }
+
+      console.log('✅ [PROTECTED] Acesso autorizado');
     }
-  }, [user, loading, router, requiredUserType, fallbackPath]);
+  }, [user, loading, supabaseLoading, hasSupabaseSession, router, requiredUserType, fallbackPath]);
 
   // Mostrar loading enquanto verifica autenticação
-  if (loading) {
+  if (loading || supabaseLoading) {
+    console.log('⏳ [PROTECTED] Carregando...', { loading, supabaseLoading });
     return <LoadingSpinner />;
   }
 
-  // Se não estiver logado ou tipo de usuário não corresponder, não renderizar conteúdo
-  if (!user || (requiredUserType && user.type !== requiredUserType)) {
+  // Se tem sessão Supabase mas contexto ainda não carregou, aguardar
+  if (hasSupabaseSession && !user) {
+    console.log('⏳ [PROTECTED] Aguardando contexto...');
     return <LoadingSpinner />;
   }
 
+  // Se não tem sessão nem user, não renderizar (vai redirecionar)
+  if (!hasSupabaseSession && !user) {
+    return <LoadingSpinner />;
+  }
+
+  // Se tem restrição de tipo e não corresponde, não renderizar
+  if (user && requiredUserType && user.type !== requiredUserType) {
+    return <LoadingSpinner />;
+  }
+
+  console.log('🎉 [PROTECTED] Renderizando conteúdo protegido');
   return <>{children}</>;
 } 
