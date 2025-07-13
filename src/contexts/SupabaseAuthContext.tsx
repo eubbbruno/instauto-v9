@@ -181,6 +181,57 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (error) {
         console.error('Erro ao carregar perfil:', error);
+        
+        // Se não encontrou o profile, criar automaticamente para usuários OAuth
+        if (error.code === 'PGRST116') { // Profile não encontrado
+          console.log('🔧 [CONTEXT] Profile não encontrado, criando automaticamente...');
+          
+          const newProfile = {
+            id: supabaseUser.id,
+            name: supabaseUser.user_metadata?.full_name || supabaseUser.user_metadata?.name || 'Usuário',
+            email: supabaseUser.email || '',
+            type: 'motorista' as const, // Default para OAuth
+            avatar_url: supabaseUser.user_metadata?.avatar_url || supabaseUser.user_metadata?.picture,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          };
+
+          // Criar profile
+          const { error: createError } = await supabase
+            .from('profiles')
+            .insert(newProfile);
+
+          if (createError) {
+            console.error('❌ [CONTEXT] Erro ao criar profile:', createError);
+            return;
+          }
+
+          // Criar registro de motorista
+          const { error: driverError } = await supabase
+            .from('drivers')
+            .insert({
+              profile_id: supabaseUser.id,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+
+          if (driverError) {
+            console.error('❌ [CONTEXT] Erro ao criar driver:', driverError);
+          }
+
+          // Definir usuário com dados criados
+          setUser({
+            id: newProfile.id,
+            name: newProfile.name,
+            email: newProfile.email,
+            type: newProfile.type,
+            avatar: newProfile.avatar_url
+          });
+
+          console.log('✅ [CONTEXT] Profile criado automaticamente!');
+          return;
+        }
+        
         return;
       }
 
