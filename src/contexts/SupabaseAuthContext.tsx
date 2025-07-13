@@ -188,11 +188,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (error.code === 'PGRST116') { // Profile não encontrado
           console.log('🔧 [CONTEXT] Profile não encontrado, criando automaticamente...');
           
+          // CORREÇÃO CLAUDE WEB: Pegar tipo do metadata (fallback para motorista)
+          const userType = supabaseUser.user_metadata?.user_type || 'motorista';
+          const planType = supabaseUser.user_metadata?.plan_type || 'free';
+          
+          console.log('📝 [CONTEXT] Criando profile com metadata:', { userType, planType });
+          
           const newProfile = {
             id: supabaseUser.id,
             name: supabaseUser.user_metadata?.full_name || supabaseUser.user_metadata?.name || 'Usuário',
             email: supabaseUser.email || '',
-            type: 'motorista' as const, // Default para OAuth
+            type: userType as 'motorista' | 'oficina',
             avatar_url: supabaseUser.user_metadata?.avatar_url || supabaseUser.user_metadata?.picture,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
@@ -208,29 +214,60 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             return;
           }
 
-          // Criar registro de motorista
-          const { error: driverError } = await supabase
-            .from('drivers')
-            .insert({
-              profile_id: supabaseUser.id,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            });
+          // Criar registro específico baseado no tipo
+          if (userType === 'motorista') {
+            console.log('🚗 [CONTEXT] Criando registro de motorista');
+            const { error: driverError } = await supabase
+              .from('drivers')
+              .insert({
+                profile_id: supabaseUser.id,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              });
 
-          if (driverError) {
-            console.error('❌ [CONTEXT] Erro ao criar driver:', driverError);
+            if (driverError) {
+              console.error('❌ [CONTEXT] Erro ao criar driver:', driverError);
+            }
+          } else if (userType === 'oficina') {
+            console.log('🔧 [CONTEXT] Criando registro de oficina com plano:', planType);
+            const { error: workshopError } = await supabase
+              .from('workshops')
+              .insert({
+                profile_id: supabaseUser.id,
+                plan_type: planType,
+                business_name: newProfile.name,
+                verified: false,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              });
+
+            if (workshopError) {
+              console.error('❌ [CONTEXT] Erro ao criar workshop:', workshopError);
+            }
           }
 
-          // Definir usuário com dados criados
-          setUser({
+          // Definir usuário com plan_type se for oficina
+          const userData: User = {
             id: newProfile.id,
             name: newProfile.name,
             email: newProfile.email,
             type: newProfile.type,
             avatar: newProfile.avatar_url
-          });
+          };
 
-          console.log('✅ [CONTEXT] Profile criado automaticamente!');
+          // Se for oficina, adicionar dados específicos
+          if (userType === 'oficina') {
+            // Estender o tipo User para oficinas
+            Object.assign(userData, {
+              plan_type: planType,
+              businessName: newProfile.name,
+              verified: false
+            });
+          }
+
+          setUser(userData);
+
+          console.log('✅ [CONTEXT] Profile criado automaticamente com tipo:', userType);
           return;
         }
         

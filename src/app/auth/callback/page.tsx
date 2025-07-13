@@ -34,6 +34,7 @@ function AuthCallbackContent() {
       redirectUrl = '/motorista';
       console.log('→ [CALLBACK] Redirecionando motorista para /motorista')
     } else if (userType === 'oficina') {
+      // CORREÇÃO CLAUDE WEB: Redirecionamento baseado no plano
       if (planType === 'pro') {
         redirectUrl = '/dashboard';
         console.log('→ [CALLBACK] Redirecionando oficina PRO para /dashboard')
@@ -98,6 +99,21 @@ function AuthCallbackContent() {
               console.log('🎯 [CALLBACK] Usando type da URL:', typeFromUrl)
               const userType = typeFromUrl
               const planType = planFromUrl || 'free'
+              
+              // CORREÇÃO CLAUDE WEB: Adicionar metadata ao usuário ANTES de criar profile
+              console.log('📝 [CALLBACK] Atualizando metadata do usuário:', { userType, planType });
+              const { error: updateError } = await supabase.auth.updateUser({
+                data: { 
+                  user_type: userType,
+                  plan_type: userType === 'oficina' ? planType : null
+                }
+              });
+
+              if (updateError) {
+                console.error('❌ [CALLBACK] Erro ao atualizar metadata:', updateError);
+              } else {
+                console.log('✅ [CALLBACK] Metadata atualizado com sucesso!');
+              }
               
               console.log('🚀 [CALLBACK] Redirecionando com dados da URL...')
               
