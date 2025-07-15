@@ -114,6 +114,17 @@ function AuthCallbackContent() {
               } else {
                 console.log('✅ [CALLBACK] Metadata atualizado com sucesso!');
               }
+
+              // 🚨 DEBUG CRÍTICO - Verificar se metadata foi salvo
+              console.log('📝 [CALLBACK] Metadata atualizado:', {
+                userType,
+                planType,
+                updateError
+              });
+
+              // Verificar se o metadata foi salvo corretamente
+              const { data: { user: updatedUser } } = await supabase.auth.getUser();
+              console.log('👤 [CALLBACK] User metadata após update:', updatedUser?.user_metadata);
               
               console.log('🚀 [CALLBACK] Redirecionando com dados da URL...')
               

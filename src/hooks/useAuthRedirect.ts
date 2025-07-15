@@ -20,6 +20,8 @@ export function useAuthRedirect() {
   };
 
   useEffect(() => {
+    // 🚨 DEBUG CRÍTICO - Se este hook estiver sendo usado, ele pode estar causando redirecionamentos
+    console.log('🚨 [AUTH_REDIRECT] HOOK ATIVO - PODE ESTAR CAUSANDO O PROBLEMA!');
     console.log('🔍 [AUTH_REDIRECT] Estado atual:', { 
       user: !!user, 
       loading,

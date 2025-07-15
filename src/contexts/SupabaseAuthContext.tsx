@@ -189,8 +189,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.log('🔧 [CONTEXT] Profile não encontrado, criando automaticamente...');
           
           // CORREÇÃO CLAUDE WEB: Pegar tipo do metadata (fallback para motorista)
+          // 🚨 DEBUG CRÍTICO - Logs detalhados do metadata
+          console.log('🔍 [CONTEXT] User metadata completo:', supabaseUser.user_metadata);
           const userType = supabaseUser.user_metadata?.user_type || 'motorista';
           const planType = supabaseUser.user_metadata?.plan_type || 'free';
+          console.log('📋 [CONTEXT] Tipo detectado:', userType);
+          console.log('📋 [CONTEXT] Plano detectado:', planType);
           
           console.log('📝 [CONTEXT] Criando profile com metadata:', { userType, planType });
           
