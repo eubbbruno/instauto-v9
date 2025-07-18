@@ -94,46 +94,69 @@ function AuthCallbackContent() {
             console.log('✅ [CALLBACK] Sessão criada com sucesso!')
             setStatus('✅ Login realizado com sucesso!')
             
-            // SE TEMOS TYPE DA URL, USAR ELE (PRIORIDADE MÁXIMA)
+            // SOLUÇÃO CLAUDE WEB: CRIAR PROFILE AQUI COM TIPO CORRETO
             if (typeFromUrl) {
               console.log('🎯 [CALLBACK] Usando type da URL:', typeFromUrl)
               const userType = typeFromUrl
               const planType = planFromUrl || 'free'
               
-              // CORREÇÃO CLAUDE WEB: Adicionar metadata ao usuário ANTES de criar profile
-              console.log('📝 [CALLBACK] Atualizando metadata do usuário:', { userType, planType });
-              const { error: updateError } = await supabase.auth.updateUser({
-                data: { 
-                  user_type: userType,
-                  plan_type: userType === 'oficina' ? planType : null
+              // Verificar se profile já existe
+              const { data: existingProfile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', sessionData.session.user.id)
+                .single();
+              
+              if (!existingProfile) {
+                console.log('🔧 [CALLBACK] Criando profile com tipo correto:', userType);
+                
+                // Criar profile com tipo correto
+                const { error: profileError } = await supabase.from('profiles').insert({
+                  id: sessionData.session.user.id,
+                  email: sessionData.session.user.email,
+                  name: sessionData.session.user.user_metadata?.full_name || 
+                        sessionData.session.user.user_metadata?.name || 'Usuário',
+                  type: userType,
+                  avatar_url: sessionData.session.user.user_metadata?.avatar_url ||
+                             sessionData.session.user.user_metadata?.picture,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString()
+                });
+                
+                if (profileError) {
+                  console.error('❌ [CALLBACK] Erro ao criar profile:', profileError);
+                } else {
+                  console.log('✅ [CALLBACK] Profile criado com sucesso!');
                 }
-              });
-
-              if (updateError) {
-                console.error('❌ [CALLBACK] Erro ao atualizar metadata:', updateError);
+                
+                // Criar registro específico
+                if (userType === 'motorista') {
+                  console.log('🚗 [CALLBACK] Criando registro de motorista');
+                  await supabase.from('drivers').insert({ 
+                    profile_id: sessionData.session.user.id,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                  });
+                } else if (userType === 'oficina') {
+                  console.log('🔧 [CALLBACK] Criando registro de oficina com plano:', planType);
+                  await supabase.from('workshops').insert({ 
+                    profile_id: sessionData.session.user.id,
+                    plan_type: planType,
+                    business_name: sessionData.session.user.user_metadata?.full_name || 
+                                  sessionData.session.user.user_metadata?.name || 'Oficina',
+                    verified: false,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                  });
+                }
               } else {
-                console.log('✅ [CALLBACK] Metadata atualizado com sucesso!');
+                console.log('✅ [CALLBACK] Profile já existe:', existingProfile.type);
               }
-
-              // 🚨 DEBUG CRÍTICO - Verificar se metadata foi salvo
-              console.log('📝 [CALLBACK] Metadata atualizado:', {
-                userType,
-                planType,
-                updateError
-              });
-
-              // Verificar se o metadata foi salvo corretamente
-              const { data: { user: updatedUser } } = await supabase.auth.getUser();
-              console.log('👤 [CALLBACK] User metadata após update:', updatedUser?.user_metadata);
               
               console.log('🚀 [CALLBACK] Redirecionando com dados da URL...')
               
-              // CORREÇÃO CLAUDE WEB: Force refresh da sessão e aguarde sincronização
-              await supabase.auth.refreshSession();
-              console.log('🔄 [CALLBACK] Sessão refreshed');
-              
-              // Aguarde mais tempo para sincronização
-              await new Promise(resolve => setTimeout(resolve, 2000));
+              // Aguarde para sincronização
+              await new Promise(resolve => setTimeout(resolve, 1000));
               
               await redirectUserByType(userType, planType)
               return
@@ -188,14 +211,55 @@ function AuthCallbackContent() {
             console.log('✅ [CALLBACK] Sessão existente encontrada')
             setStatus('✅ Login realizado com sucesso!')
             
-            // Mesmo processo: priorizar URL
+            // Mesmo processo: priorizar URL e criar profile se necessário
             if (typeFromUrl) {
               const userType = typeFromUrl
               const planType = planFromUrl || 'free'
               
-              // CORREÇÃO CLAUDE WEB: Force refresh e aguarde sincronização
-              await supabase.auth.refreshSession();
-              await new Promise(resolve => setTimeout(resolve, 2000));
+              // Verificar se profile já existe
+              const { data: existingProfile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', data.session.user.id)
+                .single();
+              
+              if (!existingProfile) {
+                console.log('🔧 [CALLBACK] Criando profile para sessão existente:', userType);
+                
+                // Criar profile com tipo correto
+                await supabase.from('profiles').insert({
+                  id: data.session.user.id,
+                  email: data.session.user.email,
+                  name: data.session.user.user_metadata?.full_name || 
+                        data.session.user.user_metadata?.name || 'Usuário',
+                  type: userType,
+                  avatar_url: data.session.user.user_metadata?.avatar_url ||
+                             data.session.user.user_metadata?.picture,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString()
+                });
+                
+                // Criar registro específico
+                if (userType === 'motorista') {
+                  await supabase.from('drivers').insert({ 
+                    profile_id: data.session.user.id,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                  });
+                } else if (userType === 'oficina') {
+                  await supabase.from('workshops').insert({ 
+                    profile_id: data.session.user.id,
+                    plan_type: planType,
+                    business_name: data.session.user.user_metadata?.full_name || 
+                                  data.session.user.user_metadata?.name || 'Oficina',
+                    verified: false,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                  });
+                }
+              }
+              
+              await new Promise(resolve => setTimeout(resolve, 1000));
               await redirectUserByType(userType, planType)
             } else {
               // Buscar no banco
@@ -219,14 +283,10 @@ function AuthCallbackContent() {
                   planType = workshop?.plan_type || 'free'
                 }
                 
-                // CORREÇÃO CLAUDE WEB: Force refresh e aguarde
-                await supabase.auth.refreshSession();
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 await redirectUserByType(userType, planType)
                               } else {
-                  // CORREÇÃO CLAUDE WEB: Fallback com refresh
-                  await supabase.auth.refreshSession();
-                  await new Promise(resolve => setTimeout(resolve, 2000));
+                  await new Promise(resolve => setTimeout(resolve, 1000));
                   await redirectUserByType('motorista', 'free')
                 }
             }

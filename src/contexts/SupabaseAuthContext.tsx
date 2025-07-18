@@ -182,99 +182,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .single();
 
       if (error) {
-        console.error('Erro ao carregar perfil:', error);
+        console.error('❌ [CONTEXT] Erro ao carregar perfil:', error);
         
-        // Se não encontrou o profile, criar automaticamente para usuários OAuth
+        // SOLUÇÃO CLAUDE WEB: NÃO criar profile automaticamente aqui
+        // Isso estava causando conflito com o callback
         if (error.code === 'PGRST116') { // Profile não encontrado
-          console.log('🔧 [CONTEXT] Profile não encontrado, criando automaticamente...');
-          
-          // CORREÇÃO CLAUDE WEB: Pegar tipo do metadata (fallback para motorista)
-          // 🚨 DEBUG CRÍTICO - Logs detalhados do metadata
-          console.log('🔍 [CONTEXT] User metadata completo:', supabaseUser.user_metadata);
-          const userType = supabaseUser.user_metadata?.user_type || 'motorista';
-          const planType = supabaseUser.user_metadata?.plan_type || 'free';
-          console.log('📋 [CONTEXT] Tipo detectado:', userType);
-          console.log('📋 [CONTEXT] Plano detectado:', planType);
-          
-          console.log('📝 [CONTEXT] Criando profile com metadata:', { userType, planType });
-          
-          const newProfile = {
-            id: supabaseUser.id,
-            name: supabaseUser.user_metadata?.full_name || supabaseUser.user_metadata?.name || 'Usuário',
-            email: supabaseUser.email || '',
-            type: userType as 'motorista' | 'oficina',
-            avatar_url: supabaseUser.user_metadata?.avatar_url || supabaseUser.user_metadata?.picture,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          };
-
-          // Criar profile
-          const { error: createError } = await supabase
-            .from('profiles')
-            .insert(newProfile);
-
-          if (createError) {
-            console.error('❌ [CONTEXT] Erro ao criar profile:', createError);
-            return;
-          }
-
-          // Criar registro específico baseado no tipo
-          if (userType === 'motorista') {
-            console.log('🚗 [CONTEXT] Criando registro de motorista');
-            const { error: driverError } = await supabase
-              .from('drivers')
-              .insert({
-                profile_id: supabaseUser.id,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-              });
-
-            if (driverError) {
-              console.error('❌ [CONTEXT] Erro ao criar driver:', driverError);
-            }
-          } else if (userType === 'oficina') {
-            console.log('🔧 [CONTEXT] Criando registro de oficina com plano:', planType);
-            const { error: workshopError } = await supabase
-              .from('workshops')
-              .insert({
-                profile_id: supabaseUser.id,
-                plan_type: planType,
-                business_name: newProfile.name,
-                verified: false,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-              });
-
-            if (workshopError) {
-              console.error('❌ [CONTEXT] Erro ao criar workshop:', workshopError);
-            }
-          }
-
-          // Definir usuário com plan_type se for oficina
-          const userData: User = {
-            id: newProfile.id,
-            name: newProfile.name,
-            email: newProfile.email,
-            type: newProfile.type,
-            avatar: newProfile.avatar_url
-          };
-
-          // Se for oficina, adicionar dados específicos
-          if (userType === 'oficina') {
-            // Estender o tipo User para oficinas
-            Object.assign(userData, {
-              plan_type: planType,
-              businessName: newProfile.name,
-              verified: false
-            });
-          }
-
-          setUser(userData);
-
-          console.log('✅ [CONTEXT] Profile criado automaticamente com tipo:', userType);
+          console.log('⚠️ [CONTEXT] Profile não encontrado - aguardando criação pelo callback...');
+          setUser(null);
           return;
         }
         
+        setUser(null);
         return;
       }
 
