@@ -32,7 +32,7 @@ export default function AuthPage() {
             <div className="grid md:grid-cols-2 gap-6">
               
               {/* Card Motorista */}
-              <Link href="/auth/motorista">
+              <Link href="/auth/new-motorista">
                 <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-blue-400 transition-all duration-300 cursor-pointer bg-gradient-to-br from-blue-50 to-indigo-100 hover:from-blue-100 hover:to-indigo-200">
                   <div className="p-8 text-center">
                     <div className="w-20 h-20 mx-auto mb-6 bg-blue-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -74,7 +74,7 @@ export default function AuthPage() {
               </Link>
 
               {/* Card Oficina */}
-              <Link href="/auth/oficina">
+              <Link href="/auth/new-oficina">
                 <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-orange-400 transition-all duration-300 cursor-pointer bg-gradient-to-br from-orange-50 to-red-100 hover:from-orange-100 hover:to-red-200">
                   <div className="p-8 text-center">
                     <div className="w-20 h-20 mx-auto mb-6 bg-orange-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
