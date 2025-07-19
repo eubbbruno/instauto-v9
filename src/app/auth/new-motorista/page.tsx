@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from 'react'
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { supabase } from '@/lib/supabase'
@@ -7,6 +8,11 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline"
 import Link from 'next/link'
 
 export default function NewMotoristaAuthPage() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
@@ -33,7 +39,7 @@ export default function NewMotoristaAuthPage() {
 
         {/* Auth UI Card */}
         <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8">
-          <Auth
+          {mounted && <Auth
             supabaseClient={supabase!}
             appearance={{ 
               theme: ThemeSupa,
@@ -56,7 +62,7 @@ export default function NewMotoristaAuthPage() {
               }
             }}
             providers={['google', 'facebook']}
-            redirectTo={`${window.location.origin}/auth/callback?type=motorista`}
+            redirectTo={typeof window !== 'undefined' ? `${window.location.origin}/auth/new-callback?type=motorista` : '/auth/new-callback?type=motorista'}
             localization={{
               variables: {
                 sign_in: {
@@ -77,7 +83,7 @@ export default function NewMotoristaAuthPage() {
                 }
               }
             }}
-          />
+          />}
         </div>
 
         {/* Benefits */}

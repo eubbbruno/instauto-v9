@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { supabase } from '@/lib/supabase'
@@ -9,6 +9,11 @@ import Link from 'next/link'
 
 export default function NewOficinaAuthPage() {
   const [selectedPlan, setSelectedPlan] = useState<'free' | 'pro'>('free')
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-600 via-orange-700 to-red-700 flex items-center justify-center p-4">
@@ -118,7 +123,7 @@ export default function NewOficinaAuthPage() {
             </p>
           </div>
 
-          <Auth
+          {mounted && <Auth
             supabaseClient={supabase!}
             appearance={{ 
               theme: ThemeSupa,
@@ -141,7 +146,7 @@ export default function NewOficinaAuthPage() {
               }
             }}
             providers={['google', 'facebook']}
-            redirectTo={`${window.location.origin}/auth/callback?type=oficina&plan_type=${selectedPlan}`}
+            redirectTo={typeof window !== 'undefined' ? `${window.location.origin}/auth/new-callback?type=oficina&plan_type=${selectedPlan}` : `/auth/new-callback?type=oficina&plan_type=${selectedPlan}`}
             localization={{
               variables: {
                 sign_in: {
@@ -162,7 +167,7 @@ export default function NewOficinaAuthPage() {
                 }
               }
             }}
-          />
+          />}
         </div>
 
         {/* Benefits */}
