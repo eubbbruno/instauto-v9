@@ -31,6 +31,7 @@ export interface User {
   services?: string[];
   rating?: number;
   verified?: boolean;
+  planType?: 'free' | 'pro'; // Para oficinas
 }
 
 export interface Vehicle {
@@ -217,7 +218,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             address: workshop?.address,
             services: workshop?.services || [],
             rating: workshop?.rating,
-            verified: workshop?.verified
+            verified: workshop?.verified,
+            planType: workshop?.plan_type || 'free' // ✅ PLANTYPE CARREGADO
           });
         } else {
           // Se for motorista, buscar dados do motorista

@@ -105,7 +105,15 @@ export default function ProtectedRoute({
       // Se tem user mas tipo não corresponde
       if (user && requiredUserType && user.type !== requiredUserType) {
         console.log('⚠️ [PROTECTED] Tipo incorreto, redirecionando...');
-        const userDashboard = user.type === 'oficina' ? '/oficina-basica' : '/motorista';
+        let userDashboard = '/motorista'; // padrão
+        
+        if (user.type === 'oficina') {
+          // 🔧 CORREÇÃO: Usar planType do usuário para determinar dashboard correto
+          console.log('🔍 [PROTECTED] Oficina detectada, verificando plano:', user.planType);
+          userDashboard = user.planType === 'pro' ? '/dashboard' : '/oficina-basica';
+        }
+        
+        console.log('🎯 [PROTECTED] Redirecionando para:', userDashboard);
         router.push(userDashboard);
         return;
       }
