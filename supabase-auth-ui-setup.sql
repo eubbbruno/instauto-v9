@@ -10,26 +10,38 @@ RETURNS trigger AS $$
 BEGIN
   INSERT INTO public.profiles (
     id,
-    user_type,
-    plan_type,
+    type,
     email,
-    full_name,
+    name,
     created_at,
     updated_at
   )
   VALUES (
     NEW.id,
     COALESCE(NEW.raw_user_meta_data->>'user_type', 'motorista'),
-    CASE 
-      WHEN COALESCE(NEW.raw_user_meta_data->>'user_type', 'motorista') = 'oficina' 
-      THEN COALESCE(NEW.raw_user_meta_data->>'plan_type', 'free')
-      ELSE NULL
-    END,
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email),
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', NEW.email),
     NOW(),
     NOW()
   );
+  
+  -- Se for oficina, criar workshop automaticamente
+  IF COALESCE(NEW.raw_user_meta_data->>'user_type', 'motorista') = 'oficina' THEN
+    INSERT INTO public.workshops (
+      profile_id,
+      business_name,
+      plan_type,
+      created_at,
+      updated_at
+    ) VALUES (
+      NEW.id,
+      COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', NEW.email) || ' - Oficina',
+      COALESCE(NEW.raw_user_meta_data->>'plan_type', 'free'),
+      NOW(),
+      NOW()
+    );
+  END IF;
+  
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -64,28 +76,25 @@ BEGIN
   -- Atualizar profile para oficina
   UPDATE public.profiles 
   SET 
-    user_type = 'oficina',
-    plan_type = plan_type,
+    type = 'oficina',
     updated_at = NOW()
   WHERE id = user_id;
 
   -- Verificar se já existe workshop
-  SELECT * INTO workshop_record FROM public.workshops WHERE user_id = user_id;
+  SELECT * INTO workshop_record FROM public.workshops WHERE profile_id = user_id;
   
   IF NOT FOUND THEN
     -- Criar workshop
     INSERT INTO public.workshops (
-      user_id,
-      name,
+      profile_id,
+      business_name,
       plan_type,
-      status,
       created_at,
       updated_at
     ) VALUES (
       user_id,
-      COALESCE(profile_record.full_name, profile_record.email) || ' - Oficina',
+      COALESCE(profile_record.name, profile_record.email) || ' - Oficina',
       plan_type,
-      'active',
       NOW(),
       NOW()
     );
@@ -94,9 +103,8 @@ BEGIN
     UPDATE public.workshops 
     SET 
       plan_type = convert_to_workshop.plan_type,
-      status = 'active',
       updated_at = NOW()
-    WHERE user_id = user_id;
+    WHERE profile_id = user_id;
   END IF;
 
   RETURN JSON_BUILD_OBJECT('success', true, 'message', 'Convertido para oficina com sucesso');
@@ -121,11 +129,11 @@ ALTER TABLE public.workshops ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Workshop owners can view own workshop" ON public.workshops;
 CREATE POLICY "Workshop owners can view own workshop" ON public.workshops
-  FOR SELECT USING (auth.uid() = user_id);
+  FOR SELECT USING (auth.uid() = profile_id);
 
 DROP POLICY IF EXISTS "Workshop owners can update own workshop" ON public.workshops;
 CREATE POLICY "Workshop owners can update own workshop" ON public.workshops
-  FOR UPDATE USING (auth.uid() = user_id);
+  FOR UPDATE USING (auth.uid() = profile_id);
 
 -- 5️⃣ GRANT PERMISSIONS
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
