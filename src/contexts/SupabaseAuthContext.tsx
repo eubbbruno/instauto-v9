@@ -200,11 +200,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (profile) {
         // Se for oficina, buscar dados da oficina
         if (profile.type === 'oficina') {
-          const { data: workshop } = await supabase
+          const { data: workshopData } = await supabase
             .from('workshops')
             .select('*')
             .eq('profile_id', profile.id)
             .single();
+          
+          console.log('📋 Workshop carregada:', workshopData);
 
           setUser({
             id: profile.id,
@@ -213,13 +215,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             type: profile.type,
             phone: profile.phone,
             avatar: profile.avatar_url,
-            businessName: workshop?.business_name,
-            cnpj: workshop?.cnpj,
-            address: workshop?.address,
-            services: workshop?.services || [],
-            rating: workshop?.rating,
-            verified: workshop?.verified,
-            planType: workshop?.plan_type || 'free' // ✅ PLANTYPE CARREGADO
+            businessName: workshopData?.business_name,
+            cnpj: workshopData?.cnpj,
+            address: workshopData?.address,
+            services: workshopData?.services || [],
+            rating: workshopData?.rating,
+            verified: workshopData?.verified,
+            planType: workshopData?.plan_type || 'free' // FALLBACK para free
           });
         } else {
           // Se for motorista, buscar dados do motorista

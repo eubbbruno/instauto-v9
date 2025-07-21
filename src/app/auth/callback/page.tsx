@@ -137,17 +137,32 @@ function AuthCallbackContent() {
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString()
                   });
-                } else if (userType === 'oficina') {
+                } else                 if (userType === 'oficina') {
                   console.log('🔧 [CALLBACK] Criando registro de oficina com plano:', planType);
-                  await supabase.from('workshops').insert({ 
+                  
+                  // ADICIONE um delay aqui antes de criar workshop:
+                  await new Promise(resolve => setTimeout(resolve, 500));
+                  
+                  // E garanta que o planType está sendo passado corretamente:
+                  const workshopData = {
                     profile_id: sessionData.session.user.id,
-                    plan_type: planType,
+                    plan_type: planType || 'free', // IMPORTANTE: fallback para 'free'
                     business_name: sessionData.session.user.user_metadata?.full_name || 
                                   sessionData.session.user.user_metadata?.name || 'Oficina',
                     verified: false,
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString()
-                  });
+                  };
+                  
+                  console.log('🔧 Criando workshop com:', workshopData);
+                  
+                  const { error: workshopError } = await supabase
+                    .from('workshops')
+                    .insert(workshopData);
+                    
+                  if (workshopError) {
+                    console.error('❌ Erro ao criar workshop:', workshopError);
+                  }
                 }
               } else {
                 console.log('✅ [CALLBACK] Profile já existe:', existingProfile.type);
