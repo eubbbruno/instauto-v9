@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Syne, Plus_Jakarta_Sans } from "next/font/google";
 import { NotificacaoProvider } from "@/contexts/NotificacaoContext";
 import { AuthProvider } from "@/contexts/SupabaseAuthContext";
+import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
 
 const syne = Syne({
@@ -29,11 +30,13 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${syne.variable} ${jakarta.variable}`} suppressHydrationWarning={true}>
       <body className="bg-white" suppressHydrationWarning={true}>
-        <AuthProvider>
-          <NotificacaoProvider>
-            <main>{children}</main>
-          </NotificacaoProvider>
-        </AuthProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <NotificacaoProvider>
+              <main>{children}</main>
+            </NotificacaoProvider>
+          </AuthProvider>
+        </ToastProvider>
       </body>
     </html>
   );
