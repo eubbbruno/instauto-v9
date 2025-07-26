@@ -5,6 +5,7 @@ import { EyeIcon, EyeSlashIcon, UserIcon } from "@heroicons/react/24/outline";
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { useToastHelpers } from '@/components/ui/toast'
 
 export default function MotoristaAuthPage() {
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
@@ -12,6 +13,7 @@ export default function MotoristaAuthPage() {
   const [message, setMessage] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
+  const { success, error: showError } = useToastHelpers()
   
   const [formData, setFormData] = useState({
     email: '',
@@ -43,12 +45,15 @@ export default function MotoristaAuthPage() {
       if (error) throw error
       
       setMessage('✅ Login realizado com sucesso!')
+      success('Bem-vindo de volta!', 'Login realizado com sucesso')
       
       // Redirecionamento direto para dashboard do motorista
       setTimeout(() => router.push('/motorista'), 1000)
       
     } catch (error: unknown) {
-      setMessage(`❌ Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido'
+      setMessage(`❌ Erro: ${errorMessage}`)
+      showError('Erro no login', errorMessage)
       setLoading(false)
     }
   }
