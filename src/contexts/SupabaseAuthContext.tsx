@@ -223,6 +223,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             verified: workshopData?.verified,
             planType: workshopData?.plan_type || 'free' // FALLBACK para free
           });
+
+          // IMPORTANTE: Verificar se plan_type está correto para redirecionamento
+          if (typeof window !== 'undefined') {
+            const currentPath = window.location.pathname;
+            console.log('🔧 [CONTEXT] Verificando redirecionamento oficina:', {
+              planType: workshopData?.plan_type,
+              currentPath,
+              shouldRedirectToDashboard: workshopData?.plan_type === 'pro' && currentPath === '/oficina-basica',
+              shouldRedirectToBasic: workshopData?.plan_type === 'free' && currentPath === '/dashboard'
+            });
+
+            if (workshopData?.plan_type === 'pro' && currentPath === '/oficina-basica') {
+              console.log('🎯 [CONTEXT] Redirecionando oficina PRO para /dashboard');
+              window.location.href = '/dashboard';
+            } else if (workshopData?.plan_type === 'free' && currentPath === '/dashboard') {
+              console.log('🎯 [CONTEXT] Redirecionando oficina FREE para /oficina-basica');
+              window.location.href = '/oficina-basica';
+            }
+          }
         } else {
           // Se for motorista, buscar dados do motorista
           setUser({

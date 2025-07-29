@@ -60,6 +60,22 @@ export default function ProtectedRoute({
     }
   }, [loading, user]);
 
+  // Debug permanente
+  useEffect(() => {
+    console.log('🔍 [PROTECTED] Debug Motorista Web:', {
+      loading,
+      supabaseLoading,
+      user: !!user,
+      userName: user?.name,
+      userType: user?.type,
+      userPlanType: user?.planType,
+      hasSupabaseSession,
+      requiredUserType,
+      pathname: typeof window !== 'undefined' ? window.location.pathname : 'server',
+      timestamp: new Date().toISOString()
+    });
+  }, [loading, supabaseLoading, user, hasSupabaseSession]);
+
   useEffect(() => {
     // Aguardar tanto o contexto quanto a verificação direta do Supabase
     if (!loading && !supabaseLoading) {
