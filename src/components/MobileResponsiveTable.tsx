@@ -1,20 +1,20 @@
-import { ReactNode } from 'react';
+import React from 'react';
 
-interface MobileResponsiveTableProps<T = unknown> {
+interface MobileResponsiveTableProps {
   headers: string[];
-  data: T[];
-  renderRow: (item: T, index: number) => ReactNode;
-  renderMobileCard: (item: T, index: number) => ReactNode;
+  data: unknown[];
+  renderRow: (item: unknown, index: number) => React.ReactNode;
+  renderMobileCard: (item: unknown, index: number) => React.ReactNode;
   className?: string;
 }
 
-export default function MobileResponsiveTable<T = unknown>({
+export default function MobileResponsiveTable({
   headers,
-  data,
+  data = [], // Default para array vazio
   renderRow,
   renderMobileCard,
   className = ""
-}: MobileResponsiveTableProps<T>) {
+}: MobileResponsiveTableProps) {
   return (
     <>
       {/* Desktop Table */}
@@ -22,22 +22,38 @@ export default function MobileResponsiveTable<T = unknown>({
         <table className="w-full">
           <thead className="bg-gray-50 text-left">
             <tr>
-              {headers.map((header, index) => (
+              {headers?.map((header, index) => (
                 <th key={index} className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {header}
                 </th>
-              ))}
+              )) || null}
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {data.map((item, index) => renderRow(item, index))}
+            {data && data.length > 0 
+              ? data.map((item, index) => renderRow(item, index))
+              : (
+                <tr>
+                  <td colSpan={headers?.length || 1} className="px-6 py-12 text-center text-gray-500">
+                    Nenhum dado encontrado
+                  </td>
+                </tr>
+              )
+            }
           </tbody>
         </table>
       </div>
 
       {/* Mobile Cards */}
       <div className="md:hidden space-y-4">
-        {data.map((item, index) => renderMobileCard(item, index))}
+        {data && data.length > 0 
+          ? data.map((item, index) => renderMobileCard(item, index))
+          : (
+            <div className="p-8 text-center text-gray-500">
+              <p>Nenhum dado encontrado</p>
+            </div>
+          )
+        }
       </div>
     </>
   );
