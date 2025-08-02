@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+
 import { 
   CalendarDaysIcon, 
   ClipboardDocumentListIcon, 
@@ -137,42 +138,8 @@ export default function OficinaDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header - Mobile Optimized */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 gap-3">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <h1 className="text-xl md:text-2xl font-bold text-gray-900">Dashboard Oficina</h1>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                  <GiftIcon className="h-3 w-3 mr-1" />
-                  Plano Gratuito
-                </span>
-              </div>
-              <p className="text-sm md:text-base text-gray-600 capitalize">{formatDate(currentTime)}</p>
-            </div>
-            
-            <div className="flex items-center space-x-3 md:space-x-4">
-              <div className="text-center sm:text-right">
-                <p className="text-xs md:text-sm text-gray-500">Hora atual</p>
-                <p className="text-lg md:text-xl font-bold text-[#0047CC]">{formatTime(currentTime)}</p>
-              </div>
-              
-              <div className="relative">
-                <button className="p-3 text-gray-400 hover:text-gray-600 relative min-h-[44px] min-w-[44px] flex items-center justify-center">
-                  <BellIcon className="h-5 w-5 md:h-6 md:w-6" />
-                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                    3
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="p-4 md:p-6 space-y-6 bg-gray-50 min-h-screen">
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
         {/* Welcome Card para Plano Gratuito */}
         <motion.div 
           className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg p-6 mb-6 text-white relative overflow-hidden"

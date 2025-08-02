@@ -15,6 +15,7 @@ import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/SupabaseAuthContext";
+
 import MiniCalendar from "@/components/MiniCalendar";
 import DashboardChart from "@/components/DashboardChart";
 import QuickDiagnosticAI from "@/components/QuickDiagnosticAI";
@@ -74,12 +75,10 @@ export default function DashboardPage() {
   ];
 
   return (
-    <>
-      {/* Content */}
-      <div className="p-6 bg-gray-50">
+    <div className="p-6 bg-gray-50">
         {/* Welcome Card PRO */}
         <motion.div 
-          className="bg-gradient-to-r from-[#0047CC] to-[#0055EB] rounded-xl shadow-lg p-6 mb-6 text-white relative overflow-hidden"
+          className="bg-gradient-to-r from-amber-600 to-orange-600 rounded-xl shadow-lg p-6 mb-6 text-white relative overflow-hidden"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -407,7 +406,6 @@ export default function DashboardPage() {
             </motion.div>
           </div>
         </div>
-      </div>
-    </>
+    </div>
   );
 } 

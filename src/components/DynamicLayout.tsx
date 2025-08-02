@@ -7,7 +7,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Car, Calendar, FileText, Settings, Wrench, Users, Crown, 
   BarChart, DollarSign, Menu, Bell, LogOut, User,
-  ChevronDown, Home, MessageSquare, Heart, Search
+  ChevronDown, Home, MessageSquare, Heart, Search,
+  Package, ShoppingBag, Cpu, Star
 } from 'lucide-react';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { useToastHelpers } from '@/components/ui/toast';
@@ -51,9 +52,13 @@ const menuItems: MenuConfig = {
     { icon: Wrench, label: 'Ordens de Serviço', href: '/dashboard/ordens' },
     { icon: Users, label: 'Clientes', href: '/dashboard/clientes' },
     { icon: Calendar, label: 'Agendamentos', href: '/dashboard/agendamentos' },
+    { icon: Package, label: 'Estoque', href: '/dashboard/estoque' },
+    { icon: ShoppingBag, label: 'Produtos', href: '/dashboard/produtos' },
+    { icon: Cpu, label: 'Diagnóstico IA', href: '/dashboard/diagnostico' },
+    { icon: Star, label: 'Avaliações', href: '/dashboard/avaliacoes' },
     { icon: BarChart, label: 'Relatórios', href: '/dashboard/relatorios' },
     { icon: DollarSign, label: 'Financeiro', href: '/dashboard/financeiro' },
-    { icon: MessageSquare, label: 'Mensagens', href: '/dashboard/whatsapp' },
+    { icon: MessageSquare, label: 'WhatsApp', href: '/dashboard/whatsapp' },
     { icon: Settings, label: 'Configurações', href: '/dashboard/configuracoes' }
   ]
 };
@@ -70,9 +75,14 @@ export default function DynamicLayout({ children }: DynamicLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-  // Não mostrar layout nas páginas auth e home
+  // Não mostrar layout nas páginas auth, home e páginas que já têm layout próprio
   const isAuthPage = pathname?.startsWith('/auth') || pathname === '/';
-  if (isAuthPage || !user) {
+  const hasOwnLayout = pathname?.startsWith('/motorista') || 
+                      pathname?.startsWith('/oficina-basica') || 
+                      pathname?.startsWith('/dashboard');
+  
+  // Se é página auth, home, ou já tem layout próprio, apenas renderizar children
+  if (isAuthPage || !user || hasOwnLayout) {
     return <>{children}</>;
   }
 
