@@ -139,22 +139,21 @@ export default function OficinaDashboard() {
 
   return (
     <div className="p-4 md:p-6 space-y-6 bg-gray-50 min-h-screen">
-
-        {/* Welcome Card para Plano Gratuito */}
-        <motion.div 
-          className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg p-6 mb-6 text-white relative overflow-hidden"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-[30px]"></div>
-          <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-yellow-400/20 rounded-full blur-[30px]"></div>
-          
-          <div className="flex flex-col lg:flex-row justify-between items-start gap-4 relative">
-            <div className="flex-1">
-              <h2 className="text-xl md:text-2xl font-bold mb-2 flex items-center">
-                <SparklesIcon className="h-6 w-6 mr-2 text-yellow-400" />
-                Bem-vindo, {user?.name || 'Oficina'}!
+      {/* Welcome Card para Plano Gratuito */}
+      <motion.div 
+        className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg p-6 mb-6 text-white relative overflow-hidden"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-[30px]"></div>
+        <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-yellow-400/20 rounded-full blur-[30px]"></div>
+        
+        <div className="flex flex-col lg:flex-row justify-between items-start gap-4 relative">
+          <div className="flex-1">
+            <h2 className="text-xl md:text-2xl font-bold mb-2 flex items-center">
+              <SparklesIcon className="h-6 w-6 mr-2 text-yellow-400" />
+              Bem-vindo, {user?.name || 'Oficina'}!
               </h2>
               <p className="text-white/90 mb-4">
                 Você está no <strong>Plano Gratuito</strong>. Gerencie seus agendamentos básicos e comece a crescer seu negócio.
