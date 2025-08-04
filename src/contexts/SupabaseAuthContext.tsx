@@ -62,6 +62,7 @@ export interface RegisterData {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  isInitialized: boolean; // NOVA FLAG
   login: (credentials: LoginCredentials) => Promise<boolean>;
   register: (data: RegisterData) => Promise<boolean>;
   logout: () => void;
@@ -89,16 +90,19 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false); // NOVA FLAG
   const router = useRouter();
 
   useEffect(() => {
+    let isMounted = true; // Prevenir updates em componentes desmontados
+    
     const initializeAuth = async () => {
-      console.log('🚀 [CONTEXT] Inicializando autenticação...');
-      
       try {
+        console.log('🚀 [CONTEXT] Inicializando...');
+        
         // Verificar auth local primeiro (login fixo)
         const localUser = localStorage.getItem('instauto_user');
-        if (localUser) {
+        if (localUser && isMounted) {
           try {
             const userData = JSON.parse(localUser);
             const mockUser: User = {
@@ -110,7 +114,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             };
             setUser(mockUser);
             console.log('✅ [CONTEXT] Usuário local carregado:', userData.name);
-            setLoading(false);
+            
+            // CRUCIAL: Marcar como inicializado APÓS tudo
+            if (isMounted) {
+              setLoading(false);
+              setIsInitialized(true);
+              console.log('✅ [CONTEXT] Inicialização completa (local)');
+            }
             return;
           } catch (error) {
             console.error('❌ [CONTEXT] Erro ao parsear dados locais:', error);
@@ -118,11 +128,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         }
 
-        // Se não tem auth local E Supabase está configurado
+        // IMPORTANTE: Sempre buscar sessão primeiro
         if (isSupabaseConfigured() && supabase) {
-          const { data: { session } } = await supabase.auth.getSession();
+          const { data: { session }, error } = await supabase.auth.getSession();
           
-          if (session?.user) {
+          if (error) {
+            console.error('❌ [CONTEXT] Erro ao buscar sessão:', error);
+          }
+          
+          if (session?.user && isMounted) {
             console.log('🔑 [CONTEXT] Sessão Supabase encontrada:', session.user.email);
             await loadUserProfile(session.user);
           } else {
@@ -130,23 +144,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         }
         
-        setLoading(false);
-        console.log('✅ [CONTEXT] Inicialização completa');
+        // CRUCIAL: Marcar como inicializado APÓS tudo
+        if (isMounted) {
+          setLoading(false);
+          setIsInitialized(true);
+          console.log('✅ [CONTEXT] Inicialização completa');
+        }
       } catch (error) {
-        console.error('❌ [CONTEXT] Erro ao inicializar:', error);
-        setLoading(false);
+        console.error('❌ [CONTEXT] Erro na inicialização:', error);
+        if (isMounted) {
+          setLoading(false);
+          setIsInitialized(true);
+        }
       }
     };
-
-    initializeAuth();
-
-    // Listener para mudanças de auth
+    
+    // Listener para mudanças
     let authSubscription: any = null;
     
     if (isSupabaseConfigured() && supabase) {
       const { data } = supabase.auth.onAuthStateChange(
         async (event, session) => {
-          console.log('🔄 [CONTEXT] Auth change:', event, session?.user?.email);
+          if (!isMounted) return;
+          
+          console.log('🔄 [CONTEXT] Auth change:', event);
           
           // Não processar se tem auth local
           const localUser = localStorage.getItem('instauto_user');
@@ -162,12 +183,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.log('🚪 [CONTEXT] Logout detectado');
             setUser(null);
           }
+          
+          setLoading(false);
         }
       );
       authSubscription = data.subscription;
     }
-
+    
+    // Inicializar
+    initializeAuth();
+    
     return () => {
+      isMounted = false;
       if (authSubscription) {
         authSubscription.unsubscribe();
       }
@@ -443,6 +470,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       value={{
         user,
         loading,
+        isInitialized, // NOVA FLAG
         login,
         register,
         logout,
