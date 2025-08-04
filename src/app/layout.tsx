@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Syne, Plus_Jakarta_Sans } from "next/font/google";
 import { NotificacaoProvider } from "@/contexts/NotificacaoContext";
-import { AuthProvider } from "@/contexts/SupabaseAuthContext";
+import { AuthProvider } from "@/contexts/AuthContextNew";
 import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
 

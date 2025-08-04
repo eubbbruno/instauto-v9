@@ -10,7 +10,7 @@ import {
   ChevronDown, Home, MessageSquare, Heart, Search,
   Package, ShoppingBag, Cpu, Star
 } from 'lucide-react';
-import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { useAuth } from '@/contexts/AuthContextNew';
 import { useToastHelpers } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
 

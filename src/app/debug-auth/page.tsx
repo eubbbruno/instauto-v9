@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { useAuth } from '@/contexts/AuthContextNew';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 export default function DebugAuthPage() {

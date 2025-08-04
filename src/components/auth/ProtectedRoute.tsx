@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { useAuth } from '@/contexts/AuthContextNew';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, ReactNode, useCallback } from 'react';
 import LoadingSpinner from '@/components/LoadingSpinner';
