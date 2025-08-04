@@ -3,7 +3,6 @@ import { Syne, Plus_Jakarta_Sans } from "next/font/google";
 import { NotificacaoProvider } from "@/contexts/NotificacaoContext";
 import { AuthProvider } from "@/contexts/SupabaseAuthContext";
 import { ToastProvider } from "@/components/ui/toast";
-import DynamicLayout from "@/components/DynamicLayout";
 import "./globals.css";
 
 const syne = Syne({
@@ -34,9 +33,7 @@ export default function RootLayout({
         <ToastProvider>
           <AuthProvider>
             <NotificacaoProvider>
-              <DynamicLayout>
-                {children}
-              </DynamicLayout>
+              {children}
             </NotificacaoProvider>
           </AuthProvider>
         </ToastProvider>
