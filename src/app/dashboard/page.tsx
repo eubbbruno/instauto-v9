@@ -3,11 +3,14 @@ import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
 
 export default function Dashboard() {
+  // Prevenir renderização no servidor
+  const [isMounted, setIsMounted] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   
   useEffect(() => {
+    setIsMounted(true)
     checkUser()
   }, [])
   
@@ -71,6 +74,11 @@ export default function Dashboard() {
     }
   }
   
+  // Prevenir renderização no servidor
+  if (!isMounted) {
+    return null
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
