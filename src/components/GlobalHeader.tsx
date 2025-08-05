@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useAuth } from '@/contexts/AuthContextNew';
+// Removido useAuth
 import NotificacoesBadge from '@/components/NotificacoesBadge';
 import {
   BellIcon,
@@ -33,7 +33,7 @@ export default function GlobalHeader({
   showSearch = true,
   customActions 
 }: GlobalHeaderProps) {
-  const { user, logout } = useAuth();
+  // Header simplificado - sem auth
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');

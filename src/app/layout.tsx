@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Syne, Plus_Jakarta_Sans } from "next/font/google";
 import { NotificacaoProvider } from "@/contexts/NotificacaoContext";
-import { AuthProvider } from "@/contexts/AuthContextNew";
 import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
 
@@ -31,11 +30,9 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${syne.variable} ${jakarta.variable}`} suppressHydrationWarning={true}>
       <body className="bg-white" suppressHydrationWarning={true}>
         <ToastProvider>
-          <AuthProvider>
-            <NotificacaoProvider>
-              {children}
-            </NotificacaoProvider>
-          </AuthProvider>
+          <NotificacaoProvider>
+            {children}
+          </NotificacaoProvider>
         </ToastProvider>
       </body>
     </html>
