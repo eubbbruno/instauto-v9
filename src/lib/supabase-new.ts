@@ -1,7 +1,10 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
 
-// ✨ NOVA CONEXÃO SUPABASE - LIMPA E SIMPLES
-export const supabase = createClientComponentClient();
+// ✨ NOVA CONEXÃO SUPABASE - USANDO MESMA CONFIG QUE FUNCIONA NO TEST-AUTH
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Tipos básicos para o novo sistema
 export interface User {
