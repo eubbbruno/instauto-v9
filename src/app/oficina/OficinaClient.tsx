@@ -28,10 +28,19 @@ export default function OficinaClient() {
         .eq('id', user.id)
         .single()
       
-      if (profile?.type !== 'oficina') {
-        window.location.href = '/dashboard'
+      if (!profile) {
+        console.error('❌ [OFICINA] Profile não encontrado!')
+        window.location.href = '/login'
         return
       }
+      
+      if (profile.type !== 'oficina') {
+        console.log('🔄 [OFICINA] Redirecionando motorista para seu dashboard')
+        window.location.href = '/motorista'
+        return
+      }
+      
+      console.log('✅ [OFICINA] Profile carregado:', profile)
       
       setProfile(profile)
     } catch (error) {

@@ -7,6 +7,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [isSignUp, setIsSignUp] = useState(false)
   const [userType, setUserType] = useState<'motorista' | 'oficina'>('motorista')
+  const [oficinaPlano, setOficinaPlano] = useState<'free' | 'pro'>('free')
   const [loading, setLoading] = useState(false)
   
   const handleAuth = async () => {
@@ -41,7 +42,11 @@ export default function LoginPage() {
             return
           }
           
-          alert('Conta criada! Faça login.')
+          if (userType === 'oficina') {
+            alert(`🎉 Conta OFICINA criada!\nPlano: ${oficinaPlano.toUpperCase()}\n\nFaça login para acessar!`)
+          } else {
+            alert('🚗 Conta MOTORISTA criada! Faça login.')
+          }
           setIsSignUp(false)
         }
       } else {
@@ -58,7 +63,22 @@ export default function LoginPage() {
         
         if (data?.user) {
           console.log('✅ Login realizado:', data.user.email)
-          window.location.href = '/dashboard'
+          
+          // Buscar profile para redirecionamento inteligente
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('type')
+            .eq('id', data.user.id)
+            .single()
+          
+          if (profile?.type === 'motorista') {
+            window.location.href = '/motorista'
+          } else if (profile?.type === 'oficina') {
+            // Por enquanto sempre FREE, depois implementar lógica de plano
+            window.location.href = '/oficina-free'
+          } else {
+            window.location.href = '/dashboard'
+          }
         }
       }
     } catch (error) {
@@ -77,19 +97,77 @@ export default function LoginPage() {
         </h1>
         
         {isSignUp && (
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Tipo de conta:
-            </label>
-            <select 
-              value={userType} 
-              onChange={(e) => setUserType(e.target.value as any)}
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="motorista">Motorista</option>
-              <option value="oficina">Oficina</option>
-            </select>
-          </div>
+          <>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tipo de conta:
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setUserType('motorista')}
+                  className={`p-3 rounded-md border-2 transition-all ${
+                    userType === 'motorista' 
+                      ? 'bg-blue-50 border-blue-500 text-blue-700' 
+                      : 'bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  🚗 Motorista
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUserType('oficina')}
+                  className={`p-3 rounded-md border-2 transition-all ${
+                    userType === 'oficina' 
+                      ? 'bg-green-50 border-green-500 text-green-700' 
+                      : 'bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  🔧 Oficina
+                </button>
+              </div>
+            </div>
+            
+            {userType === 'oficina' && (
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Escolha seu plano:
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setOficinaPlano('free')}
+                    className={`p-4 rounded-md border-2 transition-all ${
+                      oficinaPlano === 'free' 
+                        ? 'bg-green-50 border-green-500' 
+                        : 'bg-gray-50 border-gray-300 hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">🆓</div>
+                      <div className="font-bold text-green-600">FREE</div>
+                      <div className="text-xs text-gray-500">Até 10 clientes</div>
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOficinaPlano('pro')}
+                    className={`p-4 rounded-md border-2 transition-all ${
+                      oficinaPlano === 'pro' 
+                        ? 'bg-yellow-50 border-yellow-500' 
+                        : 'bg-gray-50 border-gray-300 hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">💎</div>
+                      <div className="font-bold text-yellow-600">PRO</div>
+                      <div className="text-xs text-gray-500">R$ 99/mês</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
         
         <div className="mb-4">
