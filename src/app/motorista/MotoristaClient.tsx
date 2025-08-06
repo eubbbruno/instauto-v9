@@ -1,6 +1,8 @@
 'use client'
 import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import BeautifulSidebar from '@/components/BeautifulSidebar'
 
 export default function MotoristaClient() {
   const [user, setUser] = useState<any>(null)
@@ -58,53 +60,90 @@ export default function MotoristaClient() {
   }
   
   return (
-    <div className="min-h-screen bg-blue-50">
-      {/* Header Motorista */}
-      <div className="bg-blue-600 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex justify-between items-center">
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Sidebar */}
+      <BeautifulSidebar 
+        userType="motorista"
+        userName={profile?.name || user?.email?.split('@')[0] || 'Motorista'}
+        userEmail={user?.email}
+        onLogout={logout}
+      />
+      
+      {/* Main Content */}
+      <div className="flex-1 md:ml-64 transition-all duration-300">
+
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold">🚗 Painel do Motorista</h1>
-              <p className="text-blue-100">Bem-vindo, {user?.email}!</p>
+              <h1 className="text-2xl font-bold text-gray-900">🚗 Dashboard Motorista</h1>
+              <p className="text-gray-600">Bem-vindo, {profile?.name || user?.email}!</p>
             </div>
-            <button 
-              onClick={logout}
-              className="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded"
-            >
-              Sair
-            </button>
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto py-8 px-4">
+        {/* Content */}
+        <div className="p-6">
+          
+          {/* Welcome Card */}
+          <motion.div 
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg p-6 mb-6 text-white relative overflow-hidden"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-[30px]"></div>
+            <div className="relative">
+              <h2 className="text-2xl font-bold mb-2">Bem-vindo ao seu painel!</h2>
+              <p className="text-blue-100">Gerencie seus veículos e encontre as melhores oficinas</p>
+            </div>
+          </motion.div>
         
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6 text-center">
-            <div className="text-3xl mb-2">🚙</div>
-            <h3 className="text-lg font-semibold text-gray-700">Veículos</h3>
-            <p className="text-3xl font-bold text-blue-600">2</p>
-          </div>
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <motion.div 
+              className="bg-white rounded-lg shadow p-6 text-center hover:shadow-lg transition-all"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+            >
+              <div className="text-3xl mb-2">🚙</div>
+              <h3 className="text-lg font-semibold text-gray-700">Veículos</h3>
+              <p className="text-3xl font-bold text-blue-600">2</p>
+            </motion.div>
           
-          <div className="bg-white rounded-lg shadow p-6 text-center">
-            <div className="text-3xl mb-2">📅</div>
-            <h3 className="text-lg font-semibold text-gray-700">Agendamentos</h3>
-            <p className="text-3xl font-bold text-green-600">1</p>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow p-6 text-center">
-            <div className="text-3xl mb-2">🔧</div>
-            <h3 className="text-lg font-semibold text-gray-700">Serviços</h3>
-            <p className="text-3xl font-bold text-orange-600">5</p>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow p-6 text-center">
-            <div className="text-3xl mb-2">💰</div>
-            <h3 className="text-lg font-semibold text-gray-700">Gasto Total</h3>
-            <p className="text-3xl font-bold text-purple-600">R$ 850</p>
-          </div>
+            <motion.div 
+              className="bg-white rounded-lg shadow p-6 text-center hover:shadow-lg transition-all"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className="text-3xl mb-2">📅</div>
+              <h3 className="text-lg font-semibold text-gray-700">Agendamentos</h3>
+              <p className="text-3xl font-bold text-green-600">1</p>
+            </motion.div>
+            
+            <motion.div 
+              className="bg-white rounded-lg shadow p-6 text-center hover:shadow-lg transition-all"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <div className="text-3xl mb-2">🔧</div>
+              <h3 className="text-lg font-semibold text-gray-700">Serviços</h3>
+              <p className="text-3xl font-bold text-orange-600">5</p>
+            </motion.div>
+            
+            <motion.div 
+              className="bg-white rounded-lg shadow p-6 text-center hover:shadow-lg transition-all"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <div className="text-3xl mb-2">💰</div>
+              <h3 className="text-lg font-semibold text-gray-700">Gasto Total</h3>
+              <p className="text-3xl font-bold text-purple-600">R$ 850</p>
+            </motion.div>
         </div>
 
         {/* Quick Actions */}
@@ -166,6 +205,7 @@ export default function MotoristaClient() {
           </div>
         </div>
 
+        </div>
       </div>
     </div>
   )
