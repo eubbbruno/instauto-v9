@@ -203,7 +203,7 @@ export default function ClientesClient() {
         {/* Content Container */}
         <div className="flex-1 overflow-hidden">
           <div className="h-full overflow-y-auto">
-            <div className="p-6 max-w-7xl mx-auto">
+            <div className="p-6">
 
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
