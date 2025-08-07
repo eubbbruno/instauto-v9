@@ -173,8 +173,10 @@ export default function OficinaProClient() {
           </div>
         </div>
 
-        {/* Content */}
-        <div className="p-6">
+        {/* Content Container */}
+        <div className="flex-1 overflow-hidden">
+          <div className="h-full overflow-y-auto">
+            <div className="p-6 max-w-7xl mx-auto">
           
           {/* Welcome Card PRO */}
           <motion.div 
@@ -484,6 +486,8 @@ export default function OficinaProClient() {
                 ))}
               </div>
             </motion.div>
+          </div>
+            </div>
           </div>
         </div>
       </div>

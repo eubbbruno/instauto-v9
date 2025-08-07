@@ -46,7 +46,7 @@ interface BeautifulSidebarProps {
 const menuItems = {
   motorista: [
     { icon: HomeIcon, label: 'Dashboard', href: '/motorista' },
-    { icon: TruckIcon, label: 'Meus Veículos', href: '/motorista/veiculos' },
+    { icon: TruckIcon, label: 'Minha Garagem', href: '/motorista/garagem' },
     { icon: MapPinIcon, label: 'Buscar Oficinas', href: '/motorista/buscar' },
     { icon: CalendarDaysIcon, label: 'Agendamentos', href: '/motorista/agendamentos' },
     { icon: DocumentTextIcon, label: 'Histórico', href: '/motorista/historico' },
