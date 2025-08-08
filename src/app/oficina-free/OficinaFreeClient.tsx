@@ -136,7 +136,7 @@ export default function OficinaFreeClient() {
       {/* Main Content */}
       <div className="flex-1 md:ml-64 transition-all duration-300">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="bg-white border-b border-gray-200 px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">🆓 Dashboard Oficina FREE</h1>
@@ -148,7 +148,7 @@ export default function OficinaFreeClient() {
         {/* Content Container */}
         <div className="flex-1 overflow-hidden">
           <div className="h-full overflow-y-auto">
-            <div className="p-6">
+            <div className="p-4">
           
           {/* Upgrade Banner */}
           <motion.div 
