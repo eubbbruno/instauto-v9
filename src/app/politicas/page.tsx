@@ -1,12 +1,14 @@
-import InstitutionalLayout from '@/components/InstitutionalLayout';
+import InstitutionalLayout from '@/components/institutional/InstitutionalLayout';
 
 export default function PoliticasPage() {
   return (
-    <InstitutionalLayout 
-      title="Política de Privacidade" 
-      description={`Última atualização: ${new Date().toLocaleDateString('pt-BR')}`}
-    >
-      <div className="prose prose-lg max-w-none">
+    <InstitutionalLayout>
+      <div className="bg-gray-50 py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Política de Privacidade</h1>
+          <p className="text-gray-600 mb-8">Última atualização: Janeiro de 2025</p>
+          <div className="bg-white rounded-lg shadow-sm p-8">
+            <div className="prose prose-lg max-w-none">
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">1. Informações Gerais</h2>
           <p className="text-gray-700 leading-relaxed mb-4">
@@ -141,6 +143,9 @@ export default function PoliticasPage() {
             <p className="text-gray-700"><strong>Endereço:</strong> São Paulo/SP - Brasil</p>
           </div>
         </section>
+            </div>
+          </div>
+        </div>
       </div>
     </InstitutionalLayout>
   );

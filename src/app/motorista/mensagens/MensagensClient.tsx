@@ -2,6 +2,10 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
+import { useRealtimeMessages, useRealtimeNotifications } from '@/hooks/useRealtimeSubscription'
+import RealtimeConnectionStatus from '@/components/realtime/RealtimeConnectionStatus'
+import RealtimeToast, { useRealtimeToasts } from '@/components/realtime/RealtimeToast'
+import { supabase } from '@/lib/supabase'
 import { 
   ChatBubbleLeftRightIcon,
   MagnifyingGlassIcon,
@@ -186,12 +190,24 @@ const mensagensMock: { [key: string]: Mensagem[] } = {
 }
 
 export default function MensagensClient() {
+  const [user, setUser] = useState<any>(null)
+  const [profile, setProfile] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
   const [conversaSelecionada, setConversaSelecionada] = useState<string>('1')
   const [novaMensagem, setNovaMensagem] = useState('')
   const [busca, setBusca] = useState('')
   const [typing, setTyping] = useState(false)
   const [showEmojis, setShowEmojis] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Real-time hooks
+  const { messages: toastMessages, showSuccess, showInfo, showNotification, dismissToast } = useRealtimeToasts()
+  const { isConnected: messagesConnected, error: messagesError, reconnect: reconnectMessages } = useRealtimeMessages(
+    conversaSelecionada, 
+    (newMessage) => {
+      showNotification('Nova mensagem', `Mensagem recebida`)
+    }
+  )
 
   const conversaAtual = conversasMock.find(c => c.id === conversaSelecionada)
   const mensagensAtual = mensagensMock[conversaSelecionada] || []
@@ -292,10 +308,24 @@ export default function MensagensClient() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
+      {/* Real-time Components */}
+      <RealtimeConnectionStatus 
+        isConnected={messagesConnected}
+        error={messagesError}
+        onReconnect={reconnectMessages}
+        showWhenConnected={true}
+      />
+      
+      <RealtimeToast 
+        messages={toastMessages}
+        onDismiss={dismissToast}
+        position="top-right"
+      />
+
       <BeautifulSidebar 
         userType="motorista"
-        userName="João Silva"
-        userEmail="joao@email.com"
+        userName={profile?.name || user?.email?.split('@')[0] || 'Motorista'}
+        userEmail={user?.email}
         onLogout={() => {}}
       />
       
