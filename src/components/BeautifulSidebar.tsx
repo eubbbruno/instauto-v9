@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import {
   HomeIcon,
@@ -154,8 +155,14 @@ export default function BeautifulSidebar({
       <div className={`flex items-center justify-between p-6 ${isCollapsed ? 'px-4' : ''}`}>
         <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}>
           <div className="relative">
-            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center`}>
-              <WrenchScrewdriverIcon className="w-6 h-6 text-white" />
+            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center p-2`}>
+              <Image
+                src="/images/logo.svg"
+                alt="InstaAuto"
+                width={24}
+                height={24}
+                className="w-full h-full object-contain filter brightness-0 invert"
+              />
             </div>
             <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-pulse"></div>
           </div>
