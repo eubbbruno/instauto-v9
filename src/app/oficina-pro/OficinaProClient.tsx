@@ -135,7 +135,7 @@ export default function OficinaProClient() {
   if (loading) {
     return (
       <div className="flex min-h-screen bg-gray-50">
-        <div className="hidden md:block w-64 h-screen bg-gradient-to-b from-orange-800 to-yellow-600"></div>
+        <div className="hidden md:block w-64 h-screen bg-gradient-to-b from-blue-800 to-blue-600"></div>
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-yellow-200 border-t-yellow-600 rounded-full animate-spin mx-auto mb-4"></div>
@@ -164,7 +164,7 @@ export default function OficinaProClient() {
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                 💎 Dashboard Oficina PRO 
-                <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                <span className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white text-xs px-2 py-1 rounded-full font-bold">
                   PREMIUM
                 </span>
               </h1>
@@ -180,7 +180,7 @@ export default function OficinaProClient() {
           
           {/* Welcome Card PRO */}
           <motion.div 
-            className="bg-gradient-to-r from-amber-600 to-orange-600 rounded-xl shadow-lg p-6 mb-6 text-white relative overflow-hidden"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl shadow-lg p-6 mb-6 text-white relative overflow-hidden"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -204,7 +204,7 @@ export default function OficinaProClient() {
                   Plano PRO Ativo
                   <ShieldCheckIcon className="w-6 h-6 ml-2 text-yellow-300" />
                 </h2>
-                <p className="text-amber-100 mb-4">
+                <p className="text-blue-100 mb-4">
                   Acesso completo a todas as funcionalidades premium. Você está no controle total da sua oficina!
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -295,19 +295,19 @@ export default function OficinaProClient() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-orange-400/20 to-red-500/20 rounded-bl-3xl"></div>
+              <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-yellow-400/20 to-yellow-500/20 rounded-bl-3xl"></div>
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 bg-orange-100 rounded-xl">
-                  <FireIcon className="w-8 h-8 text-orange-600" />
+                <div className="p-3 bg-yellow-100 rounded-xl">
+                  <FireIcon className="w-8 h-8 text-yellow-600" />
                 </div>
-                <div className="flex items-center text-orange-600 text-sm font-semibold">
+                <div className="flex items-center text-yellow-600 text-sm font-semibold">
                   <ArrowUpIcon className="w-4 h-4 mr-1" />
                   +{mockDataPro.stats.ticketMedio.percentage}%
                 </div>
               </div>
               <h3 className="text-lg font-semibold text-gray-700">Ticket Médio</h3>
               <p className="text-3xl font-bold text-gray-900">R$ {mockDataPro.stats.ticketMedio.value}</p>
-              <p className="text-sm text-orange-600 mt-1">+R$ {mockDataPro.stats.ticketMedio.change} vs mês anterior</p>
+              <p className="text-sm text-yellow-600 mt-1">+R$ {mockDataPro.stats.ticketMedio.change} vs mês anterior</p>
             </motion.div>
           </div>
 
@@ -433,7 +433,7 @@ export default function OficinaProClient() {
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${
                         index === 0 ? 'bg-yellow-500' :
                         index === 1 ? 'bg-gray-400' :
-                        'bg-orange-400'
+                        'bg-yellow-400'
                       }`}>
                         {index + 1}
                       </div>

@@ -89,16 +89,16 @@ const getThemeColors = (userType: string) => {
       }
     case 'oficina-free':
       return {
-        gradient: 'from-[#0D4F3C] via-[#10B981] to-[#0D4F3C]',
+        gradient: 'from-[#1E3A8A] via-[#3B82F6] to-[#1E3A8A]',
         accent: '#FCD34D',
-        primary: '#10B981',
+        primary: '#3B82F6',
         text: 'text-white'
       }
     case 'oficina-pro':
       return {
-        gradient: 'from-[#451A03] via-[#D97706] to-[#451A03]',
+        gradient: 'from-[#1E3A8A] via-[#2563EB] to-[#1E3A8A]',
         accent: '#FCD34D',
-        primary: '#D97706',
+        primary: '#2563EB',
         text: 'text-white'
       }
     default:
@@ -164,7 +164,7 @@ export default function BeautifulSidebar({
                 className="w-full h-full object-contain filter brightness-0 invert"
               />
             </div>
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-pulse"></div>
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full animate-pulse"></div>
           </div>
           {!isCollapsed && (
             <div>
@@ -203,7 +203,7 @@ export default function BeautifulSidebar({
                   isActive 
                     ? 'bg-white/15 backdrop-blur-sm border border-white/20 text-white shadow-lg' 
                     : 'text-white/80 hover:text-white hover:bg-white/10'
-                } ${item.isUpgrade ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-400/30' : ''}`}
+                } ${item.isUpgrade ? 'bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-400/30' : ''}`}
               >
                 {/* Active indicator */}
                 {isActive && (
@@ -220,7 +220,7 @@ export default function BeautifulSidebar({
                       {item.label}
                     </span>
                     {item.badge && (
-                      <span className="px-2 py-0.5 bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-xs font-bold rounded-full">
+                      <span className="px-2 py-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black text-xs font-bold rounded-full">
                         {item.badge}
                       </span>
                     )}
@@ -238,7 +238,7 @@ export default function BeautifulSidebar({
       {/* User Profile */}
       <div className="absolute bottom-4 left-4 right-4">
         {userType === 'oficina-pro' && !isCollapsed && (
-          <div className="mb-4 p-3 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-xl border border-yellow-400/30">
+          <div className="mb-4 p-3 bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 rounded-xl border border-yellow-400/30">
             <div className="flex items-center gap-2 text-yellow-400 text-sm font-semibold">
               <ShieldCheckIcon className="w-4 h-4" />
               <span>Plano PRO Ativo</span>

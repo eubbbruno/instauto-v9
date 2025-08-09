@@ -122,7 +122,7 @@ export default function MotoristaClient() {
             >
               <div className="text-3xl mb-2">📅</div>
               <h3 className="text-lg font-semibold text-gray-700">Agendamentos</h3>
-              <p className="text-3xl font-bold text-green-600">1</p>
+              <p className="text-3xl font-bold text-blue-600">1</p>
             </motion.div>
             
             <motion.div 
@@ -133,7 +133,7 @@ export default function MotoristaClient() {
             >
               <div className="text-3xl mb-2">🔧</div>
               <h3 className="text-lg font-semibold text-gray-700">Serviços</h3>
-              <p className="text-3xl font-bold text-orange-600">5</p>
+              <p className="text-3xl font-bold text-yellow-600">5</p>
             </motion.div>
             
             <motion.div 
@@ -144,7 +144,7 @@ export default function MotoristaClient() {
             >
               <div className="text-3xl mb-2">💰</div>
               <h3 className="text-lg font-semibold text-gray-700">Gasto Total</h3>
-              <p className="text-3xl font-bold text-purple-600">R$ 850</p>
+              <p className="text-3xl font-bold text-blue-600">R$ 850</p>
             </motion.div>
         </div>
 
@@ -162,7 +162,7 @@ export default function MotoristaClient() {
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-xl font-bold mb-4 text-gray-800">🚗 Meus Veículos</h3>
             <p className="text-gray-600 mb-4">Gerencie seus veículos e histórico</p>
-            <button className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
+            <button className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
               Ver Veículos
             </button>
           </div>
@@ -170,7 +170,7 @@ export default function MotoristaClient() {
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-xl font-bold mb-4 text-gray-800">📱 Emergência</h3>
             <p className="text-gray-600 mb-4">Precisa de ajuda urgente?</p>
-            <button className="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">
+            <button className="w-full bg-yellow-600 text-white py-2 px-4 rounded hover:bg-yellow-700">
               SOS Mecânico
             </button>
           </div>
@@ -191,7 +191,7 @@ export default function MotoristaClient() {
                   <p className="font-semibold">Revisão Completa - Honda Civic</p>
                   <p className="text-sm text-gray-600">Oficina Auto Center - Há 2 dias</p>
                 </div>
-                <div className="ml-auto text-green-600 font-bold">R$ 380</div>
+                <div className="ml-auto text-yellow-600 font-bold">R$ 380</div>
               </div>
               
               <div className="flex items-center p-4 bg-yellow-50 rounded">

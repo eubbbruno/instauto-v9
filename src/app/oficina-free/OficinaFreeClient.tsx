@@ -112,10 +112,10 @@ export default function OficinaFreeClient() {
   if (loading) {
     return (
       <div className="flex min-h-screen bg-gray-50">
-        <div className="hidden md:block w-64 h-screen bg-gradient-to-b from-emerald-800 to-green-600"></div>
+        <div className="hidden md:block w-64 h-screen bg-gradient-to-b from-blue-800 to-blue-600"></div>
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
+            <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-gray-600">Carregando dashboard...</p>
           </div>
         </div>
@@ -152,7 +152,7 @@ export default function OficinaFreeClient() {
           
           {/* Upgrade Banner */}
           <motion.div 
-            className="mb-6 p-6 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl shadow-lg text-white relative overflow-hidden"
+            className="mb-6 p-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg text-white relative overflow-hidden"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -167,7 +167,7 @@ export default function OficinaFreeClient() {
                       {mockData.limitesPlano.clientesAtual}/{mockData.limitesPlano.clientesMax} clientes
                     </span>
                   </h2>
-                  <p className="text-green-100">Aproveite todas as funcionalidades básicas!</p>
+                  <p className="text-blue-100">Aproveite todas as funcionalidades básicas!</p>
                 </div>
                 <Link href="/oficina-free/upgrade">
                   <button className="bg-yellow-400 text-gray-900 px-6 py-3 rounded-xl font-bold hover:bg-yellow-300 transition-all transform hover:scale-105 flex items-center gap-2">
@@ -189,13 +189,13 @@ export default function OficinaFreeClient() {
             >
               <div className="text-4xl mb-3">👥</div>
               <h3 className="text-lg font-semibold text-gray-700">Clientes Ativos</h3>
-              <p className="text-3xl font-bold text-green-600">{mockData.stats.clientesAtivos.value}</p>
+              <p className="text-3xl font-bold text-blue-600">{mockData.stats.clientesAtivos.value}</p>
               <div className="flex items-center justify-center mt-2 text-sm">
-                <ArrowUpIcon className="w-4 h-4 text-green-500 mr-1" />
-                <span className="text-green-600">+{mockData.stats.clientesAtivos.change} hoje</span>
+                <ArrowUpIcon className="w-4 h-4 text-blue-500 mr-1" />
+                <span className="text-blue-600">+{mockData.stats.clientesAtivos.change} hoje</span>
               </div>
-              <div className="mt-2 bg-green-100 rounded-full h-2">
-                <div className="bg-green-500 h-2 rounded-full" style={{width: `${(mockData.limitesPlano.clientesAtual/mockData.limitesPlano.clientesMax)*100}%`}}></div>
+              <div className="mt-2 bg-blue-100 rounded-full h-2">
+                <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(mockData.limitesPlano.clientesAtual/mockData.limitesPlano.clientesMax)*100}%`}}></div>
               </div>
               <p className="text-xs text-gray-500 mt-1">{mockData.limitesPlano.clientesAtual}/{mockData.limitesPlano.clientesMax} limite FREE</p>
             </motion.div>
@@ -210,8 +210,8 @@ export default function OficinaFreeClient() {
               <h3 className="text-lg font-semibold text-gray-700">Ordens Hoje</h3>
               <p className="text-3xl font-bold text-blue-600">{mockData.stats.ordensHoje.value}</p>
               <div className="flex items-center justify-center mt-2 text-sm">
-                <ArrowUpIcon className="w-4 h-4 text-green-500 mr-1" />
-                <span className="text-green-600">+{mockData.stats.ordensHoje.change} hoje</span>
+                <ArrowUpIcon className="w-4 h-4 text-yellow-500 mr-1" />
+                <span className="text-yellow-600">+{mockData.stats.ordensHoje.change} hoje</span>
               </div>
             </motion.div>
             
@@ -223,10 +223,10 @@ export default function OficinaFreeClient() {
             >
               <div className="text-4xl mb-3">📅</div>
               <h3 className="text-lg font-semibold text-gray-700">Agendamentos</h3>
-              <p className="text-3xl font-bold text-orange-600">{mockData.stats.agendamentosHoje.value}</p>
+              <p className="text-3xl font-bold text-yellow-600">{mockData.stats.agendamentosHoje.value}</p>
               <div className="flex items-center justify-center mt-2 text-sm">
-                <ArrowUpIcon className="w-4 h-4 text-green-500 mr-1" />
-                <span className="text-green-600">+{mockData.stats.agendamentosHoje.change} hoje</span>
+                <ArrowUpIcon className="w-4 h-4 text-yellow-500 mr-1" />
+                <span className="text-yellow-600">+{mockData.stats.agendamentosHoje.change} hoje</span>
               </div>
             </motion.div>
             
@@ -238,13 +238,13 @@ export default function OficinaFreeClient() {
             >
               <div className="text-4xl mb-3">💰</div>
               <h3 className="text-lg font-semibold text-gray-700">Receita Hoje</h3>
-              <p className="text-3xl font-bold text-purple-600">R$ {mockData.stats.receitaHoje.value.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-blue-600">R$ {mockData.stats.receitaHoje.value.toLocaleString()}</p>
               <div className="flex items-center justify-center mt-2 text-sm">
-                <ArrowUpIcon className="w-4 h-4 text-green-500 mr-1" />
-                <span className="text-green-600">+R$ {mockData.stats.receitaHoje.change}</span>
+                <ArrowUpIcon className="w-4 h-4 text-yellow-500 mr-1" />
+                <span className="text-yellow-600">+R$ {mockData.stats.receitaHoje.change}</span>
               </div>
               <div className="absolute top-3 right-3">
-                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
               </div>
             </motion.div>
           </div>
@@ -260,12 +260,12 @@ export default function OficinaFreeClient() {
               transition={{ delay: 0.5 }}
             >
               <h3 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
-                <WrenchScrewdriverIcon className="w-6 h-6 text-green-600" />
+                <WrenchScrewdriverIcon className="w-6 h-6 text-blue-600" />
                 Ações Rápidas
               </h3>
               <div className="space-y-3">
                 <Link href="/oficina-free/ordens">
-                  <button className="w-full p-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 text-left font-medium transition-all transform hover:scale-[1.02]">
+                  <button className="w-full p-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 text-left font-medium transition-all transform hover:scale-[1.02]">
                     📝 Nova Ordem de Serviço
                   </button>
                 </Link>
@@ -295,7 +295,7 @@ export default function OficinaFreeClient() {
               </h3>
               <div className="space-y-4">
                 {mockData.agendamentosHoje.map((agendamento, index) => (
-                  <div key={agendamento.id} className="p-4 border-l-4 border-green-500 bg-green-50 rounded-r-lg">
+                  <div key={agendamento.id} className="p-4 border-l-4 border-blue-500 bg-blue-50 rounded-r-lg">
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-semibold text-gray-800">{agendamento.cliente}</p>
@@ -303,15 +303,15 @@ export default function OficinaFreeClient() {
                         <p className="text-xs text-gray-500">{agendamento.veiculo}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-green-600">{agendamento.horario}</p>
-                        <p className="text-xs text-green-600">✓ Confirmado</p>
+                        <p className="font-bold text-blue-600">{agendamento.horario}</p>
+                        <p className="text-xs text-blue-600">✓ Confirmado</p>
                       </div>
                     </div>
                   </div>
                 ))}
                 
                 <Link href="/oficina-free/agendamentos">
-                  <button className="w-full p-3 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-green-500 hover:text-green-600 transition-all">
+                  <button className="w-full p-3 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-blue-500 hover:text-blue-600 transition-all">
                     + Ver todos agendamentos
                   </button>
                 </Link>
