@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 import { CreditCardIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { supabase } from '@/lib/supabase';
 
 // Inicializar MercadoPago
 if (process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY) {
@@ -45,8 +46,34 @@ export default function MercadoPagoCheckout({ planType, onSuccess, onError }: Ch
   const [preferenceId, setPreferenceId] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   
   const plan = planDetails[planType];
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  async function checkUser() {
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      
+      if (user) {
+        setUser(user);
+        
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        
+        setProfile(profile);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao buscar usuário:', error);
+    }
+  }
 
   // Se for plano gratuito, nao mostrar checkout
   if (planType === 'free') {
@@ -81,13 +108,13 @@ export default function MercadoPagoCheckout({ planType, onSuccess, onError }: Ch
         },
         body: JSON.stringify({
           planType,
-          workshopId: 'temp-workshop-id', // Em producao, pegar do contexto de auth
+          workshopId: user?.id || 'temp-workshop-id',
           payer: {
-            name: 'Usuario Teste', // Em producao, pegar do contexto de auth
-            email: 'teste@exemplo.com',
+            name: profile?.name || user?.user_metadata?.name || 'Usuário',
+            email: user?.email || 'teste@exemplo.com',
             phone: {
               area_code: '11',
-              number: '999999999'
+              number: profile?.phone || '999999999'
             }
           }
         })

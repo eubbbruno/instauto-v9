@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CheckCircleIcon as CheckCircleSolidIcon, XCircleIcon, SparklesIcon } from "@heroicons/react/24/solid";
 import { useState, useEffect, useRef } from "react";
 import MercadoPagoCheckout from "@/components/payments/MercadoPagoCheckout";
+import { supabase } from "@/lib/supabase";
 
 // Tipos para os planos
 type PlanFeature = {
@@ -49,12 +50,21 @@ export default function PlanosPage() {
     { name: "Acesso via celular", freeIncluded: true, proIncluded: true }
   ];
 
-  const handlePlanSelect = (plan: 'free' | 'pro') => {
+  const handlePlanSelect = async (plan: 'free' | 'pro') => {
     if (plan === 'pro') {
+      // Verificar se o usuário está logado
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        // Redirecionar para login com query parameter
+        window.location.href = '/login?return_url=/oficinas/planos&plan=pro';
+        return;
+      }
+      
       setShowCheckout(true);
     } else {
-      // Redirecionar para cadastro gratuito
-      window.location.href = '/auth/oficina';
+      // Para plano gratuito, redirecionar para login/cadastro
+      window.location.href = '/login?plan=free&type=oficina';
     }
   };
 

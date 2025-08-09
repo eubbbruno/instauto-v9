@@ -201,13 +201,13 @@ const Header = () => {
         {/* Botões desktop */}
         <div className="hidden md:flex items-center space-x-4">
           <Link 
-            href="/auth/oficina" 
+            href="/login" 
             className="btn-outline"
           >
             Entrar
           </Link>
           <Link 
-            href="/auth/oficina" 
+            href="/oficinas/planos" 
             ref={ctaButtonRef}
             className="btn-secondary relative overflow-hidden group flex items-center"
           >
@@ -295,7 +295,7 @@ const Header = () => {
                   </Link>
                   
                   <Link 
-                    href="/auth/oficina" 
+                    href="/oficinas/planos" 
                     className="btn-secondary block w-full text-center"
                     onClick={() => setMobileMenuOpen(false)}
                   >

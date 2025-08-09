@@ -1,10 +1,12 @@
 'use client'
 import { supabase } from '@/lib/supabase'
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
+import { useSearchParams } from 'next/navigation'
 
-export default function LoginPage() {
+function LoginContent() {
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isSignUp, setIsSignUp] = useState(false)
@@ -12,6 +14,21 @@ export default function LoginPage() {
   const [oficinaPlano, setOficinaPlano] = useState<'free' | 'pro'>('free')
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState(1) // Para multi-step signup
+  const [returnUrl, setReturnUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    // Pegar parâmetros da URL
+    const urlType = searchParams.get('type')
+    const urlPlan = searchParams.get('plan')
+    const urlReturnUrl = searchParams.get('return_url')
+    
+    if (urlType === 'oficina') setUserType('oficina')
+    if (urlPlan === 'free' || urlPlan === 'pro') setOficinaPlano(urlPlan)
+    if (urlReturnUrl) setReturnUrl(urlReturnUrl)
+    
+    // Se veio com parâmetros, já ativar signup
+    if (urlType || urlPlan) setIsSignUp(true)
+  }, [searchParams])
   
   const handleAuth = async () => {
     setLoading(true)
@@ -67,6 +84,12 @@ export default function LoginPage() {
         if (data?.user) {
           console.log('✅ Login realizado:', data.user.email)
           
+          // Se há URL de retorno, usar ela
+          if (returnUrl) {
+            window.location.href = returnUrl
+            return
+          }
+          
           // Buscar profile para redirecionamento inteligente
           const { data: profile } = await supabase
             .from('profiles')
@@ -77,8 +100,18 @@ export default function LoginPage() {
           if (profile?.type === 'motorista') {
             window.location.href = '/motorista'
           } else if (profile?.type === 'oficina') {
-            // Por enquanto sempre FREE, depois implementar lógica de plano
-            window.location.href = '/oficina-free'
+            // Verificar plano da oficina
+            const { data: workshop } = await supabase
+              .from('workshops')
+              .select('plan_type')
+              .eq('profile_id', data.user.id)
+              .single()
+            
+            if (workshop?.plan_type === 'pro') {
+              window.location.href = '/dashboard'
+            } else {
+              window.location.href = '/oficina-free'
+            }
           } else {
             window.location.href = '/dashboard'
           }
@@ -494,5 +527,17 @@ export default function LoginPage() {
         </motion.div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   )
 }
