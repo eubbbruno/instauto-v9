@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
+import QuickDiagnosticAI from '@/components/ai/QuickDiagnosticAI'
 
 export default function MotoristaClient() {
   const [user, setUser] = useState<any>(null)
@@ -71,7 +72,7 @@ export default function MotoristaClient() {
       />
       
       {/* Main Content */}
-      <div className="flex-1 md:ml-64 transition-all duration-300">
+      <div className="flex-1 md:ml-64 transition-all duration-300" style={{ marginLeft: '256px' }}>
 
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-4 py-4">
@@ -101,6 +102,24 @@ export default function MotoristaClient() {
               <p className="text-blue-100">Gerencie seus veículos e encontre as melhores oficinas</p>
             </div>
           </motion.div>
+
+          {/* Diagnóstico IA */}
+          <div className="mb-8">
+            <QuickDiagnosticAI 
+              className="w-full"
+              vehicleData={{
+                make: 'Toyota',
+                model: 'Corolla',
+                year: 2020,
+                mileage: 45000,
+                fuelType: 'gasoline',
+                transmissionType: 'automatic'
+              }}
+              onDiagnosisComplete={(results) => {
+                console.log('🤖 Diagnóstico completado:', results)
+              }}
+            />
+          </div>
         
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">

@@ -168,9 +168,13 @@ export default function BeautifulSidebar({
             <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full animate-pulse"></div>
           </div>
           {!isCollapsed && (
-            <div>
-              <h1 className="font-bold text-lg text-white">InstaAuto</h1>
-              <p className="text-xs text-white/70">
+            <div className="flex items-center gap-2">
+              <img 
+                src="/logo-instauto.svg" 
+                alt="InstaAuto" 
+                className="h-8 w-auto filter brightness-0 invert"
+              />
+              <p className="text-xs text-white/70 ml-1">
                 {userType === 'oficina-pro' ? 'PRO' : userType === 'oficina-free' ? 'FREE' : 'DRIVER'}
               </p>
             </div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
+import AnalyticsDashboard from '@/components/ai/AnalyticsDashboard'
 import { 
   CalendarDaysIcon, 
   ClipboardDocumentListIcon, 
@@ -135,7 +136,7 @@ export default function OficinaFreeClient() {
       />
       
       {/* Main Content */}
-      <div className="flex-1 md:ml-64 transition-all duration-300">
+      <div className="flex-1 md:ml-64 transition-all duration-300" style={{ marginLeft: '256px' }}>
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-4 py-4">
           <div className="flex items-center justify-between">
@@ -181,6 +182,11 @@ export default function OficinaFreeClient() {
           </motion.div>
         
           {/* Stats Cards */}
+          {/* Analytics IA */}
+          <div className="mb-8">
+            <AnalyticsDashboard userType="oficina-free" />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <motion.div 
               className="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-all border border-gray-100"
