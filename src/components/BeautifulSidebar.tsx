@@ -28,6 +28,7 @@ import {
   MapPinIcon,
   PhoneIcon
 } from '@heroicons/react/24/outline'
+import PushNotificationManager from '@/components/notifications/PushNotificationManager'
 
 interface SidebarItem {
   icon: any
@@ -243,6 +244,16 @@ export default function BeautifulSidebar({
               <ShieldCheckIcon className="w-4 h-4" />
               <span>Plano PRO Ativo</span>
             </div>
+          </div>
+        )}
+
+        {/* Push Notifications */}
+        {!isCollapsed && (
+          <div className="mb-4">
+            <PushNotificationManager 
+              userType={userType} 
+              className="w-full"
+            />
           </div>
         )}
         
