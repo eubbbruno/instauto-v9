@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
+import ChatManager from '@/components/chat/ChatManager'
 import { 
   CalendarDaysIcon, 
   ClipboardDocumentListIcon, 
@@ -369,6 +370,14 @@ export default function OficinaFreeClient() {
           </div>
         </div>
       </div>
+
+      {/* Chat Manager */}
+      {user && (
+        <ChatManager 
+          userType="oficina-free"
+          currentUserId={user.id}
+        />
+      )}
     </div>
   )
 }

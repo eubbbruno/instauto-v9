@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
+import ChatManager from '@/components/chat/ChatManager'
 import { 
   ArrowUpIcon,
   PlusIcon,
@@ -491,6 +492,14 @@ export default function OficinaProClient() {
           </div>
         </div>
       </div>
+
+      {/* Chat Manager */}
+      {user && (
+        <ChatManager 
+          userType="oficina-pro"
+          currentUserId={user.id}
+        />
+      )}
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
+import ChatManager from '@/components/chat/ChatManager'
 
 export default function MotoristaClient() {
   const [user, setUser] = useState<any>(null)
@@ -211,6 +212,14 @@ export default function MotoristaClient() {
           </div>
         </div>
       </div>
+
+      {/* Chat Manager */}
+      {user && (
+        <ChatManager 
+          userType="motorista"
+          currentUserId={user.id}
+        />
+      )}
     </div>
   )
 }
