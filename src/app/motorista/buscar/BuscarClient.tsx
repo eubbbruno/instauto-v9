@@ -5,6 +5,8 @@ import { motion } from 'framer-motion'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import { useGoogleMaps } from '@/lib/google-maps'
 import { useGeolocationSearch, SearchFilters } from '@/lib/geolocation-search'
+import AdvancedGoogleMap from '@/components/maps/AdvancedGoogleMap'
+import { Workshop, RouteData } from '@/lib/google-maps'
 import AdvancedFilters, { FilterConfig, useAdvancedFilters } from '@/components/filters/AdvancedFilters'
 import QuickFilters, { QuickFilter, useQuickFilters } from '@/components/filters/QuickFilters'
 import SearchFilter, { useSearchHistory } from '@/components/filters/SearchFilter'
@@ -29,6 +31,9 @@ export default function BuscarClient() {
   const [showFilters, setShowFilters] = useState(false)
   const [results, setResults] = useState<any[]>([])
   const [searchLoading, setSearchLoading] = useState(false)
+  const [selectedWorkshop, setSelectedWorkshop] = useState<Workshop | null>(null)
+  const [currentRoute, setCurrentRoute] = useState<RouteData | null>(null)
+  const [viewMode, setViewMode] = useState<'map' | 'list'>('map')
   
   const mapRef = useRef<HTMLDivElement>(null)
 
@@ -453,10 +458,75 @@ export default function BuscarClient() {
                     <h3 className="text-lg font-bold text-gray-900 mb-4">
                       Localização no Mapa
                     </h3>
-                    <div 
-                      ref={mapRef}
-                      className="w-full h-96 rounded-lg bg-gray-100"
-                    ></div>
+                    
+                    <AdvancedGoogleMap
+                      height="400px"
+                      showFilters={true}
+                      showSearch={true}
+                      onWorkshopSelect={(workshop) => {
+                        setSelectedWorkshop(workshop)
+                        console.log('🏪 Oficina selecionada:', workshop)
+                      }}
+                      onRouteCalculated={(route) => {
+                        setCurrentRoute(route)
+                        console.log('🛣️ Rota calculada:', route)
+                      }}
+                      className="w-full rounded-lg overflow-hidden"
+                    />
+
+                    {/* Info da oficina selecionada */}
+                    {selectedWorkshop && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4"
+                      >
+                        <h4 className="font-semibold text-blue-900 mb-2">
+                          📍 {selectedWorkshop.name}
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <p className="text-blue-700">
+                              ⭐ {selectedWorkshop.rating.toFixed(1)} ({selectedWorkshop.reviewCount} avaliações)
+                            </p>
+                            <p className="text-blue-700">
+                              📏 {selectedWorkshop.distance}km de distância
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-blue-700">
+                              {selectedWorkshop.isOpen ? '🟢 Aberto' : '🔴 Fechado'}
+                            </p>
+                            {selectedWorkshop.phone && (
+                              <p className="text-blue-700">
+                                📞 {selectedWorkshop.phone}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {currentRoute && (
+                          <div className="mt-3 pt-3 border-t border-blue-300">
+                            <p className="text-blue-800 font-medium">
+                              🛣️ Rota: {currentRoute.distance} • {currentRoute.duration}
+                            </p>
+                          </div>
+                        )}
+                        
+                        <div className="flex gap-2 mt-4">
+                          <Link href={`/oficina/${selectedWorkshop.id}`}>
+                            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                              Ver Detalhes
+                            </button>
+                          </Link>
+                          <Link href={`/agendar/${selectedWorkshop.id}`}>
+                            <button className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition-colors">
+                              Agendar Serviço
+                            </button>
+                          </Link>
+                        </div>
+                      </motion.div>
+                    )}
                     
                     {locationState.error && (
                       <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
