@@ -85,9 +85,9 @@ export default function MotoristaClient() {
         </div>
 
         {/* Content Container */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden ml-0">
           <div className="h-full overflow-y-auto">
-            <div className="p-4">
+            <div className="p-6 pl-2">
           
           {/* Welcome Card */}
           <motion.div 

@@ -153,32 +153,24 @@ export default function BeautifulSidebar({
       <div className="absolute bottom-[20%] left-[20%] w-1.5 h-1.5 bg-white/20 rounded-full"></div>
 
       {/* Header com Logo */}
-      <div className={`flex items-center justify-between p-6 ${isCollapsed ? 'px-4' : ''}`}>
-        <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}>
+      <div className={`flex items-center justify-center p-6 ${isCollapsed ? 'px-4' : ''}`}>
+        <div className={`flex items-center justify-center ${isCollapsed ? 'w-full' : 'w-full'}`}>
           <div className="relative">
-            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center p-2`}>
+            <div className={`${isCollapsed ? 'w-12 h-12' : 'w-16 h-16'} rounded-2xl bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center p-3`}>
               <Image
                 src="/images/logo.svg"
                 alt="InstaAuto"
-                width={24}
-                height={24}
+                width={isCollapsed ? 32 : 48}
+                height={isCollapsed ? 32 : 48}
                 className="w-full h-full object-contain filter brightness-0 invert"
               />
             </div>
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full animate-pulse"></div>
-          </div>
-          {!isCollapsed && (
-            <div className="flex items-center gap-2">
-              <img 
-                src="/logo-instauto.svg" 
-                alt="InstaAuto" 
-                className="h-8 w-auto filter brightness-0 invert"
-              />
-              <p className="text-xs text-white/70 ml-1">
-                {userType === 'oficina-pro' ? 'PRO' : userType === 'oficina-free' ? 'FREE' : 'DRIVER'}
-              </p>
+            <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full animate-pulse flex items-center justify-center">
+              <span className="text-xs font-bold text-white">
+                {userType === 'oficina-pro' ? 'P' : userType === 'oficina-free' ? 'F' : 'M'}
+              </span>
             </div>
-          )}
+          </div>
         </div>
         
         <button
