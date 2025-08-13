@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
 import QuickDiagnosticAI from '@/components/ai/QuickDiagnosticAI'
+import ChatFloatingButton from '@/components/chat/ChatFloatingButton'
 
 export default function MotoristaClient() {
   const [user, setUser] = useState<any>(null)
@@ -232,11 +233,11 @@ export default function MotoristaClient() {
         </div>
       </div>
 
-      {/* Chat Manager */}
+      {/* Real-time Chat */}
       {user && (
-        <ChatManager 
-          userType="motorista"
+        <ChatFloatingButton 
           currentUserId={user.id}
+          userType="motorista"
         />
       )}
     </div>

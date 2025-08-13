@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
 import AnalyticsDashboard from '@/components/ai/AnalyticsDashboard'
+import ChatFloatingButton from '@/components/chat/ChatFloatingButton'
 import { 
   CalendarDaysIcon, 
   ClipboardDocumentListIcon, 
@@ -377,11 +378,11 @@ export default function OficinaFreeClient() {
         </div>
       </div>
 
-      {/* Chat Manager */}
+      {/* Real-time Chat */}
       {user && (
-        <ChatManager 
-          userType="oficina-free"
+        <ChatFloatingButton 
           currentUserId={user.id}
+          userType="oficina-free"
         />
       )}
     </div>
