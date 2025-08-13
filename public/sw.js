@@ -1,411 +1,382 @@
-// Service Worker para PWA InstaAuto
+// Service Worker para PWA
 const CACHE_NAME = 'instauto-v1.0.0'
-const OFFLINE_PAGE = '/offline'
+const STATIC_CACHE_NAME = 'instauto-static-v1'
+const DYNAMIC_CACHE_NAME = 'instauto-dynamic-v1'
 
-// Recursos essenciais para cache
-const ESSENTIAL_RESOURCES = [
+// URLs para cache estático (recursos essenciais)
+const STATIC_ASSETS = [
   '/',
   '/login',
   '/motorista',
-  '/oficina-pro',
   '/oficina-free',
-  '/images/logo.svg',
+  '/oficina-pro',
   '/manifest.json',
-  OFFLINE_PAGE
+  '/images/logo.svg',
+  '/images/logo-instauto.svg'
 ]
 
-// Recursos estáticos para cache
-const STATIC_RESOURCES = [
-  '/images/car-3d.png',
-  '/images/truck-3d.png',
-  '/images/moto-3d.png'
+// URLs para cache dinâmico (dados da API)
+const API_CACHE_PATTERNS = [
+  /\/api\/oficinas/,
+  /\/api\/agendamentos/,
+  /\/api\/auth/
 ]
 
-// Install event - Cache essential resources
+// Instalar Service Worker
 self.addEventListener('install', (event) => {
-  console.log('🔧 Service Worker installing...')
+  console.log('🚀 SW: Installing service worker...')
   
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('📦 Caching essential resources')
-        return cache.addAll(ESSENTIAL_RESOURCES)
-      })
-      .then(() => {
-        console.log('✅ Service Worker installed successfully')
-        return self.skipWaiting()
-      })
-      .catch((error) => {
-        console.error('❌ Service Worker install failed:', error)
-      })
+    caches.open(STATIC_CACHE_NAME).then((cache) => {
+      console.log('📦 SW: Caching static assets')
+      return cache.addAll(STATIC_ASSETS)
+    }).catch((error) => {
+      console.error('❌ SW: Error caching static assets:', error)
+    })
   )
+  
+  // Força a ativação imediata
+  self.skipWaiting()
 })
 
-// Activate event - Clean old caches
+// Ativar Service Worker
 self.addEventListener('activate', (event) => {
-  console.log('🚀 Service Worker activating...')
+  console.log('✅ SW: Activating service worker...')
   
   event.waitUntil(
-    caches.keys()
-      .then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => {
-            if (cacheName !== CACHE_NAME) {
-              console.log('🗑️ Deleting old cache:', cacheName)
-              return caches.delete(cacheName)
-            }
-          })
-        )
-      })
-      .then(() => {
-        console.log('✅ Service Worker activated')
-        return self.clients.claim()
-      })
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          // Remove caches antigos
+          if (cacheName !== STATIC_CACHE_NAME && 
+              cacheName !== DYNAMIC_CACHE_NAME &&
+              cacheName !== CACHE_NAME) {
+            console.log('🗑️ SW: Deleting old cache:', cacheName)
+            return caches.delete(cacheName)
+          }
+        })
+      )
+    })
   )
+  
+  // Assume o controle imediatamente
+  self.clients.claim()
 })
 
-// Fetch event - Network first, then cache
+// Interceptar requisições
 self.addEventListener('fetch', (event) => {
   const { request } = event
   const url = new URL(request.url)
-
-  // Skip non-GET requests
-  if (request.method !== 'GET') {
-    return
+  
+  // Ignorar requisições não-HTTP
+  if (!request.url.startsWith('http')) return
+  
+  // Ignorar requisições do Chrome Extensions
+  if (url.protocol === 'chrome-extension:') return
+  
+  // WebSocket requests
+  if (request.url.includes('/api/ws')) {
+    return // Não cachear WebSocket
   }
-
-  // Skip external requests
-  if (url.origin !== location.origin) {
-    return
-  }
-
-  // Skip API requests (handle differently)
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(handleApiRequest(request))
-    return
-  }
-
-  // Handle page requests
-  if (request.headers.get('accept')?.includes('text/html')) {
-    event.respondWith(handlePageRequest(request))
-    return
-  }
-
-  // Handle static resources
-  event.respondWith(handleStaticRequest(request))
+  
+  event.respondWith(
+    handleRequest(request)
+  )
 })
 
-// Handle API requests - Network only with offline indicator
-async function handleApiRequest(request) {
+// Estratégias de cache
+async function handleRequest(request) {
+  const url = new URL(request.url)
+  
   try {
-    const response = await fetch(request)
-    return response
-  } catch (error) {
-    console.log('📡 API request failed (offline):', request.url)
+    // Estratégia: Cache First para assets estáticos
+    if (isStaticAsset(request)) {
+      return await cacheFirst(request, STATIC_CACHE_NAME)
+    }
     
-    // Return a minimal offline response for API calls
-    return new Response(
-      JSON.stringify({
-        error: 'offline',
-        message: 'Você está offline. Algumas funcionalidades podem não estar disponíveis.'
-      }),
-      {
-        status: 503,
-        statusText: 'Service Unavailable',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    // Estratégia: Network First para API calls
+    if (isApiCall(request)) {
+      return await networkFirst(request, DYNAMIC_CACHE_NAME, 5000)
+    }
+    
+    // Estratégia: Stale While Revalidate para páginas
+    if (isPageRequest(request)) {
+      return await staleWhileRevalidate(request, DYNAMIC_CACHE_NAME)
+    }
+    
+    // Estratégia: Network Only para tudo mais
+    return await fetch(request)
+    
+  } catch (error) {
+    console.error('❌ SW: Request failed:', error)
+    return await handleOffline(request)
   }
 }
 
-// Handle page requests - Network first, then cache, then offline page
-async function handlePageRequest(request) {
-  try {
-    // Try network first
-    const networkResponse = await fetch(request)
-    
-    // Cache successful responses
-    if (networkResponse.ok) {
-      const cache = await caches.open(CACHE_NAME)
-      cache.put(request, networkResponse.clone())
-    }
-    
-    return networkResponse
-  } catch (error) {
-    console.log('📄 Page request failed, trying cache:', request.url)
-    
-    // Try cache
-    const cachedResponse = await caches.match(request)
-    if (cachedResponse) {
-      return cachedResponse
-    }
-    
-    // Return offline page for navigation requests
-    if (request.mode === 'navigate') {
-      const offlineResponse = await caches.match(OFFLINE_PAGE)
-      if (offlineResponse) {
-        return offlineResponse
-      }
-    }
-    
-    // Fallback response
-    return new Response(
-      `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>InstaAuto - Offline</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-          <style>
-            body {
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              min-height: 100vh;
-              margin: 0;
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              color: white;
-              text-align: center;
-              padding: 20px;
-            }
-            .offline-container {
-              max-width: 400px;
-            }
-            .offline-icon {
-              font-size: 4rem;
-              margin-bottom: 1rem;
-            }
-            .offline-title {
-              font-size: 1.5rem;
-              font-weight: bold;
-              margin-bottom: 0.5rem;
-            }
-            .offline-message {
-              opacity: 0.9;
-              margin-bottom: 2rem;
-            }
-            .retry-button {
-              background: rgba(255, 255, 255, 0.2);
-              border: 2px solid rgba(255, 255, 255, 0.3);
-              color: white;
-              padding: 12px 24px;
-              border-radius: 8px;
-              cursor: pointer;
-              font-size: 1rem;
-              transition: all 0.3s ease;
-            }
-            .retry-button:hover {
-              background: rgba(255, 255, 255, 0.3);
-            }
-          </style>
-        </head>
-        <body>
-          <div class="offline-container">
-            <div class="offline-icon">📡</div>
-            <h1 class="offline-title">Você está offline</h1>
-            <p class="offline-message">
-              Verifique sua conexão com a internet e tente novamente.
-            </p>
-            <button class="retry-button" onclick="window.location.reload()">
-              Tentar Novamente
-            </button>
-          </div>
-        </body>
-      </html>
-      `,
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'text/html',
-        },
-      }
-    )
-  }
-}
-
-// Handle static resources - Cache first, then network
-async function handleStaticRequest(request) {
-  // Try cache first
-  const cachedResponse = await caches.match(request)
+// Cache First - Ideal para assets estáticos
+async function cacheFirst(request, cacheName) {
+  const cache = await caches.open(cacheName)
+  const cachedResponse = await cache.match(request)
+  
   if (cachedResponse) {
     return cachedResponse
   }
   
+  const networkResponse = await fetch(request)
+  
+  if (networkResponse.status === 200) {
+    cache.put(request, networkResponse.clone())
+  }
+  
+  return networkResponse
+}
+
+// Network First - Ideal para API calls
+async function networkFirst(request, cacheName, timeout = 5000) {
+  const cache = await caches.open(cacheName)
+  
   try {
-    // Try network
-    const networkResponse = await fetch(request)
+    // Tentar network com timeout
+    const networkResponse = await Promise.race([
+      fetch(request),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Network timeout')), timeout)
+      )
+    ])
     
-    // Cache successful responses
-    if (networkResponse.ok) {
-      const cache = await caches.open(CACHE_NAME)
+    if (networkResponse.status === 200) {
       cache.put(request, networkResponse.clone())
     }
     
     return networkResponse
+    
   } catch (error) {
-    console.log('🖼️ Static resource failed:', request.url)
+    console.log('🔄 SW: Network failed, trying cache...')
+    const cachedResponse = await cache.match(request)
+    
+    if (cachedResponse) {
+      return cachedResponse
+    }
+    
     throw error
   }
 }
 
-// Push notification event
-self.addEventListener('push', (event) => {
-  console.log('🔔 Push notification received')
+// Stale While Revalidate - Ideal para páginas
+async function staleWhileRevalidate(request, cacheName) {
+  const cache = await caches.open(cacheName)
+  const cachedResponse = await cache.match(request)
   
-  let data = {}
-  if (event.data) {
-    try {
-      data = event.data.json()
-    } catch (e) {
-      data = { title: 'InstaAuto', body: event.data.text() }
+  // Buscar versão atualizada em background
+  const networkResponsePromise = fetch(request).then((response) => {
+    if (response.status === 200) {
+      cache.put(request, response.clone())
     }
+    return response
+  }).catch(() => null)
+  
+  // Retornar cache imediatamente se disponível
+  if (cachedResponse) {
+    networkResponsePromise // Não aguardar
+    return cachedResponse
   }
   
-  const options = {
-    title: data.title || 'InstaAuto',
-    body: data.body || 'Nova notificação',
-    icon: '/images/logo.svg',
-    badge: '/icons/icon-72x72.png',
-    data: data.data || {},
-    actions: [
-      {
-        action: 'open',
-        title: 'Abrir App',
-        icon: '/icons/open-action.png'
-      },
-      {
-        action: 'dismiss',
-        title: 'Dispensar',
-        icon: '/icons/dismiss-action.png'
-      }
-    ],
-    tag: data.tag || 'general',
-    renotify: true,
-    requireInteraction: data.urgent || false,
-    vibrate: data.urgent ? [200, 100, 200] : [100],
-    timestamp: Date.now()
-  }
-  
-  event.waitUntil(
-    self.registration.showNotification(options.title, options)
-  )
-})
+  // Se não há cache, aguardar network
+  return await networkResponsePromise
+}
 
-// Notification click event
-self.addEventListener('notificationclick', (event) => {
-  console.log('🔔 Notification clicked:', event.action)
+// Handlers para offline
+async function handleOffline(request) {
+  const url = new URL(request.url)
   
-  event.notification.close()
-  
-  if (event.action === 'dismiss') {
-    return
-  }
-  
-  // Get the URL to open
-  let urlToOpen = '/'
-  
-  if (event.notification.data) {
-    urlToOpen = event.notification.data.url || '/'
-  }
-  
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true })
-      .then((clientList) => {
-        // Check if app is already open
-        for (const client of clientList) {
-          if (client.url.includes(self.location.origin) && 'focus' in client) {
-            client.focus()
-            if (urlToOpen !== '/') {
-              client.navigate(urlToOpen)
-            }
-            return
+  // Página offline personalizada
+  if (isPageRequest(request)) {
+    return new Response(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>InstaAuto - Offline</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+          body { 
+            font-family: system-ui, sans-serif; 
+            text-align: center; 
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
           }
-        }
-        
-        // Open new window
-        if (clients.openWindow) {
-          return clients.openWindow(urlToOpen)
-        }
-      })
-  )
-})
-
-// Background sync event (for offline actions)
-self.addEventListener('sync', (event) => {
-  console.log('🔄 Background sync:', event.tag)
+          .container {
+            max-width: 400px;
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+          }
+          .logo { font-size: 2rem; margin-bottom: 1rem; }
+          .retry-btn {
+            background: #fff;
+            color: #667eea;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            margin-top: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="logo">🚗 InstaAuto</div>
+          <h2>Você está offline</h2>
+          <p>Verifique sua conexão com a internet e tente novamente.</p>
+          <button class="retry-btn" onclick="window.location.reload()">
+            Tentar Novamente
+          </button>
+        </div>
+      </body>
+      </html>
+    `, {
+      status: 200,
+      headers: { 'Content-Type': 'text/html' }
+    })
+  }
   
-  if (event.tag === 'send-message') {
-    event.waitUntil(syncMessages())
-  } else if (event.tag === 'sync-data') {
-    event.waitUntil(syncOfflineData())
+  // API offline response
+  if (isApiCall(request)) {
+    return new Response(JSON.stringify({
+      error: 'Offline',
+      message: 'Você está offline. Tente novamente quando estiver conectado.'
+    }), {
+      status: 503,
+      headers: { 'Content-Type': 'application/json' }
+    })
   }
-})
-
-// Sync offline messages
-async function syncMessages() {
-  try {
-    // Get offline messages from IndexedDB
-    const offlineMessages = await getOfflineMessages()
-    
-    for (const message of offlineMessages) {
-      try {
-        const response = await fetch('/api/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(message)
-        })
-        
-        if (response.ok) {
-          await removeOfflineMessage(message.id)
-          console.log('✅ Offline message synced:', message.id)
-        }
-      } catch (error) {
-        console.log('❌ Failed to sync message:', message.id, error)
-      }
-    }
-  } catch (error) {
-    console.error('❌ Sync messages failed:', error)
-  }
+  
+  // Fallback genérico
+  return new Response('Offline', { status: 503 })
 }
 
-// Sync general offline data
-async function syncOfflineData() {
-  try {
-    console.log('🔄 Syncing offline data...')
-    
-    // Here you would implement syncing of:
-    // - Offline form submissions
-    // - Cached user actions
-    // - Updated profile data
-    // etc.
-    
-    console.log('✅ Offline data synced')
-  } catch (error) {
-    console.error('❌ Sync offline data failed:', error)
-  }
+// Utilitários de identificação
+function isStaticAsset(request) {
+  const url = new URL(request.url)
+  return url.pathname.match(/\.(js|css|png|jpg|jpeg|svg|ico|woff|woff2|ttf)$/) ||
+         STATIC_ASSETS.includes(url.pathname)
 }
 
-// Helper functions for IndexedDB operations
-async function getOfflineMessages() {
-  // Implement IndexedDB operations
-  return []
+function isApiCall(request) {
+  const url = new URL(request.url)
+  return url.pathname.startsWith('/api/') ||
+         API_CACHE_PATTERNS.some(pattern => pattern.test(url.pathname))
 }
 
-async function removeOfflineMessage(messageId) {
-  // Implement IndexedDB removal
-  return true
+function isPageRequest(request) {
+  const url = new URL(request.url)
+  return request.method === 'GET' && 
+         request.headers.get('accept')?.includes('text/html') &&
+         !url.pathname.startsWith('/api/')
 }
 
-// Update notification
+// Mensagens do cliente (para controle do cache)
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting()
   }
+  
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => caches.delete(cacheName))
+      )
+    }).then(() => {
+      event.ports[0].postMessage({ success: true })
+    })
+  }
+  
+  if (event.data && event.data.type === 'GET_CACHE_SIZE') {
+    getCacheSize().then((size) => {
+      event.ports[0].postMessage({ size })
+    })
+  }
 })
 
-console.log('🚀 InstaAuto Service Worker loaded successfully')
+// Calcular tamanho do cache
+async function getCacheSize() {
+  const cacheNames = await caches.keys()
+  let totalSize = 0
+  
+  for (const cacheName of cacheNames) {
+    const cache = await caches.open(cacheName)
+    const keys = await cache.keys()
+    
+    for (const request of keys) {
+      const response = await cache.match(request)
+      if (response) {
+        const blob = await response.blob()
+        totalSize += blob.size
+      }
+    }
+  }
+  
+  return Math.round(totalSize / 1024 / 1024 * 100) / 100 // MB
+}
+
+// Push Notifications
+self.addEventListener('push', (event) => {
+  if (!event.data) return
+  
+  const data = event.data.json()
+  const options = {
+    body: data.body || 'Nova notificação do InstaAuto',
+    icon: '/images/logo-192.png',
+    badge: '/images/badge-72.png',
+    tag: data.tag || 'default',
+    data: data.data || {},
+    actions: data.actions || [],
+    requireInteraction: data.requireInteraction || false,
+    vibrate: [200, 100, 200]
+  }
+  
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'InstaAuto', options)
+  )
+})
+
+// Clique em notificação
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  
+  const data = event.notification.data
+  let url = data.url || '/'
+  
+  // Ações específicas
+  if (event.action === 'view_message') {
+    url = '/mensagens'
+  } else if (event.action === 'view_appointment') {
+    url = '/agendamentos'
+  }
+  
+  event.waitUntil(
+    clients.matchAll({ type: 'window' }).then((clientList) => {
+      // Se já existe uma janela aberta, focar nela
+      for (const client of clientList) {
+        if (client.url === url && 'focus' in client) {
+          return client.focus()
+        }
+      }
+      
+      // Senão, abrir nova janela
+      if (clients.openWindow) {
+        return clients.openWindow(url)
+      }
+    })
+  )
+})
+
+console.log('✅ SW: Service Worker carregado com sucesso!')

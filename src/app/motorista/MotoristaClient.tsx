@@ -6,11 +6,13 @@ import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
 import QuickDiagnosticAI from '@/components/ai/QuickDiagnosticAI'
 import ChatFloatingButton from '@/components/chat/ChatFloatingButton'
+import { MobileOptimizedComponent, useReducedMotion } from '@/components/performance/MobileOptimizer'
 
 export default function MotoristaClient() {
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const reduceMotion = useReducedMotion()
   
   useEffect(() => {
     checkUser()
@@ -91,18 +93,16 @@ export default function MotoristaClient() {
             <div className="p-4 md:p-6 max-w-7xl">
           
           {/* Welcome Card */}
-          <motion.div 
+          <MobileOptimizedComponent 
             className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg p-6 mb-6 text-white relative overflow-hidden"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            enableAnimations={!reduceMotion}
           >
             <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-[30px]"></div>
             <div className="relative">
               <h2 className="text-2xl font-bold mb-2">Bem-vindo ao seu painel!</h2>
               <p className="text-blue-100">Gerencie seus veículos e encontre as melhores oficinas</p>
             </div>
-          </motion.div>
+          </MobileOptimizedComponent>
 
           {/* Diagnóstico IA */}
           <div className="mb-8">
