@@ -5,7 +5,8 @@ import { motion } from 'framer-motion'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import { useGoogleMaps } from '@/lib/google-maps'
 import { useGeolocationSearch, SearchFilters } from '@/lib/geolocation-search'
-import AdvancedGoogleMap from '@/components/maps/AdvancedGoogleMap'
+import AdvancedMapInterface from '@/components/maps/AdvancedMapInterface'
+import { OfficinaMarker } from '@/lib/google-maps-advanced'
 import { Workshop, RouteData } from '@/lib/google-maps'
 import AdvancedFilters, { FilterConfig, useAdvancedFilters } from '@/components/filters/AdvancedFilters'
 import QuickFilters, { QuickFilter, useQuickFilters } from '@/components/filters/QuickFilters'
@@ -32,6 +33,7 @@ export default function BuscarClient() {
   const [results, setResults] = useState<any[]>([])
   const [searchLoading, setSearchLoading] = useState(false)
   const [selectedWorkshop, setSelectedWorkshop] = useState<Workshop | null>(null)
+  const [selectedOficina, setSelectedOficina] = useState<OfficinaMarker | null>(null)
   const [currentRoute, setCurrentRoute] = useState<RouteData | null>(null)
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map')
   
@@ -459,17 +461,27 @@ export default function BuscarClient() {
                       Localização no Mapa
                     </h3>
                     
-                    <AdvancedGoogleMap
-                      height="400px"
-                      showFilters={true}
-                      showSearch={true}
-                      onWorkshopSelect={(workshop) => {
+                    <AdvancedMapInterface
+                      onOficinaSelect={(oficina) => {
+                        setSelectedOficina(oficina)
+                        // Converter OfficinaMarker para Workshop se necessário
+                        const workshop: Workshop = {
+                          id: oficina.id,
+                          name: oficina.name,
+                          lat: oficina.lat,
+                          lng: oficina.lng,
+                          rating: oficina.rating,
+                          reviewCount: oficina.reviewCount,
+                          address: oficina.address || '',
+                          distance: oficina.distance || 0,
+                          isOpen: oficina.isOpen,
+                          phone: oficina.phone,
+                          website: oficina.website,
+                          services: oficina.services,
+                          priceLevel: oficina.priceLevel || 1
+                        }
                         setSelectedWorkshop(workshop)
                         console.log('🏪 Oficina selecionada:', workshop)
-                      }}
-                      onRouteCalculated={(route) => {
-                        setCurrentRoute(route)
-                        console.log('🛣️ Rota calculada:', route)
                       }}
                       className="w-full rounded-lg overflow-hidden"
                     />
