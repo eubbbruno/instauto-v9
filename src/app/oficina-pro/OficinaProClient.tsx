@@ -159,9 +159,9 @@ export default function OficinaProClient() {
       />
       
       {/* Main Content */}
-      <div className="flex-1 md:ml-64 transition-all duration-300" style={{ marginLeft: '256px' }}>
+      <div className="flex-1 transition-all duration-300 ml-0 md:ml-60">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-4 py-4">
+        <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
@@ -176,9 +176,9 @@ export default function OficinaProClient() {
         </div>
 
         {/* Content Container */}
-        <div className="flex-1 overflow-hidden ml-0">
+        <div className="flex-1 overflow-hidden">
           <div className="h-full overflow-y-auto">
-            <div className="p-6 pl-2">
+            <div className="p-4 md:p-6 max-w-7xl">
           
           {/* Welcome Card PRO */}
           <motion.div 
@@ -232,7 +232,7 @@ export default function OficinaProClient() {
           </div>
 
           {/* Stats Cards PRO */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
             <motion.div 
               className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all relative overflow-hidden"
               initial={{ opacity: 0, scale: 0.9 }}

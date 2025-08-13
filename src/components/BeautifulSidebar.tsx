@@ -132,7 +132,7 @@ export default function BeautifulSidebar({
 
   if (!isMounted) {
     return (
-      <div className={`hidden md:block w-64 h-screen bg-gradient-to-b ${theme.gradient}`}>
+      <div className="hidden md:block w-60 h-screen bg-gradient-to-b from-blue-800 to-blue-600">
         <div className="p-6 animate-pulse">
           <div className="w-32 h-8 bg-white/20 rounded mb-6"></div>
         </div>
@@ -324,7 +324,7 @@ export default function BeautifulSidebar({
       {/* Desktop Sidebar */}
       <aside 
         className={`hidden md:block fixed left-0 top-0 h-screen z-30 transition-all duration-300 bg-gradient-to-b ${theme.gradient} relative ${
-          isCollapsed ? 'w-20' : 'w-64'
+          isCollapsed ? 'w-20' : 'w-60'
         }`}
       >
         <SidebarContent />

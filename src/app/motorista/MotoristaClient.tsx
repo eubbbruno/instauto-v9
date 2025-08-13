@@ -72,10 +72,10 @@ export default function MotoristaClient() {
       />
       
       {/* Main Content */}
-      <div className="flex-1 md:ml-64 transition-all duration-300" style={{ marginLeft: '256px' }}>
+      <div className="flex-1 transition-all duration-300 ml-0 md:ml-60">
 
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-4 py-4">
+        <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">🚗 Dashboard Motorista</h1>
@@ -85,9 +85,9 @@ export default function MotoristaClient() {
         </div>
 
         {/* Content Container */}
-        <div className="flex-1 overflow-hidden ml-0">
+        <div className="flex-1 overflow-hidden">
           <div className="h-full overflow-y-auto">
-            <div className="p-6 pl-2">
+            <div className="p-4 md:p-6 max-w-7xl">
           
           {/* Welcome Card */}
           <motion.div 
@@ -121,8 +121,8 @@ export default function MotoristaClient() {
             />
           </div>
         
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                  {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
             <motion.div 
               className="bg-white rounded-lg shadow p-6 text-center hover:shadow-lg transition-all"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -169,7 +169,7 @@ export default function MotoristaClient() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
           
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-xl font-bold mb-4 text-gray-800">🔍 Buscar Oficinas</h3>
