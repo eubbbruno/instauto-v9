@@ -33,7 +33,7 @@ import {
   InformationCircleIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  CrownIcon
+  StarIcon as CrownIcon
 } from '@heroicons/react/24/outline'
 
 export default function ConfiguracoesClient() {

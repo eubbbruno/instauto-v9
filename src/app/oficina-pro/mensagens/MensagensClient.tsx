@@ -18,7 +18,7 @@ import {
   ExclamationTriangleIcon,
   FaceSmileIcon,
   MapPinIcon,
-  CrownIcon,
+  StarIcon as CrownIcon,
   UserIcon,
   TruckIcon,
   FunnelIcon,

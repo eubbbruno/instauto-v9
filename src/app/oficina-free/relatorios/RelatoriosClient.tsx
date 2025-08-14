@@ -10,7 +10,7 @@ import {
   LockClosedIcon,
   ArrowUpIcon,
   ArrowDownIcon,
-  CrownIcon,
+  StarIcon as CrownIcon,
   EyeIcon,
   StarIcon,
   ClockIcon,

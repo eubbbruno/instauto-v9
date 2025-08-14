@@ -20,8 +20,8 @@ import {
   EyeIcon,
   StarIcon,
   PhoneIcon,
-  TrendingUpIcon,
-  TrendingDownIcon
+  ArrowTrendingUpIcon as TrendingUpIcon,
+  ArrowTrendingDownIcon as TrendingDownIcon
 } from '@heroicons/react/24/outline'
 
 export default function RelatoriosClient() {
