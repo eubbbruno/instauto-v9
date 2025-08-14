@@ -6,6 +6,7 @@ import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
 import AnalyticsDashboard from '@/components/ai/AnalyticsDashboard'
 import ChatFloatingButton from '@/components/chat/ChatFloatingButton'
+import TrialBanner from '@/components/TrialBanner'
 import { 
   ArrowUpIcon,
   PlusIcon,
@@ -161,6 +162,16 @@ export default function OficinaProClient() {
       
       {/* Main Content */}
       <div className="flex-1 transition-all duration-300 ml-0 md:ml-60">
+        {/* Trial Banner */}
+        {user && (
+          <div className="px-4 md:px-6 pt-4">
+            <TrialBanner 
+              userId={user.id} 
+              className="mb-4"
+            />
+          </div>
+        )}
+
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-4">
           <div className="flex items-center justify-between">

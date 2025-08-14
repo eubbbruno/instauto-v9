@@ -1,6 +1,7 @@
 'use client'
 import { supabase } from '@/lib/supabase'
 import { useEffect, useState, useRef } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import { useGoogleMaps } from '@/lib/google-maps'
@@ -25,6 +26,7 @@ import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid'
 import Link from 'next/link'
 
 export default function BuscarClient() {
+  const searchParams = useSearchParams()
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
@@ -140,6 +142,25 @@ export default function BuscarClient() {
     plano: 'all',
     sortBy: 'distance'
   })
+
+  // Processar parâmetros da URL
+  useEffect(() => {
+    const urlQuery = searchParams.get('q')
+    const cidade = searchParams.get('cidade')
+    const estado = searchParams.get('estado')
+    const cep = searchParams.get('cep')
+    const bairro = searchParams.get('bairro')
+    
+    if (urlQuery) {
+      setSearchTerm(urlQuery)
+      console.log('🔍 Busca iniciada pela URL:', { urlQuery, cidade, estado, cep, bairro })
+      
+      // Executar busca automaticamente após carregar
+      setTimeout(() => {
+        handleSearch()
+      }, 1000)
+    }
+  }, [searchParams])
 
   useEffect(() => {
     checkUser()

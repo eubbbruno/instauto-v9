@@ -1,5 +1,6 @@
 'use client'
 import { supabase } from '@/lib/supabase'
+import { SocialAuthManager, SOCIAL_PROVIDERS } from '@/lib/auth-social'
 import { useState, useEffect, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
@@ -15,6 +16,7 @@ function LoginContent() {
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState(1) // Para multi-step signup
   const [returnUrl, setReturnUrl] = useState<string | null>(null)
+  const [socialLoading, setSocialLoading] = useState<string | null>(null)
 
   useEffect(() => {
     // Pegar parâmetros da URL
@@ -66,13 +68,23 @@ function LoginContent() {
 
           if (!profileError && userType === 'oficina') {
             // Criar workshop se for oficina
+            const workshopData: any = {
+              id: data.user.id,
+              plan_type: oficinaPlano,
+              created_at: new Date().toISOString()
+            }
+
+            // Se for plano PRO, adicionar trial de 7 dias
+            if (oficinaPlano === 'pro') {
+              const trialEndDate = new Date()
+              trialEndDate.setDate(trialEndDate.getDate() + 7)
+              workshopData.trial_ends_at = trialEndDate.toISOString()
+              workshopData.is_trial = true
+            }
+
             const { error: workshopError } = await supabase
               .from('workshops')
-              .insert({
-                id: data.user.id,
-                plan_type: oficinaPlano,
-                created_at: new Date().toISOString()
-              })
+              .insert(workshopData)
 
             if (workshopError) {
               console.error('Erro ao criar workshop:', workshopError)
@@ -109,12 +121,21 @@ function LoginContent() {
             // Buscar plano da oficina
             const { data: workshop } = await supabase
               .from('workshops')
-              .select('plan_type')
+              .select('plan_type, is_trial, trial_ends_at')
               .eq('id', data.user.id)
               .single()
 
             if (workshop?.plan_type === 'pro') {
-              window.location.href = '/dashboard'
+              // Verificar se ainda está no trial
+              const isTrialActive = workshop.is_trial && workshop.trial_ends_at && 
+                new Date(workshop.trial_ends_at) > new Date()
+              
+              if (isTrialActive || !workshop.is_trial) {
+                window.location.href = '/dashboard'
+              } else {
+                // Trial expirado, redirecionar para upgrade
+                window.location.href = '/oficina-free?trial_expired=true'
+              }
             } else {
               window.location.href = '/oficina-free'
             }
@@ -128,6 +149,27 @@ function LoginContent() {
       alert('Erro inesperado!')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleSocialAuth = async (provider: 'google' | 'facebook') => {
+    setSocialLoading(provider)
+    
+    try {
+      await SocialAuthManager.signInWithProvider({
+        provider,
+        userType: isSignUp ? userType : undefined,
+        oficinaPlano: isSignUp && userType === 'oficina' ? oficinaPlano : undefined,
+        returnUrl: returnUrl || undefined
+      })
+      
+      // O redirecionamento será feito automaticamente pelo OAuth
+      
+    } catch (error) {
+      console.error('Erro no login social:', error)
+      alert('Erro ao fazer login com ' + SOCIAL_PROVIDERS[provider].name)
+    } finally {
+      setSocialLoading(null)
     }
   }
 
@@ -224,8 +266,14 @@ function LoginContent() {
                       className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-white/20"
                     >
                       <div className="text-center space-y-4">
-                        <div className="w-32 h-32 mx-auto bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-6xl">
-                          🚗
+                        <div className="w-32 h-32 mx-auto bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center overflow-hidden">
+                          <Image
+                            src="/images/car-3d.png"
+                            alt="Motorista"
+                            width={80}
+                            height={80}
+                            className="object-contain"
+                          />
                         </div>
                         <h3 className="text-2xl font-bold text-gray-800">
                           Para Motoristas
@@ -263,8 +311,14 @@ function LoginContent() {
                       className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-white/20"
                     >
                       <div className="text-center space-y-4">
-                        <div className="w-32 h-32 mx-auto bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center text-white text-6xl">
-                          🔧
+                        <div className="w-32 h-32 mx-auto bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center overflow-hidden">
+                          <Image
+                            src="/images/mechanic-illustration.png"
+                            alt="Oficina"
+                            width={80}
+                            height={80}
+                            className="object-contain"
+                          />
                         </div>
                         <h3 className="text-2xl font-bold text-gray-800">
                           Para Oficinas
@@ -351,7 +405,15 @@ function LoginContent() {
                           }`}
                         >
                           <div className="text-center">
-                            <div className="text-2xl mb-2">🚗</div>
+                            <div className="w-12 h-12 mx-auto mb-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center overflow-hidden">
+                              <Image
+                                src="/images/car-3d.png"
+                                alt="Motorista"
+                                width={24}
+                                height={24}
+                                className="object-contain"
+                              />
+                            </div>
                             <div className="font-medium">Motorista</div>
                           </div>
                         </button>
@@ -365,7 +427,15 @@ function LoginContent() {
                           }`}
                         >
                           <div className="text-center">
-                            <div className="text-2xl mb-2">🔧</div>
+                            <div className="w-12 h-12 mx-auto mb-2 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center overflow-hidden">
+                              <Image
+                                src="/images/mechanic-illustration.png"
+                                alt="Oficina"
+                                width={24}
+                                height={24}
+                                className="object-contain"
+                              />
+                            </div>
                             <div className="font-medium">Oficina</div>
                           </div>
                         </button>
@@ -403,18 +473,28 @@ function LoginContent() {
                           <button
                             type="button"
                             onClick={() => setOficinaPlano('pro')}
-                            className={`p-4 rounded-xl border-2 text-left transition-all ${
+                            className={`p-4 rounded-xl border-2 text-left transition-all relative ${
                               oficinaPlano === 'pro'
                                 ? 'border-blue-500 bg-blue-50'
                                 : 'border-gray-200 bg-white hover:border-gray-300'
                             }`}
                           >
+                            {/* Badge de Trial */}
+                            <div className="absolute -top-2 -right-2 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs px-2 py-1 rounded-full font-bold">
+                              7 DIAS GRÁTIS
+                            </div>
                             <div className="flex justify-between items-center">
                               <div>
                                 <div className="font-bold text-gray-800">PRO</div>
                                 <div className="text-sm text-gray-600">Recursos avançados + IA</div>
+                                <div className="text-xs text-green-600 font-medium mt-1">
+                                  Trial gratuito por 7 dias
+                                </div>
                               </div>
-                              <div className="text-2xl font-bold text-blue-600">R$ 89</div>
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-blue-600">R$ 89</div>
+                                <div className="text-xs text-gray-500">/mês após trial</div>
+                              </div>
                             </div>
                           </button>
                         </div>
@@ -427,6 +507,57 @@ function LoginContent() {
                     >
                       Continuar
                     </button>
+
+                    {/* Divider */}
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200"></div>
+                      </div>
+                      <div className="relative flex justify-center text-sm">
+                        <span className="px-4 bg-white text-gray-500">ou continue com</span>
+                      </div>
+                    </div>
+
+                    {/* Social Auth Buttons */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        onClick={() => handleSocialAuth('google')}
+                        disabled={socialLoading !== null}
+                        className="flex items-center justify-center px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {socialLoading === 'google' ? (
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            className="w-5 h-5 border-2 border-gray-300 border-t-red-500 rounded-full"
+                          />
+                        ) : (
+                          <>
+                            <span className="text-xl mr-2">🔍</span>
+                            <span className="font-medium text-gray-700">Google</span>
+                          </>
+                        )}
+                      </button>
+                      
+                      <button
+                        onClick={() => handleSocialAuth('facebook')}
+                        disabled={socialLoading !== null}
+                        className="flex items-center justify-center px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {socialLoading === 'facebook' ? (
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full"
+                          />
+                        ) : (
+                          <>
+                            <span className="text-xl mr-2">📘</span>
+                            <span className="font-medium text-gray-700">Facebook</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </motion.div>
                 )}
 
@@ -530,6 +661,57 @@ function LoginContent() {
                     >
                       {loading ? 'Entrando...' : 'Entrar'}
                     </button>
+
+                    {/* Divider */}
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200"></div>
+                      </div>
+                      <div className="relative flex justify-center text-sm">
+                        <span className="px-4 bg-white text-gray-500">ou entre com</span>
+                      </div>
+                    </div>
+
+                    {/* Social Auth Buttons */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        onClick={() => handleSocialAuth('google')}
+                        disabled={socialLoading !== null}
+                        className="flex items-center justify-center px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {socialLoading === 'google' ? (
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            className="w-5 h-5 border-2 border-gray-300 border-t-red-500 rounded-full"
+                          />
+                        ) : (
+                          <>
+                            <span className="text-xl mr-2">🔍</span>
+                            <span className="font-medium text-gray-700">Google</span>
+                          </>
+                        )}
+                      </button>
+                      
+                      <button
+                        onClick={() => handleSocialAuth('facebook')}
+                        disabled={socialLoading !== null}
+                        className="flex items-center justify-center px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {socialLoading === 'facebook' ? (
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            className="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full"
+                          />
+                        ) : (
+                          <>
+                            <span className="text-xl mr-2">📘</span>
+                            <span className="font-medium text-gray-700">Facebook</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>

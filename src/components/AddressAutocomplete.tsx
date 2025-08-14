@@ -267,6 +267,23 @@ export default function AddressAutocomplete({
     onAddressSelect(suggestion);
   };
 
+  const handleSearch = () => {
+    if (query.trim()) {
+      // Se não há sugestão selecionada, criar uma baseada na query
+      const searchSuggestion: AddressSuggestion = {
+        cep: '',
+        logradouro: '',
+        bairro: '',
+        localidade: query.trim(),
+        uf: '',
+        ibge: '',
+        type: 'city',
+        display: query.trim()
+      };
+      onAddressSelect(searchSuggestion);
+    }
+  };
+
   const clearInput = () => {
     setQuery("");
     setSuggestions([]);
@@ -312,7 +329,10 @@ export default function AddressAutocomplete({
             <Navigation className="h-4 w-4 text-gray-400" />
           </button>
           
-          <button className="bg-[#0047CC] hover:bg-[#003DA6] p-3 text-white transition-colors flex items-center justify-center min-w-12 h-12">
+          <button 
+            onClick={handleSearch}
+            className="bg-[#0047CC] hover:bg-[#003DA6] p-3 text-white transition-colors flex items-center justify-center min-w-12 h-12"
+          >
             {isLoading ? (
               <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
             ) : (

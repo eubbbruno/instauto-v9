@@ -54,7 +54,32 @@ export default function HeroSection() {
 
   const handleAddressSelect = (address: AddressSuggestion) => {
     console.log('Endereço selecionado:', address);
-    // Aqui você pode redirecionar para a página de resultados ou fazer a busca
+    
+    // Construir URL de busca com parâmetros
+    const searchParams = new URLSearchParams();
+    
+    if (address.localidade) {
+      searchParams.set('cidade', address.localidade);
+    }
+    if (address.uf) {
+      searchParams.set('estado', address.uf);
+    }
+    if (address.cep) {
+      searchParams.set('cep', address.cep);
+    }
+    if (address.bairro) {
+      searchParams.set('bairro', address.bairro);
+    }
+    
+    // Adicionar query geral para busca
+    searchParams.set('q', address.display);
+    
+    // Redirecionar para página de busca
+    const searchUrl = `/motorista/buscar?${searchParams.toString()}`;
+    console.log('🔍 Redirecionando para:', searchUrl);
+    
+    // Usar window.location para navegação
+    window.location.href = searchUrl;
   };
 
   return (
