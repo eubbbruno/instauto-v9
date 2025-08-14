@@ -289,7 +289,7 @@ const PlansSection = () => {
             <div className="p-8">
               <div className="text-lg font-medium text-gray-600 mb-1">Plano Profissional</div>
               <div className="flex items-end mb-4">
-                <span className="text-4xl font-bold mr-2 font-syne text-blue-600">R$ 149</span>
+                <span className="text-4xl font-bold mr-2 font-syne text-blue-600">R$ 89</span>
                 <span className="text-gray-600 pb-1">/mês</span>
               </div>
               <p className="text-gray-700 mb-6">

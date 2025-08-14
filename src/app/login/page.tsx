@@ -131,7 +131,7 @@ function LoginContent() {
                 new Date(workshop.trial_ends_at) > new Date()
               
               if (isTrialActive || !workshop.is_trial) {
-                window.location.href = '/dashboard'
+                window.location.href = '/oficina-pro'
               } else {
                 // Trial expirado, redirecionar para upgrade
                 window.location.href = '/oficina-free?trial_expired=true'

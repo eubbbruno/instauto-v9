@@ -71,7 +71,7 @@ function AuthCallbackContent() {
               .single()
             
             if (workshop?.plan_type === 'pro') {
-              redirectUrl = '/dashboard'
+              redirectUrl = '/oficina-pro'
             } else {
               redirectUrl = '/oficina-free'
             }
