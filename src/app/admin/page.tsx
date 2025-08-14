@@ -367,10 +367,16 @@ export default function AdminDashboard() {
 
             <div className="flex gap-2">
               <Link
+                href="/admin/demo-users"
+                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2 text-sm"
+              >
+                👥 Usuários Demo
+              </Link>
+              <Link
                 href="/admin/seed"
                 className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 text-sm"
               >
-                📋 Importar Oficinas Reais
+                📋 Importar Oficinas
               </Link>
               <button
                 onClick={handleCreateWorkshop}
