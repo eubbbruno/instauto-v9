@@ -145,7 +145,7 @@ export default function DemoUsersPage() {
         .insert({
           id: userId,
           email: user.email,
-          full_name: user.name,
+          name: user.name,
           type: user.type,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()

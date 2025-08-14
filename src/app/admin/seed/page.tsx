@@ -264,7 +264,7 @@ export default function SeedOficinasPage() {
               .insert({
                 id: authData.user.id,
                 email: oficina.email,
-                full_name: oficina.business_name,
+                name: oficina.business_name,
                 type: 'workshop_owner',
                 created_at: new Date().toISOString()
               })

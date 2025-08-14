@@ -218,7 +218,7 @@ export default function WorkshopModal({
             .insert({
               id: authData.user.id,
               email: formData.email,
-              full_name: formData.business_name,
+              name: formData.business_name,
               type: 'workshop_owner',
               created_at: new Date().toISOString()
             })

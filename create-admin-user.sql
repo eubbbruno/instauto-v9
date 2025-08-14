@@ -8,20 +8,18 @@
 INSERT INTO profiles (
   id,
   email,
-  full_name,
+  name,
   type,
-  created_at,
-  updated_at
+  created_at
 ) VALUES (
   '00000000-0000-0000-0000-000000000000', -- ID temporário, substitua pelo ID real do usuário
   'admin@instauto.com.br',
   'Administrador InstaAuto',
   'admin',
-  NOW(),
   NOW()
 ) ON CONFLICT (id) DO UPDATE SET
   type = 'admin',
-  updated_at = NOW();
+  name = 'Administrador InstaAuto';
 
 -- 2. Adicionar política RLS para admins acessarem tudo
 CREATE POLICY "Admins can access all profiles"

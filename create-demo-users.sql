@@ -73,16 +73,14 @@ DELETE FROM profiles WHERE email IN (
 INSERT INTO profiles (
   id,
   email,
-  full_name,
+  name,
   type,
-  created_at,
-  updated_at
+  created_at
 ) VALUES (
   motorista_id,
   'motorista.demo@instauto.com.br',
   'João Silva - Motorista Demo',
   'motorista',
-  NOW(),
   NOW()
 );
 
@@ -90,16 +88,14 @@ INSERT INTO profiles (
 INSERT INTO profiles (
   id,
   email,
-  full_name,
+  name,
   type,
-  created_at,
-  updated_at
+  created_at
 ) VALUES (
   oficina_free_id,
   'oficina.free@instauto.com.br',
   'Mecânica do José - FREE Demo',
-  'workshop_owner',
-  NOW(),
+  'oficina',
   NOW()
 );
 
@@ -107,16 +103,14 @@ INSERT INTO profiles (
 INSERT INTO profiles (
   id,
   email,
-  full_name,
+  name,
   type,
-  created_at,
-  updated_at
+  created_at
 ) VALUES (
   oficina_pro_id,
   'oficina.pro@instauto.com.br',
   'AutoCenter Premium - PRO Demo',
-  'workshop_owner',
-  NOW(),
+  'oficina',
   NOW()
 );
 
@@ -124,16 +118,14 @@ INSERT INTO profiles (
 INSERT INTO profiles (
   id,
   email,
-  full_name,
+  name,
   type,
-  created_at,
-  updated_at
+  created_at
 ) VALUES (
   admin_id,
   'admin.demo@instauto.com.br',
   'Admin InstaAuto - Demo',
   'admin',
-  NOW(),
   NOW()
 );
 

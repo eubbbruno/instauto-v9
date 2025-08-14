@@ -43,7 +43,7 @@ interface Workshop {
 interface AdminUser {
   id: string
   email: string
-  full_name?: string
+  name?: string
   type: string
 }
 
@@ -100,7 +100,7 @@ export default function AdminDashboard() {
       setUser({
         id: user.id,
         email: user.email || '',
-        full_name: profile.full_name,
+        name: profile.name,
         type: profile.type
       })
     } catch (error) {
@@ -118,7 +118,7 @@ export default function AdminDashboard() {
         .select(`
           *,
           profiles!inner(
-            full_name,
+            name,
             email
           )
         `)
@@ -129,7 +129,7 @@ export default function AdminDashboard() {
       const workshopsWithProfile = data.map(workshop => ({
         ...workshop,
         email: workshop.profiles?.email || '',
-        owner_name: workshop.profiles?.full_name || ''
+        owner_name: workshop.profiles?.name || ''
       }))
 
       setWorkshops(workshopsWithProfile)
@@ -253,7 +253,7 @@ export default function AdminDashboard() {
               />
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Painel Administrativo</h1>
-                <p className="text-sm text-gray-500">Bem-vindo, {user?.full_name || user?.email}</p>
+                <p className="text-sm text-gray-500">Bem-vindo, {user?.name || user?.email}</p>
               </div>
             </div>
             <button
