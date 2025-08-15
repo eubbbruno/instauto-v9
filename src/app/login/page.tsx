@@ -142,7 +142,10 @@ function LoginContent() {
               window.location.href = '/oficina-free'
             }
           } else {
-            window.location.href = '/dashboard'
+            // Fallback: se não encontrar tipo, vai para seleção de tipo
+            console.error('Tipo de usuário não encontrado:', profile)
+            alert('Erro: Tipo de usuário não identificado. Entre em contato com o suporte.')
+            window.location.href = '/'
           }
         }
       }

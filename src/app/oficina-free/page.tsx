@@ -2,7 +2,12 @@
 export const dynamic = 'force-dynamic'
 
 import OficinaFreeClient from './OficinaFreeClient'
+import { RouteProtection } from '@/components/auth/RouteProtection'
 
 export default function OficinaFreePage() {
-  return <OficinaFreeClient />
+  return (
+    <RouteProtection allowedUserTypes={['oficina']}>
+      <OficinaFreeClient />
+    </RouteProtection>
+  )
 }

@@ -1,10 +1,15 @@
 'use client'
+
+// Forçar rota como dinâmica para evitar SSR
+export const dynamic = 'force-dynamic'
+
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
+import { RouteProtection } from '@/components/auth/RouteProtection'
 import {
   PlusIcon,
   PencilIcon,
@@ -47,7 +52,7 @@ interface AdminUser {
   type: string
 }
 
-export default function AdminDashboard() {
+function AdminDashboardContent() {
   const router = useRouter()
   const [user, setUser] = useState<AdminUser | null>(null)
   const [loading, setLoading] = useState(true)
@@ -542,5 +547,13 @@ export default function AdminDashboard() {
         onSave={fetchWorkshops}
       />
     </div>
+  )
+}
+
+export default function AdminDashboard() {
+  return (
+    <RouteProtection allowedUserTypes={['admin']}>
+      <AdminDashboardContent />
+    </RouteProtection>
   )
 }
