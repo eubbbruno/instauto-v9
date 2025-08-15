@@ -12,7 +12,7 @@ INSERT INTO profiles (
   type,
   created_at
 ) VALUES (
-  '00000000-0000-0000-0000-000000000000', -- ID temporário, substitua pelo ID real do usuário
+  'b80e798c-fa25-4e82-80a0-3447326ac007', -- ID temporário, substitua pelo ID real do usuário
   'admin@instauto.com.br',
   'Administrador InstaAuto',
   'admin',
@@ -22,6 +22,7 @@ INSERT INTO profiles (
   name = 'Administrador InstaAuto';
 
 -- 2. Adicionar política RLS para admins acessarem tudo
+DROP POLICY IF EXISTS "Admins can access all profiles" ON profiles;
 CREATE POLICY "Admins can access all profiles"
   ON profiles FOR ALL
   TO authenticated
@@ -33,6 +34,8 @@ CREATE POLICY "Admins can access all profiles"
     )
   );
 
+-- 3. Política para admins acessarem workshops
+DROP POLICY IF EXISTS "Admins can access all workshops" ON workshops;
 CREATE POLICY "Admins can access all workshops"
   ON workshops FOR ALL
   TO authenticated
@@ -44,7 +47,7 @@ CREATE POLICY "Admins can access all workshops"
     )
   );
 
--- 3. Verificar se as políticas existem antes de criar
+-- 4. Verificar se as políticas existem antes de criar
 DO $$
 BEGIN
   -- Política para profiles

@@ -117,6 +117,8 @@ function LoginContent() {
 
           if (profile?.type === 'motorista') {
             window.location.href = '/motorista'
+          } else if (profile?.type === 'admin') {
+            window.location.href = '/admin'
           } else if (profile?.type === 'oficina') {
             // Buscar plano da oficina
             const { data: workshop } = await supabase
