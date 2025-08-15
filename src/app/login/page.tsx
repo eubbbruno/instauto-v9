@@ -104,29 +104,36 @@ function LoginContent() {
           return
         }
 
+        // Aguardar para garantir que profile foi criado
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
         // Redirecionamento inteligente após login
         if (returnUrl) {
           window.location.href = returnUrl
         } else {
-          // Buscar tipo do usuário
-          const { data: profile } = await supabase
+          // Buscar profile COMPLETO
+          const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('type')
+            .select('*, workshops(*)')
             .eq('id', data.user.id)
             .single()
+
+          if (profileError || !profile) {
+            console.error('Erro ao buscar profile:', profileError)
+            alert('Profile não encontrado. Aguarde um momento e tente novamente.')
+            return
+          }
+
+          console.log('Profile encontrado:', profile)
 
           if (profile?.type === 'motorista') {
             window.location.href = '/motorista'
           } else if (profile?.type === 'admin') {
             window.location.href = '/admin'
-          } else if (profile?.type === 'oficina') {
-            // Buscar plano da oficina
-            const { data: workshop } = await supabase
-              .from('workshops')
-              .select('plan_type, is_trial, trial_ends_at')
-              .eq('id', data.user.id)
-              .single()
-
+          } else if (profile.type === 'oficina') {
+            // Verificar plano da oficina
+            const workshop = profile.workshops?.[0]
+            
             if (workshop?.plan_type === 'pro') {
               // Verificar se ainda está no trial
               const isTrialActive = workshop.is_trial && workshop.trial_ends_at && 
@@ -135,17 +142,14 @@ function LoginContent() {
               if (isTrialActive || !workshop.is_trial) {
                 window.location.href = '/oficina-pro'
               } else {
-                // Trial expirado, redirecionar para upgrade
                 window.location.href = '/oficina-free?trial_expired=true'
               }
             } else {
               window.location.href = '/oficina-free'
             }
           } else {
-            // Fallback: se não encontrar tipo, vai para seleção de tipo
-            console.error('Tipo de usuário não encontrado:', profile)
-            alert('Erro: Tipo de usuário não identificado. Entre em contato com o suporte.')
-            window.location.href = '/'
+            console.error('Tipo de usuário inválido:', profile.type)
+            alert(`Erro: Tipo "${profile.type}" não reconhecido. Entre em contato com o suporte.`)
           }
         }
       }
