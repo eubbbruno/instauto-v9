@@ -5,6 +5,9 @@ import { useState, useEffect, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
+import ValidatedInput from '@/components/auth/ValidatedInput'
+import LoadingButton from '@/components/auth/LoadingButton'
+import ForgotPasswordModal from '@/components/auth/ForgotPasswordModal'
 
 function LoginContent() {
   const searchParams = useSearchParams()
@@ -16,7 +19,115 @@ function LoginContent() {
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState(1) // Para multi-step signup
   const [returnUrl, setReturnUrl] = useState<string | null>(null)
+  
+  // Estados de validação
+  const [emailError, setEmailError] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [isEmailValid, setIsEmailValid] = useState(false)
+  const [isPasswordValid, setIsPasswordValid] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const [socialLoading, setSocialLoading] = useState<string | null>(null)
+  const [forgotPassword, setForgotPassword] = useState(false)
+  const [resetLoading, setResetLoading] = useState(false)
+
+  // Funções de validação
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!email) {
+      setEmailError('Email é obrigatório')
+      setIsEmailValid(false)
+      return false
+    }
+    if (!emailRegex.test(email)) {
+      setEmailError('Email inválido')
+      setIsEmailValid(false)
+      return false
+    }
+    setEmailError('')
+    setIsEmailValid(true)
+    return true
+  }
+
+  const validatePassword = (password: string) => {
+    if (!password) {
+      setPasswordError('Senha é obrigatória')
+      setIsPasswordValid(false)
+      return false
+    }
+    if (isSignUp && password.length < 6) {
+      setPasswordError('Senha deve ter pelo menos 6 caracteres')
+      setIsPasswordValid(false)
+      return false
+    }
+    setPasswordError('')
+    setIsPasswordValid(true)
+    return true
+  }
+
+  // Validação em tempo real
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setEmail(value)
+    if (value) validateEmail(value)
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setPassword(value)
+    if (value) validatePassword(value)
+  }
+
+  // Função de recuperação de senha
+  const handleForgotPassword = async () => {
+    if (!validateEmail(email)) {
+      return
+    }
+    
+    setResetLoading(true)
+    
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/callback?type=recovery`
+      })
+      
+      if (error) {
+        alert('Erro ao enviar email: ' + error.message)
+      } else {
+        alert('✅ Email de recuperação enviado! Verifique sua caixa de entrada.')
+        setForgotPassword(false)
+      }
+    } catch (error) {
+      alert('Erro inesperado ao enviar email de recuperação')
+    } finally {
+      setResetLoading(false)
+    }
+  }
+
+  // Função de login social
+  const handleSocialLogin = async (provider: 'google' | 'facebook') => {
+    setSocialLoading(provider)
+    
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            user_type: userType,
+            plan_type: userType === 'oficina' ? oficinaPlano : undefined
+          }
+        }
+      })
+      
+      if (error) {
+        alert('Erro no login social: ' + error.message)
+      }
+    } catch (error) {
+      alert('Erro inesperado no login social')
+    } finally {
+      setSocialLoading(null)
+    }
+  }
 
   useEffect(() => {
     // Pegar parâmetros da URL
@@ -33,6 +144,14 @@ function LoginContent() {
   }, [searchParams])
   
   const handleAuth = async () => {
+    // Validar campos antes de enviar
+    const isEmailOk = validateEmail(email)
+    const isPasswordOk = validatePassword(password)
+    
+    if (!isEmailOk || !isPasswordOk) {
+      return
+    }
+    
     setLoading(true)
     
     try {
