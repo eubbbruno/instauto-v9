@@ -1,129 +1,99 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import LoadingSpinner from '@/components/LoadingSpinner'
 
-interface RouteProtectionProps {
-  children: React.ReactNode
-  allowedUserTypes: ('motorista' | 'oficina' | 'admin')[]
-  requiredPlan?: 'free' | 'pro'
-  redirectTo?: string
-}
-
-export function RouteProtection({ 
+export default function RouteProtection({ 
   children, 
-  allowedUserTypes, 
-  requiredPlan,
-  redirectTo = '/login' 
-}: RouteProtectionProps) {
-  const [loading, setLoading] = useState(true)
+  allowedTypes 
+}: { 
+  children: React.ReactNode
+  allowedTypes: string[]
+}) {
   const [authorized, setAuthorized] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
-    checkAccess()
+    checkAuth()
   }, [])
 
-  async function checkAccess() {
+  async function checkAuth() {
     try {
-      // Verificar se usuário está logado
-      const { data: { user }, error } = await supabase.auth.getUser()
+      console.log('🔍 [RouteProtection] Verificando auth...')
       
-      if (error || !user) {
-        console.log('❌ [ROUTE_PROTECTION] Usuário não logado')
-        window.location.href = redirectTo
+      // 1. Verificar sessão
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      
+      if (sessionError || !session) {
+        console.log('❌ [RouteProtection] Sem sessão válida:', sessionError)
+        router.push('/login')
         return
       }
 
-      // Buscar perfil do usuário
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('type')
-        .eq('id', user.id)
-        .single()
+      console.log('✅ [RouteProtection] Sessão encontrada:', session.user.email)
 
-      if (profileError || !profile) {
-        console.error('❌ [ROUTE_PROTECTION] Erro ao buscar perfil:', profileError)
-        alert('Erro ao verificar permissões. Faça login novamente.')
-        window.location.href = '/login'
+      // 2. Buscar profile COM RETRY (solução do Claude Web)
+      let profile = null
+      let attempts = 0
+      
+      while (!profile && attempts < 3) {
+        console.log(`🔄 [RouteProtection] Tentativa ${attempts + 1} de buscar profile...`)
+        
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single()
+        
+        if (error) {
+          console.error(`❌ [RouteProtection] Erro tentativa ${attempts + 1}:`, error)
+        } else {
+          profile = data
+          console.log('✅ [RouteProtection] Profile encontrado:', profile)
+        }
+        
+        attempts++
+        
+        if (!profile && attempts < 3) {
+          console.log('⏳ [RouteProtection] Aguardando 1s antes da próxima tentativa...')
+          await new Promise(resolve => setTimeout(resolve, 1000))
+        }
+      }
+
+      if (!profile) {
+        console.error('❌ [RouteProtection] Profile não encontrado após 3 tentativas')
+        alert('Erro: Profile não encontrado. Faça login novamente.')
+        router.push('/login')
         return
       }
 
-      // Verificar tipo do usuário
-      if (!allowedUserTypes.includes(profile.type as any)) {
-        console.log(`❌ [ROUTE_PROTECTION] Tipo ${profile.type} não permitido. Permitidos: ${allowedUserTypes.join(', ')}`)
+      // 3. Verificar permissão
+      console.log(`🔐 [RouteProtection] Verificando permissão. Tipo: ${profile.type}, Permitidos: [${allowedTypes.join(', ')}]`)
+      
+      if (allowedTypes.includes(profile.type)) {
+        console.log('✅ [RouteProtection] Acesso autorizado!')
+        setAuthorized(true)
+      } else {
+        console.error('❌ [RouteProtection] Tipo não autorizado:', profile.type)
+        alert(`Acesso negado. Tipo "${profile.type}" não permitido nesta página.`)
         
         // Redirecionar para dashboard correto
         if (profile.type === 'motorista') {
-          window.location.href = '/motorista'
+          router.push('/motorista')
         } else if (profile.type === 'admin') {
-          window.location.href = '/admin'
+          router.push('/admin')
         } else if (profile.type === 'oficina') {
-          // Verificar plano da oficina
-          const { data: workshop } = await supabase
-            .from('workshops')
-            .select('plan_type, is_trial, trial_ends_at')
-            .eq('profile_id', user.id)
-            .single()
-
-          if (workshop?.plan_type === 'pro') {
-            const isTrialActive = workshop.is_trial && workshop.trial_ends_at && 
-              new Date(workshop.trial_ends_at) > new Date()
-            
-            if (isTrialActive || !workshop.is_trial) {
-              window.location.href = '/oficina-pro'
-            } else {
-              window.location.href = '/oficina-free?trial_expired=true'
-            }
-          } else {
-            window.location.href = '/oficina-free'
-          }
+          router.push('/oficina-free')
         } else {
-          window.location.href = '/'
-        }
-        return
-      }
-
-      // Se for oficina, verificar plano se necessário
-      if (profile.type === 'oficina' && requiredPlan) {
-        const { data: workshop } = await supabase
-          .from('workshops')
-          .select('plan_type, is_trial, trial_ends_at')
-          .eq('profile_id', user.id)
-          .single()
-
-        if (!workshop) {
-          console.log('❌ [ROUTE_PROTECTION] Workshop não encontrado')
-          window.location.href = '/oficina-free'
-          return
-        }
-
-        // Verificar plano específico
-        if (requiredPlan === 'pro' && workshop.plan_type !== 'pro') {
-          console.log('❌ [ROUTE_PROTECTION] Plano PRO necessário')
-          window.location.href = '/oficina-free/upgrade'
-          return
-        }
-
-        // Verificar se trial PRO ainda está ativo
-        if (workshop.plan_type === 'pro' && workshop.is_trial) {
-          const isTrialActive = workshop.trial_ends_at && 
-            new Date(workshop.trial_ends_at) > new Date()
-          
-          if (!isTrialActive) {
-            console.log('❌ [ROUTE_PROTECTION] Trial PRO expirado')
-            window.location.href = '/oficina-free?trial_expired=true'
-            return
-          }
+          router.push('/login')
         }
       }
-
-      console.log('✅ [ROUTE_PROTECTION] Acesso autorizado')
-      setAuthorized(true)
-
     } catch (error) {
-      console.error('❌ [ROUTE_PROTECTION] Erro:', error)
-      window.location.href = '/login'
+      console.error('💥 [RouteProtection] Erro geral:', error)
+      alert('Erro inesperado na verificação de permissões.')
+      router.push('/login')
     } finally {
       setLoading(false)
     }
@@ -131,30 +101,17 @@ export function RouteProtection({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
-          <LoadingSpinner />
-          <p className="mt-4 text-xl text-gray-600">🔐 Verificando permissões...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">🔐 Verificando permissões...</p>
         </div>
       </div>
     )
   }
 
   if (!authorized) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-xl text-red-600 mb-4">❌ Acesso negado</p>
-          <p className="text-gray-600 mb-4">Você não tem permissão para acessar esta página.</p>
-          <button 
-            onClick={() => window.location.href = '/login'}
-            className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
-          >
-            Voltar ao Login
-          </button>
-        </div>
-      </div>
-    )
+    return null
   }
 
   return <>{children}</>

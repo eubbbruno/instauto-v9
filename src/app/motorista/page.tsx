@@ -2,11 +2,11 @@
 export const dynamic = 'force-dynamic'
 
 import MotoristaClient from './MotoristaClient'
-import { RouteProtection } from '@/components/auth/RouteProtection'
+import RouteProtection from '@/components/auth/RouteProtection'
 
 export default function MotoristaPage() {
   return (
-    <RouteProtection allowedUserTypes={['motorista']}>
+    <RouteProtection allowedTypes={['motorista']}>
       <MotoristaClient />
     </RouteProtection>
   )

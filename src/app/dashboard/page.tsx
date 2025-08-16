@@ -1,7 +1,7 @@
 'use client'
 import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
-import { RouteProtection } from '@/components/auth/RouteProtection'
+import RouteProtection from '@/components/auth/RouteProtection'
 
 function DashboardContent() {
   // Prevenir renderização no servidor
@@ -202,7 +202,7 @@ function DashboardContent() {
 
 export default function Dashboard() {
   return (
-    <RouteProtection allowedUserTypes={['motorista', 'oficina', 'admin']}>
+    <RouteProtection allowedTypes={['motorista', 'oficina', 'admin']}>
       <DashboardContent />
     </RouteProtection>
   )
