@@ -23,35 +23,11 @@ export default function QuickAccessButtons({
   const quickActions = [
     {
       id: 'demo',
-      title: 'Testar Demo',
-      description: 'Ver demonstração',
+      title: 'Ver Demo',
+      description: 'Demonstração da plataforma',
       href: '/demonstracao',
       icon: PlayIcon,
       color: 'gray'
-    },
-    {
-      id: 'motorista-demo',
-      title: 'Login Motorista',
-      description: 'motorista@demo.com',
-      href: '/login?email=motorista@demo.com&password=demo123',
-      icon: UserIcon,
-      color: 'blue'
-    },
-    {
-      id: 'oficina-demo',
-      title: 'Login Oficina',
-      description: 'oficina.free@demo.com',
-      href: '/login?email=oficina.free@demo.com&password=demo123',
-      icon: WrenchScrewdriverIcon,
-      color: 'yellow'
-    },
-    {
-      id: 'admin-demo',
-      title: 'Login Admin',
-      description: 'admin@instauto.com.br',
-      href: '/login?email=admin@instauto.com.br&password=InstaAuto@2024',
-      icon: CrownIcon,
-      color: 'purple'
     }
   ]
 
@@ -90,7 +66,7 @@ export default function QuickAccessButtons({
           Acesso Rápido
         </h4>
         
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2">
           {quickActions.map((action, index) => {
             const Icon = action.icon
             const colorClasses = {

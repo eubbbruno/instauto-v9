@@ -37,10 +37,8 @@ function LoginContent() {
     // Se veio com parâmetros, já ativar signup
     if (urlType || urlPlan) setIsSignUp(true)
     
-    // Se veio com email e senha, fazer login automático
-    if (urlEmail && urlPassword) {
-      handleQuickLogin(urlEmail, urlPassword)
-    }
+    // Auto-fill mas não auto-login
+    // Removido auto-login problemático
   }, [searchParams])
 
   const handleQuickLogin = async (email: string, password: string) => {
@@ -189,7 +187,7 @@ function LoginContent() {
             >
               <div className="text-center lg:text-left">
                 <Image
-                  src="/images/logo.svg"
+                  src="/images/logo-of.svg"
                   alt="InstaAuto"
                   width={120}
                   height={120}
