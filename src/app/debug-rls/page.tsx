@@ -1,123 +1,44 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
-
-// Cliente admin com service_role key
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  // TEMPORÁRIO: Vamos usar o service key para debug
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0cGVqZXJteGdqd2txamNkdndpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczMzI2MjkxMCwiZXhwIjoyMDQ4ODM4OTEwfQ.FJKTnlAo4zLsNFv0cB8kFHF6bNYqrNhk78bALBUCiGU'
-)
+import { useState } from 'react'
 
 export default function DebugRLS() {
   const [results, setResults] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
 
-  const executeSQL = async (sql: string, description: string) => {
+  const fixRLS = async () => {
+    setResults([])
+    setLoading(true)
+    
     try {
-      setLoading(true)
-      const { data, error } = await supabaseAdmin.rpc('exec_sql', { 
-        sql_query: sql 
+      const response = await fetch('/api/debug-rls', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'fix-rls' })
       })
       
-      if (error) {
-        console.error(`❌ ${description}:`, error)
-        setResults(prev => [...prev, {
-          description,
-          success: false,
-          error: error.message,
-          data: null
-        }])
+      const data = await response.json()
+      
+      if (data.success) {
+        setResults(data.results)
       } else {
-        console.log(`✅ ${description}:`, data)
-        setResults(prev => [...prev, {
-          description,
-          success: true,
-          error: null,
-          data
+        setResults([{
+          step: 'Erro na API',
+          success: false,
+          error: data.error
         }])
       }
-    } catch (err: any) {
-      console.error(`❌ ${description}:`, err)
-      setResults(prev => [...prev, {
-        description,
+    } catch (error: any) {
+      setResults([{
+        step: 'Erro de conexão',
         success: false,
-        error: err.message,
-        data: null
+        error: error.message
       }])
     } finally {
       setLoading(false)
     }
-  }
-
-  const fixRLS = async () => {
-    setResults([])
-    
-    // 1. Desabilitar RLS
-    await executeSQL(
-      `ALTER TABLE profiles DISABLE ROW LEVEL SECURITY;`,
-      'Desabilitando RLS profiles'
-    )
-    
-    // 2. Remover políticas
-    await executeSQL(
-      `DROP POLICY IF EXISTS "profiles_select_own" ON profiles;
-       DROP POLICY IF EXISTS "profiles_insert_own" ON profiles;
-       DROP POLICY IF EXISTS "profiles_update_own" ON profiles;`,
-      'Removendo políticas antigas'
-    )
-    
-    // 3. Criar políticas simples
-    await executeSQL(
-      `CREATE POLICY "profiles_select_policy" ON profiles
-         FOR SELECT USING (auth.uid() = id);`,
-      'Criando política SELECT'
-    )
-    
-    await executeSQL(
-      `CREATE POLICY "profiles_insert_policy" ON profiles
-         FOR INSERT WITH CHECK (auth.uid() = id);`,
-      'Criando política INSERT'
-    )
-    
-    await executeSQL(
-      `CREATE POLICY "profiles_update_policy" ON profiles
-         FOR UPDATE USING (auth.uid() = id);`,
-      'Criando política UPDATE'
-    )
-    
-    // 4. Reabilitar RLS
-    await executeSQL(
-      `ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;`,
-      'Reabilitando RLS'
-    )
-    
-    // 5. Verificar se admin existe
-    await executeSQL(
-      `INSERT INTO profiles (
-         id, email, name, type, created_at, updated_at
-       ) VALUES (
-         '4c7a55d9-b3e9-40f9-8755-df07fa7eb689',
-         'admin@instauto.com.br',
-         'Administrador',
-         'admin',
-         NOW(),
-         NOW()
-       ) ON CONFLICT (id) DO UPDATE SET
-         email = EXCLUDED.email,
-         name = EXCLUDED.name,
-         type = EXCLUDED.type,
-         updated_at = NOW();`,
-      'Criando/atualizando profile admin'
-    )
-    
-    // 6. Testar consulta
-    await executeSQL(
-      `SELECT id, email, name, type FROM profiles 
-       WHERE id = '4c7a55d9-b3e9-40f9-8755-df07fa7eb689';`,
-      'Testando consulta profile admin'
-    )
   }
 
   return (
@@ -144,7 +65,7 @@ export default function DebugRLS() {
               <h3 className={`font-semibold ${
                 result.success ? 'text-green-800' : 'text-red-800'
               }`}>
-                {result.success ? '✅' : '❌'} {result.description}
+                {result.success ? '✅' : '❌'} {result.step}
               </h3>
               
               {result.error && (
