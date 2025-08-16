@@ -36,7 +36,7 @@ export default function TrialBanner({ userId, className = '' }: TrialBannerProps
       const { data: workshop } = await supabase
         .from('workshops')
         .select('plan_type, is_trial, trial_ends_at')
-        .eq('id', userId)
+        .eq('profile_id', userId)
         .single()
 
       if (workshop && workshop.is_trial && workshop.trial_ends_at) {
@@ -89,7 +89,7 @@ export default function TrialBanner({ userId, className = '' }: TrialBannerProps
             </div>
             <div className="flex items-center space-x-2">
               <Link
-                href="/oficina-free/upgrade"
+                href="/upgrade"
                 className="bg-white text-red-600 px-4 py-2 rounded-lg font-medium hover:bg-red-50 transition-colors"
               >
                 Fazer Upgrade
@@ -134,7 +134,7 @@ export default function TrialBanner({ userId, className = '' }: TrialBannerProps
           <div className="flex items-center space-x-2">
             {daysRemaining <= 2 && (
               <Link
-                href="/oficina-free/upgrade"
+                href="/upgrade"
                 className="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors flex items-center space-x-2"
               >
                 <CreditCardIcon className="h-4 w-4" />
