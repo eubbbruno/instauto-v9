@@ -41,6 +41,41 @@ export default function DebugRLS() {
     }
   }
 
+  const fixAnonRLS = async () => {
+    setResults([])
+    setLoading(true)
+    
+    try {
+      const response = await fetch('/api/fix-anon-rls', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'fix-anon-rls' })
+      })
+      
+      const data = await response.json()
+      
+      if (data.success) {
+        setResults(data.results)
+      } else {
+        setResults([{
+          step: 'Erro na API Anon',
+          success: false,
+          error: data.error
+        }])
+      }
+    } catch (error: any) {
+      setResults([{
+        step: 'Erro de conexão Anon',
+        success: false,
+        error: error.message
+      }])
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-4xl mx-auto">
@@ -48,13 +83,28 @@ export default function DebugRLS() {
         
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4">Executar Correção RLS</h2>
-          <button
-            onClick={fixRLS}
-            disabled={loading}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-          >
-            {loading ? '⏳ Executando...' : '🚀 Corrigir RLS Agora'}
-          </button>
+          <div className="flex gap-4 flex-wrap">
+            <button
+              onClick={fixRLS}
+              disabled={loading}
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              {loading ? '⏳ Executando...' : '🚀 Corrigir RLS Base'}
+            </button>
+            
+            <button
+              onClick={fixAnonRLS}
+              disabled={loading}
+              className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 disabled:opacity-50"
+            >
+              {loading ? '⏳ Executando...' : '🔑 Corrigir RLS Anon/Auth'}
+            </button>
+          </div>
+          
+          <div className="mt-4 text-sm text-gray-600">
+            <p><strong>RLS Base:</strong> Cria estrutura básica das políticas</p>
+            <p><strong>RLS Anon/Auth:</strong> Corrige políticas para anon e authenticated funcionarem</p>
+          </div>
         </div>
 
         <div className="space-y-4">
