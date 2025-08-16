@@ -4,6 +4,9 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import { Button } from '@/components/ui/Button'
+import { useToast } from '@/components/ui/ToastManager'
+import { motion } from 'framer-motion'
 
 export default function LoginSimples() {
   const [email, setEmail] = useState('')
@@ -15,6 +18,7 @@ export default function LoginSimples() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
+  const { addToast } = useToast()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,6 +33,11 @@ export default function LoginSimples() {
 
       if (authError) {
         setError(authError.message)
+        addToast({
+          type: 'error',
+          title: 'Erro no login',
+          message: authError.message
+        })
         return
       }
 
@@ -43,6 +52,13 @@ export default function LoginSimples() {
         setError('Erro ao buscar perfil')
         return
       }
+
+      // Sucesso no login
+      addToast({
+        type: 'success',
+        title: 'Login realizado!',
+        message: `Bem-vindo de volta!`
+      })
 
       // Redirecionar baseado no tipo
       switch (profile.type) {
@@ -65,6 +81,11 @@ export default function LoginSimples() {
           break
         default:
           setError('Tipo de usuário não suportado')
+          addToast({
+            type: 'error',
+            title: 'Erro',
+            message: 'Tipo de usuário não suportado'
+          })
       }
 
     } catch (error: any) {
@@ -98,7 +119,11 @@ export default function LoginSimples() {
       }
 
       if (data.user) {
-        alert('Cadastro realizado! Faça login.')
+        addToast({
+          type: 'success',
+          title: 'Cadastro realizado!',
+          message: 'Agora faça login com suas credenciais.'
+        })
         setIsSignUp(false)
       }
 
@@ -112,7 +137,12 @@ export default function LoginSimples() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white rounded-2xl shadow-xl p-8"
+        >
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               {isSignUp ? 'Criar Conta' : 'Entrar'}
@@ -198,13 +228,15 @@ export default function LoginSimples() {
               </div>
             )}
 
-            <button
+            <Button
               type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 font-medium"
+              variant="primary"
+              size="lg"
+              loading={loading}
+              className="w-full"
             >
-              {loading ? '⏳ Processando...' : (isSignUp ? '✨ Criar Conta' : '🚀 Entrar')}
-            </button>
+              {isSignUp ? '✨ Criar Conta' : '🚀 Entrar'}
+            </Button>
           </form>
 
           <div className="mt-6 text-center">
@@ -224,7 +256,7 @@ export default function LoginSimples() {
               🔐 Login Admin
             </a>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   )
