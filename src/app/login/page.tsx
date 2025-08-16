@@ -42,7 +42,11 @@ function LoginContent() {
           email,
           password,
           options: {
-            data: { user_type: userType }
+            data: { 
+              user_type: userType,
+              plan_type: userType === 'oficina' ? oficinaPlano : undefined,
+              name: email.split('@')[0] // Nome padrão baseado no email
+            }
           }
         })
         
@@ -51,45 +55,18 @@ function LoginContent() {
           return
         }
 
-        alert('Conta criada! Verifique seu email para confirmar.')
-        
-        // Após confirmação do email, criar profile
         if (data.user) {
-          const profileData: any = {
-            id: data.user.id,
-            email: data.user.email,
-            type: userType,
-            created_at: new Date().toISOString()
+          if (oficinaPlano === 'pro') {
+            alert(`🎉 Conta PRO criada! Você tem 7 dias de trial GRÁTIS. Verifique seu email para confirmar.`)
+          } else {
+            alert('✅ Conta criada! Verifique seu email para confirmar.')
           }
-
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .insert(profileData)
-
-          if (!profileError && userType === 'oficina') {
-            // Criar workshop se for oficina
-            const workshopData: any = {
-              id: data.user.id,
-              plan_type: oficinaPlano,
-              created_at: new Date().toISOString()
-            }
-
-            // Se for plano PRO, adicionar trial de 7 dias
-            if (oficinaPlano === 'pro') {
-              const trialEndDate = new Date()
-              trialEndDate.setDate(trialEndDate.getDate() + 7)
-              workshopData.trial_ends_at = trialEndDate.toISOString()
-              workshopData.is_trial = true
-            }
-
-            const { error: workshopError } = await supabase
-              .from('workshops')
-              .insert(workshopData)
-
-            if (workshopError) {
-              console.error('Erro ao criar workshop:', workshopError)
-            }
-          }
+          
+          console.log('🎯 Usuário criado com metadados:', {
+            user_type: userType,
+            plan_type: userType === 'oficina' ? oficinaPlano : undefined,
+            email: data.user.email
+          })
         }
         
       } else {
@@ -134,17 +111,29 @@ function LoginContent() {
             // Verificar plano da oficina
             const workshop = profile.workshops?.[0]
             
+            console.log('🔍 Workshop encontrado:', workshop)
+            
             if (workshop?.plan_type === 'pro') {
               // Verificar se ainda está no trial
               const isTrialActive = workshop.is_trial && workshop.trial_ends_at && 
                 new Date(workshop.trial_ends_at) > new Date()
               
+              console.log('🎯 Trial status:', {
+                is_trial: workshop.is_trial,
+                trial_ends_at: workshop.trial_ends_at,
+                isTrialActive,
+                now: new Date().toISOString()
+              })
+              
               if (isTrialActive || !workshop.is_trial) {
+                console.log('✅ Redirecionando para oficina-pro')
                 window.location.href = '/oficina-pro'
               } else {
+                console.log('⚠️ Trial expirado, redirecionando para oficina-free')
                 window.location.href = '/oficina-free?trial_expired=true'
               }
             } else {
+              console.log('📋 Plano free, redirecionando para oficina-free')
               window.location.href = '/oficina-free'
             }
           } else {

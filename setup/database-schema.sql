@@ -231,11 +231,21 @@ BEGIN
     
     -- Se for oficina, criar registro na workshops
     IF (new.raw_user_meta_data->>'user_type' = 'oficina') THEN
-        INSERT INTO public.workshops (profile_id, name, plan_type)
+        INSERT INTO public.workshops (
+            profile_id, 
+            name, 
+            plan_type,
+            is_trial,
+            trial_starts_at,
+            trial_ends_at
+        )
         VALUES (
             new.id, 
             COALESCE(new.raw_user_meta_data->>'name', 'Oficina'),
-            COALESCE(new.raw_user_meta_data->>'plan_type', 'free')
+            COALESCE(new.raw_user_meta_data->>'plan_type', 'free'),
+            CASE WHEN COALESCE(new.raw_user_meta_data->>'plan_type', 'free') = 'pro' THEN true ELSE false END,
+            CASE WHEN COALESCE(new.raw_user_meta_data->>'plan_type', 'free') = 'pro' THEN NOW() ELSE NULL END,
+            CASE WHEN COALESCE(new.raw_user_meta_data->>'plan_type', 'free') = 'pro' THEN NOW() + INTERVAL '7 days' ELSE NULL END
         );
     END IF;
     
