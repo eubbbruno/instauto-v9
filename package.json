@@ -7,7 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "clean": "rimraf .next && rimraf node_modules/.cache"
+    "clean": "rimraf .next && rimraf node_modules/.cache",
+    "setup": "npm run setup:check && echo '\\n📋 Agora execute database-schema.sql no Supabase SQL Editor' && echo '⏸️  Depois execute: npm run setup:admin' && echo '🔍 E finalmente: npm run setup:verify'",
+    "setup:check": "node setup/check-environment.js",
+    "setup:admin": "node setup/create-admin.js",
+    "setup:verify": "node setup/verify-setup.js",
+    "setup:help": "echo '\\n🚀 Setup InstaAuto:\\n   1. npm run setup:check\\n   2. Execute setup/database-schema.sql no Supabase\\n   3. npm run setup:admin\\n   4. npm run setup:verify\\n'"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
