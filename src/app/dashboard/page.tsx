@@ -51,6 +51,33 @@ function DashboardContent() {
       
       if (profile) {
         console.log('✅ [DASHBOARD] Profile carregado:', profile)
+        
+        // REDIRECIONAMENTO INTELIGENTE
+        if (profile.type === 'admin') {
+          console.log('🚀 [DASHBOARD] Admin detectado, redirecionando para /admin')
+          window.location.href = '/admin'
+          return
+        } else if (profile.type === 'motorista') {
+          console.log('🚀 [DASHBOARD] Motorista detectado, redirecionando para /motorista')
+          window.location.href = '/motorista'
+          return
+        } else if (profile.type === 'oficina') {
+          console.log('🚀 [DASHBOARD] Oficina detectada, redirecionando para oficina específica')
+          // Buscar workshop para determinar plano
+          const { data: workshop } = await supabase
+            .from('workshops')
+            .select('plan_type, is_trial, trial_ends_at')
+            .eq('profile_id', profile.id)
+            .single()
+          
+          if (workshop?.plan_type === 'pro') {
+            window.location.href = '/oficina-pro'
+          } else {
+            window.location.href = '/oficina-free'
+          }
+          return
+        }
+        
         setProfile(profile)
       } else {
         console.log('⚠️ [DASHBOARD] Profile não encontrado')
@@ -202,7 +229,7 @@ function DashboardContent() {
 
 export default function Dashboard() {
   return (
-    <RouteProtection allowedTypes={['motorista', 'oficina', 'admin']}>
+    <RouteProtection allowedTypes={['motorista', 'oficina']}>
       <DashboardContent />
     </RouteProtection>
   )
