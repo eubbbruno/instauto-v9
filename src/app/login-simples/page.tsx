@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
-import { Button } from '@/components/ui/Button'
-import { useToast } from '@/components/ui/ToastManager'
+import { Button } from '@/components/ui'
+import { useToast } from '@/components/ui'
 import { motion } from 'framer-motion'
 
 export default function LoginSimples() {
