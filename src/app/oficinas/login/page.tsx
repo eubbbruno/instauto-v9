@@ -170,11 +170,19 @@ export default function OficinaLogin() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-white rounded-2xl shadow-xl p-8"
+            className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden"
           >
+            {/* Glassmorphism Effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 to-red-50/30 -z-10"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-orange-200/20 to-transparent rounded-full -translate-y-16 translate-x-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-red-200/20 to-transparent rounded-full translate-y-12 -translate-x-12"></div>
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="mx-auto mb-6">
+          <div className="text-center mb-8 relative z-10">
+            <motion.div 
+              className="mx-auto mb-6 p-3 bg-white/80 rounded-2xl shadow-lg w-fit"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
               <Image
                 src="/images/logo-of.svg"
                 alt="InstaAuto"
@@ -182,51 +190,69 @@ export default function OficinaLogin() {
                 height={40}
                 className="mx-auto"
               />
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {isSignUp ? 'Cadastrar Oficina' : 'Oficina Login'}
-            </h1>
-            <p className="text-gray-600">
-              {isSignUp ? 'Crie sua conta de oficina' : 'Acesse o painel da sua oficina'}
-            </p>
+            </motion.div>
+            <motion.h1 
+              className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-3"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              {isSignUp ? '🔧 Cadastrar Oficina' : '⚙️ Oficina Login'}
+            </motion.h1>
+            <motion.p 
+              className="text-gray-600 text-lg"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              {isSignUp ? 'Crie sua conta e gerencie sua oficina' : 'Acesse seu painel profissional'}
+            </motion.p>
           </div>
 
-          <form onSubmit={isSignUp ? handleSignUp : handleLogin} className="space-y-6">
+          <form onSubmit={isSignUp ? handleSignUp : handleLogin} className="space-y-6 relative z-10">
             
             {/* Plano da Oficina (Signup) */}
             {isSignUp && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Escolha seu Plano
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  🎯 Escolha seu Plano
                 </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
+                <div className="grid grid-cols-2 gap-4">
+                  <motion.button
                     type="button"
                     onClick={() => setPlanType('free')}
-                    className={`p-4 border-2 rounded-lg text-left transition-all ${
+                    className={`p-4 border-2 rounded-xl text-left transition-all duration-200 ${
                       planType === 'free' 
-                        ? 'border-green-500 bg-green-50 text-green-700' 
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-green-500 bg-green-50/80 text-green-700 shadow-lg' 
+                        : 'border-gray-200 hover:border-gray-300 bg-white/60'
                     }`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
                     <div className="font-semibold">💎 FREE</div>
                     <div className="text-sm text-gray-600">Grátis para sempre</div>
-                  </button>
+                  </motion.button>
                   
-                  <button
+                  <motion.button
                     type="button"
                     onClick={() => setPlanType('pro')}
-                    className={`p-4 border-2 rounded-lg text-left transition-all ${
+                    className={`p-4 border-2 rounded-xl text-left transition-all duration-200 ${
                       planType === 'pro' 
-                        ? 'border-orange-500 bg-orange-50 text-orange-700' 
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-orange-500 bg-orange-50/80 text-orange-700 shadow-lg' 
+                        : 'border-gray-200 hover:border-gray-300 bg-white/60'
                     }`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
                     <div className="font-semibold">⭐ PRO</div>
                     <div className="text-sm text-gray-600">7 dias grátis</div>
-                  </button>
+                  </motion.button>
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {/* Campo de Cupom (Signup PRO) */}

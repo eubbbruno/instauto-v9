@@ -150,10 +150,18 @@ export default function MotoristaLogin() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-white rounded-2xl shadow-xl p-8"
+            className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden"
           >
-          <div className="text-center mb-8">
-            <div className="mx-auto mb-6">
+            {/* Glassmorphism Effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/30 -z-10"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-blue-200/20 to-transparent rounded-full -translate-y-16 translate-x-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-indigo-200/20 to-transparent rounded-full translate-y-12 -translate-x-12"></div>
+          <div className="text-center mb-8 relative z-10">
+            <motion.div 
+              className="mx-auto mb-6 p-3 bg-white/80 rounded-2xl shadow-lg w-fit"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
               <Image
                 src="/images/logo-of.svg"
                 alt="InstaAuto"
@@ -161,52 +169,72 @@ export default function MotoristaLogin() {
                 height={40}
                 className="mx-auto"
               />
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {isSignUp ? 'Cadastro Motorista' : 'Motorista Login'}
-            </h1>
-            <p className="text-gray-600">
-              {isSignUp ? 'Crie sua conta de motorista' : 'Acesse o painel do motorista'}
-            </p>
+            </motion.div>
+            <motion.h1 
+              className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-3"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              {isSignUp ? '🚗 Cadastro Motorista' : '🚀 Motorista Login'}
+            </motion.h1>
+            <motion.p 
+              className="text-gray-600 text-lg"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              {isSignUp ? 'Crie sua conta e encontre as melhores oficinas' : 'Acesse seu painel personalizado'}
+            </motion.p>
           </div>
 
-          <form onSubmit={isSignUp ? handleSignUp : handleLogin} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email do Motorista
+          <form onSubmit={isSignUp ? handleSignUp : handleLogin} className="space-y-6 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                📧 Email do Motorista
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
                 placeholder="motorista@exemplo.com"
                 required
               />
-            </div>
+            </motion.div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Senha
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                🔒 Senha
               </label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 pr-12"
+                  className="w-full px-5 py-4 pr-14 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 transition-all duration-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
                   placeholder="••••••••"
                   required
                 />
-                <button
+                <motion.button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors p-1"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
-                </button>
+                </motion.button>
               </div>
-            </div>
+            </motion.div>
 
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
@@ -214,15 +242,21 @@ export default function MotoristaLogin() {
               </div>
             )}
 
-            <Button
-              type="submit"
-              variant="primary"
-              size="lg"
-              loading={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg"
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
             >
-              {isSignUp ? '🚗 Criar Conta Motorista' : '🚀 Entrar como Motorista'}
-            </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                loading={loading}
+                className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-700 hover:via-blue-800 hover:to-indigo-800 shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5 transition-all duration-200 text-white font-semibold text-lg py-4 rounded-xl border-0"
+              >
+                {isSignUp ? '🚗 Criar Conta Motorista' : '🚀 Entrar como Motorista'}
+              </Button>
+            </motion.div>
           </form>
 
           {/* OAuth Buttons */}
