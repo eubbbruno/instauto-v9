@@ -2,10 +2,10 @@
 import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import BeautifulSidebar from '@/components/BeautifulSidebar'
-import ChatManager from '@/components/chat/ChatManager'
-import QuickDiagnosticAI from '@/components/ai/QuickDiagnosticAI'
-import ChatFloatingButton from '@/components/chat/ChatFloatingButton'
+// Temporarily commenting out complex components
+// import BeautifulSidebar from '@/components/BeautifulSidebar'
+// import ChatManager from '@/components/chat/ChatManager'
+// import ChatFloatingButton from '@/components/chat/ChatFloatingButton'
 import { ModernDashboard } from '@/components/dashboard/ModernDashboard'
 import { SkeletonDashboardAdvanced } from '@/components/ui/SkeletonAdvanced'
 
@@ -62,34 +62,37 @@ export default function MotoristaClient() {
   }
   
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      {/* Sidebar */}
-      <BeautifulSidebar 
-        userType="motorista"
-        userName={profile?.name || user?.email?.split('@')[0] || 'Motorista'}
-        userEmail={user?.email}
-        onLogout={logout}
-      />
-      
-      {/* Main Content */}
-      <div className="flex-1 transition-all duration-300 ml-0 md:ml-60">
-        {/* Content Container */}
-        <div className="flex-1 overflow-hidden">
-          <div className="h-full overflow-y-auto">
-            <div className="p-4 md:p-6 max-w-7xl">
-              <ModernDashboard 
-                userType="motorista"
-                profile={profile}
-                user={user}
-              />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      {/* Simplified Header */}
+      <div className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold text-gray-900">🚗 Dashboard Motorista</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">
+                {profile?.name || user?.email?.split('@')[0] || 'Motorista'}
+              </span>
+              <button
+                onClick={logout}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Sair
+              </button>
             </div>
           </div>
         </div>
       </div>
-      
-      {/* Chat Components */}
-      <ChatFloatingButton />
-      <ChatManager />
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <ModernDashboard 
+          userType="motorista"
+          profile={profile}
+          user={user}
+        />
+      </div>
     </div>
   )
 }

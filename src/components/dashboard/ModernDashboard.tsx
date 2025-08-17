@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
-import { useToastAdvanced } from '@/components/ui/ToastAdvanced'
+// import { useToastAdvanced } from '@/components/ui/ToastAdvanced'
 import { SkeletonDashboardAdvanced } from '@/components/ui/SkeletonAdvanced'
 import { 
   ChartBarIcon, 
@@ -26,7 +26,7 @@ export function ModernDashboard({ userType, profile, user }: DashboardProps) {
   const [stats, setStats] = useState<any>(null)
   const [recentActivity, setRecentActivity] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const { toast } = useToastAdvanced()
+  // const { toast } = useToastAdvanced()
 
   useEffect(() => {
     loadDashboardData()
@@ -42,10 +42,10 @@ export function ModernDashboard({ userType, profile, user }: DashboardProps) {
         await loadOficinaData()
       }
 
-      toast.success('Dashboard atualizado', 'Dados carregados com sucesso!')
+      console.log('Dashboard atualizado - Dados carregados com sucesso!')
     } catch (error) {
       console.error('Erro ao carregar dashboard:', error)
-      toast.error('Erro ao carregar dados', 'Tente novamente em alguns instantes')
+      console.error('Erro ao carregar dados - Tente novamente em alguns instantes')
     } finally {
       setLoading(false)
     }
