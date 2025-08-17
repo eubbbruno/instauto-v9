@@ -1,341 +1,263 @@
 'use client'
-import { supabase } from '@/lib/supabase'
-import { SocialAuthManager, SOCIAL_PROVIDERS } from '@/lib/auth-social'
-import { useState, useEffect, Suspense } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import Image from 'next/image'
-import { useSearchParams } from 'next/navigation'
-import SocialLoginButtons from '@/components/auth/SocialLoginButtons'
-import QuickAccessButtons from '@/components/auth/QuickAccessButtons'
-import LoginFormAdvanced from '@/components/auth/LoginFormAdvanced'
 
-function LoginContent() {
-  const searchParams = useSearchParams()
+import { useState } from 'react'
+import { supabase } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import { Button } from '@/components/ui'
+import { useToast } from '@/components/ui'
+import { motion } from 'framer-motion'
+
+export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isSignUp, setIsSignUp] = useState(false)
   const [userType, setUserType] = useState<'motorista' | 'oficina'>('motorista')
-  const [oficinaPlano, setOficinaPlano] = useState<'free' | 'pro'>('free')
+  const [planType, setPlanType] = useState<'free' | 'pro'>('free')
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [step, setStep] = useState(1)
-  const [returnUrl, setReturnUrl] = useState<string | null>(null)
+  const [error, setError] = useState('')
+  const router = useRouter()
+  const { addToast } = useToast()
 
-  useEffect(() => {
-    // Pegar parâmetros da URL
-    const urlType = searchParams.get('type')
-    const urlPlan = searchParams.get('plan')
-    const urlReturnUrl = searchParams.get('return_url')
-    const urlEmail = searchParams.get('email')
-    const urlPassword = searchParams.get('password')
-    
-    if (urlType === 'oficina') setUserType('oficina')
-    if (urlPlan === 'free' || urlPlan === 'pro') setOficinaPlano(urlPlan)
-    if (urlReturnUrl) setReturnUrl(urlReturnUrl)
-    if (urlEmail) setEmail(urlEmail)
-    if (urlPassword) setPassword(urlPassword)
-    
-    // Se veio com parâmetros, já ativar signup
-    if (urlType || urlPlan) setIsSignUp(true)
-    
-    // Auto-fill mas não auto-login
-    // Removido auto-login problemático
-  }, [searchParams])
-
-  const handleQuickLogin = async (email: string, password: string) => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
     setLoading(true)
+    setError('')
+
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password
       })
-      
-      if (error) {
-        alert('Erro no login: ' + error.message)
+
+      if (authError) {
+        setError(authError.message)
+        addToast({
+          type: 'error',
+          title: 'Erro no login',
+          message: authError.message
+        })
         return
       }
 
-      // Redirecionamento inteligente
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      const { data: profile } = await supabase
+      // Buscar profile
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('*, workshops(*)')
+        .select('type')
         .eq('id', data.user.id)
         .single()
 
-      if (profile?.type === 'motorista') {
-        window.location.href = '/motorista'
-      } else if (profile?.type === 'admin') {
-        window.location.href = '/admin'
-      } else if (profile.type === 'oficina') {
-        const workshop = profile.workshops?.[0]
-        if (workshop?.plan_type === 'pro') {
-          window.location.href = '/oficina-pro'
-        } else {
-          window.location.href = '/oficina-free'
-        }
+      if (profileError || !profile) {
+        setError('Erro ao buscar perfil')
+        return
       }
-      
-    } catch (error) {
-      console.error('Erro no quick login:', error)
+
+      // Sucesso no login
+      addToast({
+        type: 'success',
+        title: 'Login realizado!',
+        message: `Bem-vindo de volta!`
+      })
+
+      // Redirecionar baseado no tipo
+      switch (profile.type) {
+        case 'motorista':
+          router.push('/motorista')
+          break
+        case 'oficina':
+          // Verificar plano da oficina
+          const { data: workshop } = await supabase
+            .from('workshops')
+            .select('plan_type')
+            .eq('profile_id', data.user.id)
+            .single()
+          
+          if (workshop?.plan_type === 'pro') {
+            router.push('/oficina-pro')
+          } else {
+            router.push('/oficina-free')
+          }
+          break
+        default:
+          setError('Tipo de usuário não suportado')
+          addToast({
+            type: 'error',
+            title: 'Erro',
+            message: 'Tipo de usuário não suportado'
+          })
+      }
+
+    } catch (error: any) {
+      setError('Erro inesperado: ' + error.message)
     } finally {
       setLoading(false)
     }
   }
-  
-  const handleAuth = async () => {
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault()
     setLoading(true)
-    
+    setError('')
+
     try {
-      if (isSignUp) {
-        // Criar conta
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { 
-              user_type: userType,
-              plan_type: userType === 'oficina' ? oficinaPlano : undefined,
-              name: email.split('@')[0]
-            }
-          }
-        })
-        
-        if (error) {
-          alert('Erro ao criar conta: ' + error.message)
-          return
-        }
-
-        if (data.user) {
-          if (oficinaPlano === 'pro') {
-            alert(`🎉 Conta PRO criada! Você tem 7 dias de trial GRÁTIS. Verifique seu email para confirmar.`)
-          } else {
-            alert('✅ Conta criada! Verifique seu email para confirmar.')
+      const { data, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            user_type: userType,
+            plan_type: userType === 'oficina' ? planType : null,
+            workshop_name: userType === 'oficina' ? 'Minha Oficina' : null
           }
         }
-        
-      } else {
-        // Login
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        })
-        
-        if (error) {
-          alert('Erro no login: ' + error.message)
-          return
-        }
+      })
 
-        // Redirecionamento inteligente após login
-        if (returnUrl) {
-          window.location.href = returnUrl
-        } else {
-          await new Promise(resolve => setTimeout(resolve, 1000))
-          
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*, workshops(*)')
-            .eq('id', data.user.id)
-            .single()
-
-          if (profile?.type === 'motorista') {
-            window.location.href = '/motorista'
-          } else if (profile?.type === 'admin') {
-            window.location.href = '/admin'
-          } else if (profile.type === 'oficina') {
-            const workshop = profile.workshops?.[0]
-            
-            if (workshop?.plan_type === 'pro') {
-              const isTrialActive = workshop.is_trial && workshop.trial_ends_at && 
-                new Date(workshop.trial_ends_at) > new Date()
-              
-              if (isTrialActive || !workshop.is_trial) {
-                window.location.href = '/oficina-pro'
-              } else {
-                window.location.href = '/oficina-free?trial_expired=true'
-              }
-            } else {
-              window.location.href = '/oficina-free'
-            }
-          } else {
-            console.error('Tipo de usuário inválido:', profile.type)
-            alert(`Erro: Tipo "${profile.type}" não reconhecido. Entre em contato com o suporte.`)
-          }
-        }
+      if (authError) {
+        setError(authError.message)
+        return
       }
-      
-    } catch (error) {
-      console.error('Erro na autenticação:', error)
-      alert('Erro inesperado na autenticação')
+
+      if (data.user) {
+        addToast({
+          type: 'success',
+          title: 'Cadastro realizado!',
+          message: 'Agora faça login com suas credenciais.'
+        })
+        setIsSignUp(false)
+      }
+
+    } catch (error: any) {
+      setError('Erro no cadastro: ' + error.message)
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-yellow-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            
-            {/* Lado Esquerdo - Apresentação */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="hidden lg:block"
-            >
-              <div className="text-center lg:text-left">
-                <Image
-                  src="/images/logo-of.svg"
-                  alt="InstaAuto"
-                  width={120}
-                  height={120}
-                  className="mx-auto lg:mx-0 mb-8"
-                />
-                
-                <h1 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-6">
-                  {userType === 'motorista' ? (
-                    <>
-                      Encontre a <span className="text-blue-600">oficina perfeita</span> para seu veículo
-                    </>
-                  ) : (
-                    <>
-                      Gerencie sua oficina com <span className="text-yellow-600">inteligência</span>
-                    </>
-                  )}
-                </h1>
-                
-                <p className="text-xl text-gray-600 mb-8">
-                  {userType === 'motorista' 
-                    ? 'Conecte-se com oficinas confiáveis na sua região e agende serviços com facilidade.'
-                    : 'Sistema completo de gestão para oficinas modernas e conectadas.'
-                  }
-                </p>
-
-                <AnimatePresence mode="wait">
-                  {userType === 'motorista' ? (
-                    <motion.div
-                      key="motorista"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      className="space-y-4"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                        Busca inteligente de oficinas
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                        Agendamento online
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                        Avaliações e reviews
-                      </div>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="oficina"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      className="space-y-4"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
-                        CRM + ERP integrado
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
-                        Gestão de estoque
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
-                        Relatórios inteligentes
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </motion.div>
-
-            {/* Lado Direito - Formulário */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="w-full max-w-md mx-auto"
-            >
-              {/* Card do Formulário */}
-              <div className="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 p-8">
-                
-                {/* Logo Mobile */}
-                <div className="lg:hidden mb-6 text-center">
-                  <Image
-                    src="/images/logo.svg"
-                    alt="InstaAuto"
-                    width={60}
-                    height={60}
-                    className="mx-auto mb-4"
-                  />
-                </div>
-
-                {/* Formulário Avançado */}
-                <LoginFormAdvanced
-                  isSignUp={isSignUp}
-                  userType={userType}
-                  oficinaPlano={oficinaPlano}
-                  onSubmit={async (email, password) => {
-                    setEmail(email)
-                    setPassword(password)
-                    await handleAuth()
-                  }}
-                  loading={loading}
-                  returnUrl={returnUrl}
-                />
-
-                {/* Toggle Login/Signup */}
-                <div className="text-center mt-6 pt-4 border-t border-gray-200">
-                  <p className="text-gray-600 text-sm mb-2">
-                    {isSignUp ? 'Já tem uma conta?' : 'Não tem uma conta?'}
-                  </p>
-                  <button
-                    onClick={() => {
-                      setIsSignUp(!isSignUp)
-                      setStep(1)
-                    }}
-                    className="text-blue-600 font-medium hover:text-blue-700 transition-colors"
-                  >
-                    {isSignUp ? 'Fazer Login' : 'Criar Conta'}
-                  </button>
-                </div>
-
-                {/* Atalhos Rápidos */}
-                <div className="mt-6 pt-4 border-t border-gray-200">
-                  <QuickAccessButtons
-                    currentUserType={userType}
-                    onUserTypeChange={setUserType}
-                  />
-                </div>
-              </div>
-            </motion.div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="max-w-md w-full">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white rounded-2xl shadow-xl p-8"
+        >
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {isSignUp ? 'Criar Conta' : 'Entrar'}
+            </h1>
+            <p className="text-gray-600">
+              {isSignUp ? 'Cadastre-se na plataforma' : 'Acesse sua conta'}
+            </p>
           </div>
-        </div>
+
+          <form onSubmit={isSignUp ? handleSignUp : handleLogin} className="space-y-6">
+            {isSignUp && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tipo de Usuário
+                </label>
+                <select
+                  value={userType}
+                  onChange={(e) => setUserType(e.target.value as 'motorista' | 'oficina')}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="motorista">🚗 Motorista</option>
+                  <option value="oficina">🔧 Oficina</option>
+                </select>
+              </div>
+            )}
+
+            {isSignUp && userType === 'oficina' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Plano da Oficina
+                </label>
+                <select
+                  value={planType}
+                  onChange={(e) => setPlanType(e.target.value as 'free' | 'pro')}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="free">💎 Grátis</option>
+                  <option value="pro">⭐ PRO (7 dias grátis)</option>
+                </select>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="seu@email.com"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Senha
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 pr-12"
+                  placeholder="••••••••"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              loading={loading}
+              className="w-full"
+            >
+              {isSignUp ? '✨ Criar Conta' : '🚀 Entrar'}
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-blue-600 hover:text-blue-700 font-medium"
+            >
+              {isSignUp ? '← Já tenho conta' : '✨ Criar nova conta'}
+            </button>
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+            <a
+              href="/admin/login"
+              className="text-gray-500 hover:text-gray-700 text-sm"
+            >
+              🔐 Login Admin
+            </a>
+          </div>
+        </motion.div>
       </div>
     </div>
-  )
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-yellow-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
-      </div>
-    }>
-      <LoginContent />
-    </Suspense>
   )
 }
