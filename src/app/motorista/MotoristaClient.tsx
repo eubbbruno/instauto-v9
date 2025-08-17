@@ -5,6 +5,7 @@ import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
 import ChatFloatingButton from '@/components/chat/ChatFloatingButton'
 import { SkeletonDashboardAdvanced } from '@/components/ui/SkeletonAdvanced'
+import PushNotificationButton from '@/components/notifications/PushNotificationButton'
 
 export default function MotoristaClient() {
   const [user, setUser] = useState<any>(null)
@@ -85,6 +86,15 @@ export default function MotoristaClient() {
                     <p className="text-gray-600 mt-1">
                       Bem-vindo de volta, {profile?.name || user?.email?.split('@')[0]}!
                     </p>
+                  </div>
+                  
+                  {/* Push Notification Button */}
+                  <div className="flex items-center space-x-3">
+                    <PushNotificationButton 
+                      userId={user?.id}
+                      className="text-sm"
+                      showText={false}
+                    />
                   </div>
                 </div>
 

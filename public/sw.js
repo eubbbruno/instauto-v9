@@ -1,4 +1,4 @@
-// Service Worker para PWA
+// Service Worker para PWA + Push Notifications
 const CACHE_NAME = 'instauto-v1.0.0'
 const STATIC_CACHE_NAME = 'instauto-static-v1'
 const DYNAMIC_CACHE_NAME = 'instauto-dynamic-v1'
@@ -348,35 +348,131 @@ self.addEventListener('push', (event) => {
   )
 })
 
+// 🔔 PUSH NOTIFICATIONS HANDLERS
+
+// Receber push notification
+self.addEventListener('push', (event) => {
+  console.log('📥 Push notification recebida:', event)
+  
+  if (!event.data) {
+    console.warn('⚠️ Push sem dados')
+    return
+  }
+  
+  try {
+    const data = event.data.json()
+    console.log('📋 Dados da notificação:', data)
+    
+    const options = {
+      body: data.body,
+      icon: data.icon || '/images/logo-of.svg',
+      badge: data.badge || '/images/logo-of.svg',
+      image: data.image,
+      tag: data.tag || 'default',
+      data: data.data || {},
+      actions: data.actions || [],
+      requireInteraction: data.requireInteraction || false,
+      silent: data.silent || false,
+      timestamp: data.timestamp || Date.now(),
+      vibrate: data.vibrate || [200, 100, 200]
+    }
+    
+    event.waitUntil(
+      self.registration.showNotification(data.title, options)
+    )
+    
+  } catch (error) {
+    console.error('❌ Erro ao processar push:', error)
+    
+    // Fallback notification
+    event.waitUntil(
+      self.registration.showNotification('InstaAuto', {
+        body: 'Você tem uma nova notificação',
+        icon: '/images/logo-of.svg',
+        tag: 'fallback'
+      })
+    )
+  }
+})
+
 // Clique em notificação
 self.addEventListener('notificationclick', (event) => {
+  console.log('👆 Notificação clicada:', event.notification.tag, event.action)
+  
   event.notification.close()
   
-  const data = event.notification.data
+  const data = event.notification.data || {}
   let url = data.url || '/'
   
-  // Ações específicas
-  if (event.action === 'view_message') {
-    url = '/mensagens'
-  } else if (event.action === 'view_appointment') {
-    url = '/agendamentos'
+  // Ações específicas baseadas no tipo
+  if (event.action) {
+    switch (event.action) {
+      case 'view':
+        url = data.url || '/'
+        break
+      case 'reply':
+        url = '/mensagens'
+        break
+      case 'cancel':
+        url = '/motorista/agendamentos'
+        break
+      case 'view_appointment':
+        url = '/motorista/agendamentos'
+        break
+      case 'view_message':
+        url = '/mensagens'
+        break
+      default:
+        url = data.url || '/'
+    }
+  } else {
+    // Clique na notificação sem ação específica
+    if (data.type === 'agendamento') {
+      url = '/motorista/agendamentos'
+    } else if (data.type === 'mensagem') {
+      url = '/mensagens'
+    } else if (data.type === 'promocao') {
+      url = '/buscar-oficinas'
+    }
   }
   
   event.waitUntil(
-    clients.matchAll({ type: 'window' }).then((clientList) => {
-      // Se já existe uma janela aberta, focar nela
+    clients.matchAll({ 
+      type: 'window',
+      includeUncontrolled: true 
+    }).then((clientList) => {
+      // Procurar janela existente com a URL
       for (const client of clientList) {
-        if (client.url === url && 'focus' in client) {
+        const clientUrl = new URL(client.url)
+        const targetUrl = new URL(url, self.location.origin)
+        
+        if (clientUrl.pathname === targetUrl.pathname && 'focus' in client) {
+          console.log('🔍 Focando janela existente:', client.url)
           return client.focus()
         }
       }
       
-      // Senão, abrir nova janela
+      // Se não encontrou, abrir nova janela
       if (clients.openWindow) {
+        console.log('🆕 Abrindo nova janela:', url)
         return clients.openWindow(url)
       }
+    }).catch((error) => {
+      console.error('❌ Erro ao abrir janela:', error)
     })
   )
+})
+
+// Fechamento de notificação
+self.addEventListener('notificationclose', (event) => {
+  console.log('✖️ Notificação fechada:', event.notification.tag)
+  
+  // Analytics ou tracking se necessário
+  const data = event.notification.data || {}
+  if (data.trackClose) {
+    // Enviar evento de analytics
+    console.log('📊 Tracking close event for:', data.type)
+  }
 })
 
 console.log('✅ SW: Service Worker carregado com sucesso!')
