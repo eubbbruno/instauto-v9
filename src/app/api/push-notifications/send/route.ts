@@ -3,11 +3,15 @@ import { supabase } from '@/lib/supabase'
 import webpush from 'web-push'
 
 // Configurar VAPID
-webpush.setVapidDetails(
-  'mailto:admin@instauto.com.br',
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-)
+if (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(
+    'mailto:admin@instauto.com.br',
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  )
+} else {
+  console.warn('⚠️ VAPID keys não configuradas - notificações não funcionarão')
+}
 
 export interface PushNotificationPayload {
   title: string
@@ -28,6 +32,14 @@ export interface PushNotificationPayload {
 
 export async function POST(request: NextRequest) {
   try {
+    // Verificar se VAPID está configurado
+    if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
+      return NextResponse.json(
+        { error: 'VAPID keys não configuradas - notificações desabilitadas' },
+        { status: 503 }
+      )
+    }
+
     const { 
       user_ids, 
       title, 

@@ -33,6 +33,10 @@ class PushNotificationManager {
   
   constructor() {
     this.vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || ''
+    
+    if (!this.vapidPublicKey) {
+      console.warn('⚠️ VAPID public key não configurada - notificações desabilitadas')
+    }
   }
 
   // Verificar se notificações são suportadas
@@ -77,6 +81,11 @@ class PushNotificationManager {
   // Subscrever para push notifications
   async subscribe(userId: string): Promise<PushSubscriptionData | null> {
     if (!this.isSupported()) return null
+    
+    if (!this.vapidPublicKey) {
+      console.error('❌ VAPID public key não configurada')
+      return null
+    }
 
     try {
       // 1. Verificar permissão
