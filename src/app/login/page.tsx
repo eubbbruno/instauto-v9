@@ -8,12 +8,10 @@ import { Button } from '@/components/ui'
 import { useToast } from '@/components/ui'
 import { motion } from 'framer-motion'
 
-export default function Login() {
+export default function MotoristaLogin() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isSignUp, setIsSignUp] = useState(false)
-  const [userType, setUserType] = useState<'motorista' | 'oficina'>('motorista')
-  const [planType, setPlanType] = useState<'free' | 'pro'>('free')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -41,15 +39,21 @@ export default function Login() {
         return
       }
 
-      // Buscar profile
+      // Verificar se é motorista
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('type')
         .eq('id', data.user.id)
         .single()
 
-      if (profileError || !profile) {
-        setError('Erro ao buscar perfil')
+      if (profileError || !profile || profile.type !== 'motorista') {
+        setError('Esta conta não é de motorista')
+        addToast({
+          type: 'error',
+          title: 'Acesso negado',
+          message: 'Esta conta não é de motorista'
+        })
+        await supabase.auth.signOut()
         return
       }
 
@@ -57,36 +61,11 @@ export default function Login() {
       addToast({
         type: 'success',
         title: 'Login realizado!',
-        message: `Bem-vindo de volta!`
+        message: `Bem-vindo de volta, motorista!`
       })
 
-      // Redirecionar baseado no tipo
-      switch (profile.type) {
-        case 'motorista':
-          router.push('/motorista')
-          break
-        case 'oficina':
-          // Verificar plano da oficina
-          const { data: workshop } = await supabase
-            .from('workshops')
-            .select('plan_type')
-            .eq('profile_id', data.user.id)
-            .single()
-          
-          if (workshop?.plan_type === 'pro') {
-            router.push('/oficina-pro')
-          } else {
-            router.push('/oficina-free')
-          }
-          break
-        default:
-          setError('Tipo de usuário não suportado')
-          addToast({
-            type: 'error',
-            title: 'Erro',
-            message: 'Tipo de usuário não suportado'
-          })
-      }
+      // Redirecionar para dashboard motorista
+      router.push('/motorista')
 
     } catch (error: any) {
       setError('Erro inesperado: ' + error.message)
@@ -106,9 +85,7 @@ export default function Login() {
         password,
         options: {
           data: {
-            user_type: userType,
-            plan_type: userType === 'oficina' ? planType : null,
-            workshop_name: userType === 'oficina' ? 'Minha Oficina' : null
+            user_type: 'motorista'
           }
         }
       })
@@ -121,8 +98,8 @@ export default function Login() {
       if (data.user) {
         addToast({
           type: 'success',
-          title: 'Cadastro realizado!',
-          message: 'Agora faça login com suas credenciais.'
+          title: 'Motorista cadastrado!',
+          message: 'Agora faça login para acessar seu painel.'
         })
         setIsSignUp(false)
       }
@@ -144,57 +121,28 @@ export default function Login() {
           className="bg-white rounded-2xl shadow-xl p-8"
         >
           <div className="text-center mb-8">
+            <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+              <span className="text-2xl">🚗</span>
+            </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {isSignUp ? 'Criar Conta' : 'Entrar'}
+              {isSignUp ? 'Cadastro Motorista' : 'Motorista Login'}
             </h1>
             <p className="text-gray-600">
-              {isSignUp ? 'Cadastre-se na plataforma' : 'Acesse sua conta'}
+              {isSignUp ? 'Crie sua conta de motorista' : 'Acesse o painel do motorista'}
             </p>
           </div>
 
           <form onSubmit={isSignUp ? handleSignUp : handleLogin} className="space-y-6">
-            {isSignUp && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tipo de Usuário
-                </label>
-                <select
-                  value={userType}
-                  onChange={(e) => setUserType(e.target.value as 'motorista' | 'oficina')}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="motorista">🚗 Motorista</option>
-                  <option value="oficina">🔧 Oficina</option>
-                </select>
-              </div>
-            )}
-
-            {isSignUp && userType === 'oficina' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Plano da Oficina
-                </label>
-                <select
-                  value={planType}
-                  onChange={(e) => setPlanType(e.target.value as 'free' | 'pro')}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="free">💎 Grátis</option>
-                  <option value="pro">⭐ PRO (7 dias grátis)</option>
-                </select>
-              </div>
-            )}
-
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email
+                Email do Motorista
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="seu@email.com"
+                placeholder="motorista@exemplo.com"
                 required
               />
             </div>
@@ -235,7 +183,7 @@ export default function Login() {
               loading={loading}
               className="w-full"
             >
-              {isSignUp ? '✨ Criar Conta' : '🚀 Entrar'}
+              {isSignUp ? '🚗 Criar Conta Motorista' : '🚀 Entrar como Motorista'}
             </Button>
           </form>
 
@@ -244,14 +192,20 @@ export default function Login() {
               onClick={() => setIsSignUp(!isSignUp)}
               className="text-blue-600 hover:text-blue-700 font-medium"
             >
-              {isSignUp ? '← Já tenho conta' : '✨ Criar nova conta'}
+              {isSignUp ? '← Já tenho conta' : '✨ Criar conta de motorista'}
             </button>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+          <div className="mt-8 pt-6 border-t border-gray-200 text-center space-y-2">
+            <a
+              href="/oficinas/login"
+              className="block text-orange-600 hover:text-orange-700 text-sm font-medium"
+            >
+              🔧 Sou Oficina
+            </a>
             <a
               href="/admin/login"
-              className="text-gray-500 hover:text-gray-700 text-sm"
+              className="block text-gray-500 hover:text-gray-700 text-sm"
             >
               🔐 Login Admin
             </a>
