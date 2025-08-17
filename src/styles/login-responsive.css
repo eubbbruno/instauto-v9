@@ -1,0 +1,94 @@
+/* RESPONSIVIDADE AVANÇADA PARA LOGINS */
+
+/* Mobile First Approach */
+@media (max-width: 640px) {
+  .login-container {
+    padding: 1rem;
+  }
+  
+  .login-form {
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+  
+  .mobile-image {
+    height: 120px;
+  }
+}
+
+/* Tablet */
+@media (min-width: 641px) and (max-width: 1023px) {
+  .login-container {
+    padding: 2rem;
+  }
+  
+  .login-form {
+    padding: 2rem;
+  }
+  
+  .mobile-image {
+    height: 160px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .image-side {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .image-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+  }
+  
+  .image-content {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    z-index: 20;
+    color: white;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1440px) {
+  .image-content {
+    bottom: 3rem;
+    left: 3rem;
+  }
+  
+  .image-content h2 {
+    font-size: 2.5rem;
+  }
+  
+  .image-content p {
+    font-size: 1.25rem;
+  }
+}
+
+/* High Resolution Displays */
+@media (min-resolution: 2dppx) {
+  .login-image {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .login-animation {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .login-form {
+    background-color: rgba(31, 41, 55, 0.95);
+    color: white;
+  }
+}

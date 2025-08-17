@@ -134,15 +134,44 @@ export default function OficinaLogin() {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="bg-white rounded-2xl shadow-xl p-8"
-        >
+    return (
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100 flex">
+      {/* Desktop Image Side */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-600/20 to-red-600/20 z-10"></div>
+        <Image
+          src="/images/oficina.png"
+          alt="Oficina Profissional"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute bottom-8 left-8 z-20 text-white">
+          <h2 className="text-3xl font-bold mb-2">Oficina Profissional!</h2>
+          <p className="text-orange-100 text-lg">Gerencie sua oficina com tecnologia</p>
+        </div>
+      </div>
+
+      {/* Form Side */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-8">
+        <div className="max-w-md w-full">
+          {/* Mobile Image */}
+          <div className="lg:hidden mb-6 relative h-32 rounded-xl overflow-hidden">
+            <Image
+              src="/images/oficina.png"
+              alt="Oficina"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-orange-600/30 to-red-600/30"></div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white rounded-2xl shadow-xl p-8"
+          >
           {/* Header */}
           <div className="text-center mb-8">
             <div className="mx-auto mb-6">
@@ -303,7 +332,8 @@ export default function OficinaLogin() {
               🚗 Sou Motorista
             </Link>
           </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
     </div>
   )

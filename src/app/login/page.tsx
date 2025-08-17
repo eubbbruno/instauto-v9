@@ -114,15 +114,44 @@ export default function MotoristaLogin() {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="bg-white rounded-2xl shadow-xl p-8"
-        >
+    return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex">
+      {/* Desktop Image Side */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-indigo-600/20 z-10"></div>
+        <Image
+          src="/images/motorista.png"
+          alt="Motorista Feliz"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute bottom-8 left-8 z-20 text-white">
+          <h2 className="text-3xl font-bold mb-2">Bem-vindo, Motorista!</h2>
+          <p className="text-blue-100 text-lg">Encontre as melhores oficinas da sua região</p>
+        </div>
+      </div>
+
+      {/* Form Side */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-8">
+        <div className="max-w-md w-full">
+          {/* Mobile Image */}
+          <div className="lg:hidden mb-6 relative h-32 rounded-xl overflow-hidden">
+            <Image
+              src="/images/motorista.png"
+              alt="Motorista"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-indigo-600/30"></div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white rounded-2xl shadow-xl p-8"
+          >
           <div className="text-center mb-8">
             <div className="mx-auto mb-6">
               <Image
@@ -216,7 +245,8 @@ export default function MotoristaLogin() {
               🔧 Sou Oficina
             </Link>
           </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
     </div>
   )
