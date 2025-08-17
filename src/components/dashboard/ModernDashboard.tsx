@@ -272,7 +272,7 @@ export function ModernDashboard({ userType, profile, user }: DashboardProps) {
         <h3 className="text-xl font-semibold text-gray-900 mb-6">⚡ Ações Rápidas</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {userType === 'motorista' ? [
+          {(userType === 'motorista' ? [
             { label: 'Buscar Oficinas', icon: '🔍', color: 'blue' },
             { label: 'Agendar Serviço', icon: '📅', color: 'green' },
             { label: 'Meus Veículos', icon: '🚗', color: 'purple' },
@@ -284,7 +284,7 @@ export function ModernDashboard({ userType, profile, user }: DashboardProps) {
             { label: 'Relatórios', icon: '📊', color: 'purple' },
             { label: 'Estoque', icon: '📦', color: 'gray' },
             { label: 'Configurações', icon: '⚙️', color: 'orange' }
-          ].map((action, index) => (
+          ]).map((action, index) => (
             <motion.button
               key={action.label}
               whileHover={{ scale: 1.05, y: -2 }}
