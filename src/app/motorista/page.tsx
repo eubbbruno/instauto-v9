@@ -3,11 +3,14 @@ export const dynamic = 'force-dynamic'
 
 import MotoristaClient from './MotoristaClient'
 import RouteProtection from '@/components/auth/RouteProtection'
+import { ToastAdvancedProvider } from '@/components/ui/ToastAdvanced'
 
 export default function MotoristaPage() {
   return (
-    <RouteProtection allowedTypes={['motorista']}>
-      <MotoristaClient />
-    </RouteProtection>
+    <ToastAdvancedProvider>
+      <RouteProtection allowedTypes={['motorista']}>
+        <MotoristaClient />
+      </RouteProtection>
+    </ToastAdvancedProvider>
   )
 }
