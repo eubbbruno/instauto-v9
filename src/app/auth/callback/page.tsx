@@ -18,8 +18,9 @@ function AuthCallbackContent() {
         console.log('🔄 Processando callback de autenticação...')
         
         // Obter parâmetros da URL
-        const userType = searchParams.get('type')
-        const oficinaPlano = searchParams.get('plan')
+        const userType = searchParams.get('user_type')
+        const planType = searchParams.get('plan_type')
+        const couponCode = searchParams.get('coupon_code')
         const returnUrl = searchParams.get('return_url')
         
         // Obter sessão atual
@@ -42,7 +43,8 @@ function AuthCallbackContent() {
         const profile = await SocialAuthManager.handleOAuthCallback(
           session.user,
           userType || undefined,
-          oficinaPlano || undefined
+          planType || undefined,
+          couponCode || undefined
         )
         
         if (!profile) {

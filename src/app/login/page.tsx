@@ -9,6 +9,7 @@ import { useToast } from '@/components/ui'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
+import { OAuthButtons } from '@/components/auth/OAuthButtons'
 
 export default function MotoristaLogin() {
   const [email, setEmail] = useState('')
@@ -125,7 +126,7 @@ export default function MotoristaLogin() {
           <div className="text-center mb-8">
             <div className="mx-auto mb-6">
               <Image
-                src="/logo.svg"
+                src="/images/logo-of.svg"
                 alt="InstaAuto"
                 width={120}
                 height={40}
@@ -194,6 +195,9 @@ export default function MotoristaLogin() {
               {isSignUp ? '🚗 Criar Conta Motorista' : '🚀 Entrar como Motorista'}
             </Button>
           </form>
+
+          {/* OAuth Buttons */}
+          <OAuthButtons userType="motorista" />
 
           <div className="mt-6 text-center">
             <button

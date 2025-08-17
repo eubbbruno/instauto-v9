@@ -9,6 +9,7 @@ import { useToast } from '@/components/ui'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
+import { OAuthButtons } from '@/components/auth/OAuthButtons'
 
 export default function OficinaLogin() {
   const [email, setEmail] = useState('')
@@ -146,7 +147,7 @@ export default function OficinaLogin() {
           <div className="text-center mb-8">
             <div className="mx-auto mb-6">
               <Image
-                src="/logo.svg"
+                src="/images/logo-of.svg"
                 alt="InstaAuto"
                 width={120}
                 height={40}
@@ -275,6 +276,13 @@ export default function OficinaLogin() {
               {isSignUp ? '🚀 Criar Oficina' : '🔧 Entrar na Oficina'}
             </Button>
           </form>
+
+          {/* OAuth Buttons */}
+          <OAuthButtons 
+            userType="oficina" 
+            planType={planType}
+            couponCode={couponCode}
+          />
 
           {/* Toggle Login/Signup */}
           <div className="mt-6 text-center">
