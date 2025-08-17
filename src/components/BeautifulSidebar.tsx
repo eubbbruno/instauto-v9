@@ -28,7 +28,7 @@ import {
   MapPinIcon,
   PhoneIcon
 } from '@heroicons/react/24/outline'
-import PushNotificationManager from '@/components/notifications/PushNotificationManager'
+import PushNotificationButton from '@/components/notifications/PushNotificationButton'
 
 interface SidebarItem {
   icon: any
@@ -246,9 +246,9 @@ export default function BeautifulSidebar({
         {/* Push Notifications */}
         {!isCollapsed && (
           <div className="mb-4">
-            <PushNotificationManager 
-              userType={userType} 
-              className="w-full"
+            <PushNotificationButton 
+              className="w-full text-sm"
+              showText={true}
             />
           </div>
         )}
