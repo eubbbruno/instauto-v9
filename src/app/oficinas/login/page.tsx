@@ -3,10 +3,11 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { EyeIcon, EyeSlashIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/outline'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import { Button } from '@/components/ui'
 import { useToast } from '@/components/ui'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import Link from 'next/link'
 
 export default function OficinaLogin() {
@@ -143,8 +144,14 @@ export default function OficinaLogin() {
         >
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
-              <WrenchScrewdriverIcon className="w-8 h-8 text-orange-600" />
+            <div className="mx-auto mb-6">
+              <Image
+                src="/logo.svg"
+                alt="InstaAuto"
+                width={120}
+                height={40}
+                className="mx-auto"
+              />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               {isSignUp ? 'Cadastrar Oficina' : 'Oficina Login'}
@@ -263,7 +270,7 @@ export default function OficinaLogin() {
               variant="primary"
               size="lg"
               loading={loading}
-              className="w-full bg-orange-600 hover:bg-orange-700 focus:ring-orange-500"
+              className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 shadow-lg"
             >
               {isSignUp ? '🚀 Criar Oficina' : '🔧 Entrar na Oficina'}
             </Button>
@@ -280,18 +287,12 @@ export default function OficinaLogin() {
           </div>
 
           {/* Links */}
-          <div className="mt-8 pt-6 border-t border-gray-200 text-center space-y-2">
+          <div className="mt-8 pt-6 border-t border-gray-200 text-center">
             <Link
               href="/login"
-              className="block text-blue-600 hover:text-blue-700 text-sm"
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
             >
               🚗 Sou Motorista
-            </Link>
-            <Link
-              href="/admin/login"
-              className="block text-gray-500 hover:text-gray-700 text-sm"
-            >
-              🔐 Login Admin
             </Link>
           </div>
         </motion.div>
