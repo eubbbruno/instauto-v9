@@ -13,7 +13,9 @@ import {
   ExclamationTriangleIcon,
   WrenchScrewdriverIcon,
   XMarkIcon,
-  ArrowUpIcon
+  ArrowUpIcon,
+  PhotoIcon,
+  CameraIcon
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 
@@ -59,61 +61,48 @@ interface Veiculo {
 }
 
 export default function GaragemClient() {
-  const [veiculos, setVeiculos] = useState<Veiculo[]>([
-    {
-      id: 1,
-      modelo: "Civic",
-      marca: "Honda",
-      ano: "2020",
-      placa: "ABC-1234",
-      cor: "Prata",
-      km: "35.450",
-      combustivel: "Flex",
-      ultimaRevisao: "15/05/2023",
-      proximaRevisao: "15/11/2023",
-      seguro: {
-        possui: true,
-        empresa: "Seguradora XYZ",
-        vigencia: "01/01/2023 a 01/01/2024"
-      },
-      manutencoes: [
-        { id: 1, tipo: "Troca de óleo", data: "15/05/2023", km: "33.200", valor: 180, oficina: "Auto Center Silva" },
-        { id: 2, tipo: "Alinhamento", data: "02/03/2023", km: "31.500", valor: 120, oficina: "Pneus & Rodas" }
-      ],
-      documentos: [
-        { id: 1, tipo: "CRLV", numero: "123456789", validade: "31/12/2023" },
-        { id: 2, tipo: "Seguro", numero: "POL789123", validade: "01/01/2024" }
-      ],
-      chassi: "9BWZZZ377VT004251",
-      renavam: "12345678901"
-    },
-    {
-      id: 2,
-      modelo: "Uno",
-      marca: "Fiat",
-      ano: "2018",
-      placa: "XYZ-9876",
-      cor: "Vermelho",
-      km: "65.800",
-      combustivel: "Etanol",
-      ultimaRevisao: "10/06/2023",
-      proximaRevisao: "10/12/2023",
-      seguro: {
-        possui: false
-      },
-      manutencoes: [
-        { id: 3, tipo: "Troca de pneus", data: "20/04/2023", km: "64.200", valor: 480, oficina: "Pneustore" }
-      ],
-      documentos: [
-        { id: 3, tipo: "CRLV", numero: "987654321", validade: "31/12/2023" }
-      ],
-      chassi: "9BD15902040123456",
-      renavam: "98765432109"
-    }
-  ])
-
+  const [veiculos, setVeiculos] = useState<Veiculo[]>([])
   const [selectedVeiculo, setSelectedVeiculo] = useState<Veiculo | null>(null)
   const [showModal, setShowModal] = useState(false)
+  const [showAddVehicleModal, setShowAddVehicleModal] = useState(false)
+  const [vehicleFormData, setVehicleFormData] = useState<Partial<Veiculo>>({})
+
+  // Upload de fotos
+  const handlePhotoUpload = (veiculoId: number, file: File) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const photoUrl = e.target?.result as string
+      setVeiculos(prev => prev.map(v => 
+        v.id === veiculoId 
+          ? { ...v, foto: photoUrl }
+          : v
+      ))
+    }
+    reader.readAsDataURL(file)
+  }
+
+  // Adicionar novo veículo
+  const addVehicle = (vehicleData: Partial<Veiculo>) => {
+    const newVehicle: Veiculo = {
+      id: Date.now(),
+      modelo: vehicleData.modelo || '',
+      marca: vehicleData.marca || '',
+      ano: vehicleData.ano || '',
+      placa: vehicleData.placa || '',
+      cor: vehicleData.cor || '',
+      km: vehicleData.km || '0',
+      combustivel: vehicleData.combustivel || '',
+      ultimaRevisao: '',
+      proximaRevisao: '',
+      seguro: { possui: false },
+      manutencoes: [],
+      documentos: [],
+      foto: vehicleData.foto
+    }
+    setVeiculos(prev => [...prev, newVehicle])
+    setShowAddVehicleModal(false)
+    setVehicleFormData({})
+  }
 
   const getTotalGastos = () => {
     return veiculos.reduce((total, veiculo) => 
@@ -168,7 +157,7 @@ export default function GaragemClient() {
               <p className="text-gray-600">Gerencie seus veículos e histórico de manutenções</p>
             </div>
             <button 
-              onClick={() => setShowModal(true)}
+              onClick={() => setShowAddVehicleModal(true)}
               className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 flex items-center gap-2 transition-all"
             >
               <PlusIcon className="w-5 h-5" />
@@ -288,8 +277,26 @@ export default function GaragemClient() {
               )}
 
               {/* Lista de Veículos */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                {veiculos.map((veiculo, index) => (
+              {veiculos.length === 0 ? (
+                <motion.div 
+                  className="bg-white rounded-xl shadow-lg p-12 text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <TruckIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">Nenhum veículo cadastrado</h3>
+                  <p className="text-gray-600 mb-6">Adicione seu primeiro veículo para começar a gerenciar sua garagem</p>
+                  <button 
+                    onClick={() => setShowAddVehicleModal(true)}
+                    className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 flex items-center gap-2 mx-auto transition-all"
+                  >
+                    <PlusIcon className="w-5 h-5" />
+                    Adicionar Primeiro Veículo
+                  </button>
+                </motion.div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {veiculos.map((veiculo, index) => (
                   <motion.div
                     key={veiculo.id}
                     className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all"
@@ -297,22 +304,53 @@ export default function GaragemClient() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 * index }}
                   >
-                    {/* Header do Card */}
-                    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="text-xl font-bold text-white">
-                            {veiculo.marca} {veiculo.modelo}
-                          </h3>
-                          <p className="text-blue-100">{veiculo.ano} • {veiculo.placa}</p>
+                    {                    /* Foto do Veículo */}
+                    <div className="relative">
+                      {veiculo.foto ? (
+                        <img 
+                          src={veiculo.foto} 
+                          alt={`${veiculo.marca} ${veiculo.modelo}`}
+                          className="w-full h-48 object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-48 bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center">
+                          <TruckIcon className="w-16 h-16 text-white/50" />
                         </div>
-                        <div className="flex gap-2">
-                          <button className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-all">
-                            <PencilIcon className="w-4 h-4 text-white" />
-                          </button>
-                          <button className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-all">
-                            <TrashIcon className="w-4 h-4 text-white" />
-                          </button>
+                      )}
+                      
+                      {/* Upload Button */}
+                      <div className="absolute top-2 right-2">
+                        <label className="cursor-pointer p-2 bg-black/20 rounded-lg hover:bg-black/30 transition-all backdrop-blur-sm">
+                          <PhotoIcon className="w-5 h-5 text-white" />
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0]
+                              if (file) handlePhotoUpload(veiculo.id, file)
+                            }}
+                          />
+                        </label>
+                      </div>
+
+                      {/* Header do Card - Overlay */}
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                        <div className="flex justify-between items-end">
+                          <div>
+                            <h3 className="text-xl font-bold text-white">
+                              {veiculo.marca} {veiculo.modelo}
+                            </h3>
+                            <p className="text-blue-100">{veiculo.ano} • {veiculo.placa}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-all">
+                              <PencilIcon className="w-4 h-4 text-white" />
+                            </button>
+                            <button className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-all">
+                              <TrashIcon className="w-4 h-4 text-white" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -380,8 +418,9 @@ export default function GaragemClient() {
                       </button>
                     </div>
                   </motion.div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
 
               {/* Quick Actions */}
               <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -534,6 +573,182 @@ export default function GaragemClient() {
                   ))}
                 </div>
               </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Modal Adicionar Veículo */}
+      {showAddVehicleModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <motion.div 
+            className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+          >
+            <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Adicionar Novo Veículo</h2>
+              <button 
+                onClick={() => setShowAddVehicleModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg"
+              >
+                <XMarkIcon className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <form onSubmit={(e) => {
+                e.preventDefault()
+                addVehicle(vehicleFormData)
+              }} className="space-y-6">
+                
+                {/* Upload de Foto */}
+                <div className="text-center">
+                  <div className="relative mx-auto w-48 h-32 bg-gray-100 rounded-lg overflow-hidden">
+                    {vehicleFormData.foto ? (
+                      <img 
+                        src={vehicleFormData.foto} 
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <CameraIcon className="w-12 h-12 text-gray-400" />
+                      </div>
+                    )}
+                    <label className="absolute inset-0 cursor-pointer hover:bg-black/10 transition-all flex items-center justify-center">
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) {
+                            const reader = new FileReader()
+                            reader.onload = (e) => {
+                              setVehicleFormData(prev => ({
+                                ...prev,
+                                foto: e.target?.result as string
+                              }))
+                            }
+                            reader.readAsDataURL(file)
+                          }
+                        }}
+                      />
+                      {!vehicleFormData.foto && (
+                        <span className="text-gray-500 text-sm">Adicionar Foto</span>
+                      )}
+                    </label>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Marca</label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      value={vehicleFormData.marca || ''}
+                      onChange={(e) => setVehicleFormData(prev => ({ ...prev, marca: e.target.value }))}
+                      placeholder="Honda, Toyota, Volkswagen..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Modelo</label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      value={vehicleFormData.modelo || ''}
+                      onChange={(e) => setVehicleFormData(prev => ({ ...prev, modelo: e.target.value }))}
+                      placeholder="Civic, Corolla, Gol..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Ano</label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      value={vehicleFormData.ano || ''}
+                      onChange={(e) => setVehicleFormData(prev => ({ ...prev, ano: e.target.value }))}
+                      placeholder="2020, 2019..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Placa</label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      value={vehicleFormData.placa || ''}
+                      onChange={(e) => setVehicleFormData(prev => ({ ...prev, placa: e.target.value.toUpperCase() }))}
+                      placeholder="ABC-1234"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Cor</label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      value={vehicleFormData.cor || ''}
+                      onChange={(e) => setVehicleFormData(prev => ({ ...prev, cor: e.target.value }))}
+                      placeholder="Branco, Prata, Preto..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Combustível</label>
+                    <select
+                      required
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      value={vehicleFormData.combustivel || ''}
+                      onChange={(e) => setVehicleFormData(prev => ({ ...prev, combustivel: e.target.value }))}
+                    >
+                      <option value="">Selecionar...</option>
+                      <option value="Flex">Flex</option>
+                      <option value="Gasolina">Gasolina</option>
+                      <option value="Etanol">Etanol</option>
+                      <option value="Diesel">Diesel</option>
+                      <option value="Elétrico">Elétrico</option>
+                      <option value="Híbrido">Híbrido</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Quilometragem Atual</label>
+                  <input
+                    type="text"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    value={vehicleFormData.km || ''}
+                    onChange={(e) => setVehicleFormData(prev => ({ ...prev, km: e.target.value }))}
+                    placeholder="Ex: 45.000"
+                  />
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddVehicleModal(false)}
+                    className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"
+                  >
+                    Adicionar Veículo
+                  </button>
+                </div>
+              </form>
             </div>
           </motion.div>
         </div>
