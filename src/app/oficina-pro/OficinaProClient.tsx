@@ -5,7 +5,6 @@ import { motion } from 'framer-motion'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
 import AnalyticsDashboard from '@/components/ai/AnalyticsDashboard'
-import ChatFloatingButton from '@/components/chat/ChatFloatingButton'
 import TrialBanner from '@/components/TrialBanner'
 import { 
   ArrowUpIcon,
@@ -511,11 +510,11 @@ export default function OficinaProClient() {
         </div>
       </div>
 
-      {/* Real-time Chat */}
+      {/* Chat Components */}
       {user && (
-        <ChatFloatingButton 
-          currentUserId={user.id}
+        <ChatManager 
           userType="oficina-pro"
+          currentUserId={user.id}
         />
       )}
     </div>
