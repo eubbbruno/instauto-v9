@@ -7,6 +7,8 @@ import ChatManager from '@/components/chat/ChatManager'
 import AnalyticsDashboard from '@/components/ai/AnalyticsDashboard'
 import AIDiagnosticSystem from '@/components/ai/AIDiagnosticSystem'
 import AIControlPanel from '@/components/ai/AIControlPanel'
+import { OnboardingProvider } from '@/components/onboarding/OnboardingManager'
+import ContextualTips from '@/components/onboarding/ContextualTips'
 import TrialBanner from '@/components/TrialBanner'
 import { 
   ArrowUpIcon,
@@ -152,9 +154,10 @@ export default function OficinaProClient() {
   }
   
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Beautiful Sidebar PRO */}
-      <BeautifulSidebar 
+    <OnboardingProvider userType="oficina-pro" userId={user?.id || ''}>
+      <div className="flex min-h-screen bg-gray-50">
+        {/* Beautiful Sidebar PRO */}
+        <BeautifulSidebar 
         userType="oficina-pro"
         userName={profile?.name || user?.email?.split('@')[0] || 'Oficina PRO'}
         userEmail={user?.email}
@@ -535,6 +538,15 @@ export default function OficinaProClient() {
           }}
         />
       )}
-    </div>
+
+      {/* Onboarding & Tips */}
+      {user && (
+        <ContextualTips 
+          userId={user.id}
+          userType="oficina-pro"
+        />
+      )}
+      </div>
+    </OnboardingProvider>
   )
 }

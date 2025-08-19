@@ -7,6 +7,8 @@ import ChatManager from '@/components/chat/ChatManager'
 import AnalyticsDashboard from '@/components/ai/AnalyticsDashboard'
 import AIDiagnosticSystem from '@/components/ai/AIDiagnosticSystem'
 import AIControlPanel from '@/components/ai/AIControlPanel'
+import { OnboardingProvider } from '@/components/onboarding/OnboardingManager'
+import ContextualTips from '@/components/onboarding/ContextualTips'
 import { 
   CalendarDaysIcon, 
   ClipboardDocumentListIcon, 
@@ -128,9 +130,10 @@ export default function OficinaFreeClient() {
   }
   
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Beautiful Sidebar */}
-      <BeautifulSidebar 
+    <OnboardingProvider userType="oficina-free" userId={user?.id || ''}>
+      <div className="flex min-h-screen bg-gray-50">
+        {/* Beautiful Sidebar */}
+        <BeautifulSidebar 
         userType="oficina-free"
         userName={profile?.name || user?.email?.split('@')[0] || 'Oficina'}
         userEmail={user?.email}
@@ -402,6 +405,15 @@ export default function OficinaFreeClient() {
           }}
         />
       )}
-    </div>
+
+      {/* Onboarding & Tips */}
+      {user && (
+        <ContextualTips 
+          userId={user.id}
+          userType="oficina-free"
+        />
+      )}
+      </div>
+    </OnboardingProvider>
   )
 }

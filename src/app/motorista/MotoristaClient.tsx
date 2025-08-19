@@ -5,6 +5,9 @@ import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
 import { SkeletonDashboardAdvanced } from '@/components/ui/SkeletonAdvanced'
 import PushNotificationButton from '@/components/notifications/PushNotificationButton'
+import { OnboardingProvider } from '@/components/onboarding/OnboardingManager'
+import ContextualTips from '@/components/onboarding/ContextualTips'
+import OnboardingTrigger from '@/components/onboarding/OnboardingTrigger'
 
 export default function MotoristaClient() {
   const [user, setUser] = useState<any>(null)
@@ -59,17 +62,18 @@ export default function MotoristaClient() {
   }
   
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <BeautifulSidebar 
-        userType="motorista"
-        userName={profile?.name || user?.email?.split('@')[0]}
-        userEmail={user?.email}
-        onLogout={logout}
-      />
-      
-      {/* Conteúdo Principal */}
-      <div className="flex-1 md:ml-64 transition-all duration-300">
+    <OnboardingProvider userType="motorista" userId={user?.id || ''}>
+      <div className="flex min-h-screen bg-gray-50">
+        {/* Sidebar */}
+        <BeautifulSidebar 
+          userType="motorista"
+          userName={profile?.name || user?.email?.split('@')[0]}
+          userEmail={user?.email}
+          onLogout={logout}
+        />
+        
+        {/* Conteúdo Principal */}
+        <div className="flex-1 md:ml-64 transition-all duration-300">
         {/* Dashboard Content */}
         <div className="flex-1 overflow-hidden">
           <div className="h-full overflow-y-auto">
@@ -89,6 +93,11 @@ export default function MotoristaClient() {
                   
                   {/* Push Notification Button */}
                   <div className="flex items-center space-x-3">
+                    <OnboardingTrigger 
+                      variant="button" 
+                      showText={false}
+                      className="text-sm"
+                    />
                     <PushNotificationButton 
                       userId={user?.id}
                       className="text-sm"
@@ -96,6 +105,9 @@ export default function MotoristaClient() {
                     />
                   </div>
                 </div>
+
+                {/* Onboarding Banner */}
+                <OnboardingTrigger variant="banner" />
 
                 {/* Quick Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
@@ -223,13 +235,25 @@ export default function MotoristaClient() {
             </div>
           </div>
         </div>
-      </div>
+        </div>
 
-      {/* Chat Components */}
-      <ChatManager 
-        userType="motorista"
-        currentUserId={user?.id || ''}
-      />
-    </div>
+        {/* Chat Components */}
+        <ChatManager 
+          userType="motorista"
+          currentUserId={user?.id || ''}
+        />
+
+        {/* Onboarding & Tips */}
+        {user && (
+          <>
+            <ContextualTips 
+              userId={user.id}
+              userType="motorista"
+            />
+            <OnboardingTrigger variant="floating" />
+          </>
+        )}
+      </div>
+    </OnboardingProvider>
   )
 }
