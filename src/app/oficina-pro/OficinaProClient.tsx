@@ -5,6 +5,8 @@ import { motion } from 'framer-motion'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
 import AnalyticsDashboard from '@/components/ai/AnalyticsDashboard'
+import AIDiagnosticSystem from '@/components/ai/AIDiagnosticSystem'
+import AIControlPanel from '@/components/ai/AIControlPanel'
 import TrialBanner from '@/components/TrialBanner'
 import { 
   ArrowUpIcon,
@@ -240,6 +242,11 @@ export default function OficinaProClient() {
           {/* Analytics IA PRO */}
           <div className="mb-8">
             <AnalyticsDashboard userType="oficina-pro" />
+          </div>
+
+          {/* IA Control Panel PRO */}
+          <div className="mb-8">
+            <AIControlPanel workshopId={user?.id || ''} />
           </div>
 
           {/* Stats Cards PRO */}
@@ -515,6 +522,17 @@ export default function OficinaProClient() {
         <ChatManager 
           userType="oficina-pro"
           currentUserId={user.id}
+        />
+      )}
+
+      {/* IA Diagnostic System - EXCLUSIVO PRO */}
+      {user && (
+        <AIDiagnosticSystem 
+          workshopId={user.id}
+          onServiceSuggested={(suggestion) => {
+            console.log('Serviço sugerido pela IA:', suggestion)
+            // Integração avançada com sistema de orçamentos
+          }}
         />
       )}
     </div>

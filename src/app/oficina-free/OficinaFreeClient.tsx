@@ -5,6 +5,8 @@ import { motion } from 'framer-motion'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
 import AnalyticsDashboard from '@/components/ai/AnalyticsDashboard'
+import AIDiagnosticSystem from '@/components/ai/AIDiagnosticSystem'
+import AIControlPanel from '@/components/ai/AIControlPanel'
 import { 
   CalendarDaysIcon, 
   ClipboardDocumentListIcon, 
@@ -185,6 +187,11 @@ export default function OficinaFreeClient() {
           {/* Analytics IA */}
           <div className="mb-8">
             <AnalyticsDashboard userType="oficina-free" />
+          </div>
+
+          {/* IA Control Panel */}
+          <div className="mb-8">
+            <AIControlPanel workshopId={user?.id || ''} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
@@ -382,6 +389,17 @@ export default function OficinaFreeClient() {
         <ChatManager 
           userType="oficina-free"
           currentUserId={user.id}
+        />
+      )}
+
+      {/* IA Diagnostic System */}
+      {user && (
+        <AIDiagnosticSystem 
+          workshopId={user.id}
+          onServiceSuggested={(suggestion) => {
+            console.log('Serviço sugerido:', suggestion)
+            // Aqui pode integrar com sistema de orçamentos
+          }}
         />
       )}
     </div>
