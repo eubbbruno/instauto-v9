@@ -26,6 +26,7 @@ import {
   XMarkIcon
 } from '@heroicons/react/24/outline'
 import WorkshopModal from './components/WorkshopModal'
+import AdminClient from './AdminClient'
 
 interface Workshop {
   id: string
@@ -553,7 +554,7 @@ function AdminDashboardContent() {
 export default function AdminDashboard() {
   return (
     <RouteProtection allowedTypes={['admin']}>
-      <AdminDashboardContent />
+      <AdminClient />
     </RouteProtection>
   )
 }
