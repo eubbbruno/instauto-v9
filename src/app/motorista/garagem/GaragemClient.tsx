@@ -1,6 +1,7 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { supabase } from '@/lib/supabase'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import { 
   PlusIcon, 
@@ -66,6 +67,35 @@ export default function GaragemClient() {
   const [showModal, setShowModal] = useState(false)
   const [showAddVehicleModal, setShowAddVehicleModal] = useState(false)
   const [vehicleFormData, setVehicleFormData] = useState<Partial<Veiculo>>({})
+  const [user, setUser] = useState<any>(null)
+  const [profile, setProfile] = useState<any>(null)
+
+  useEffect(() => {
+    checkUser()
+  }, [])
+
+  const checkUser = async () => {
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser()
+      
+      if (error || !user) {
+        window.location.href = '/login'
+        return
+      }
+
+      setUser(user)
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      setProfile(profile)
+    } catch (error) {
+      console.error('Erro ao verificar usuário:', error)
+    }
+  }
 
   // Upload de fotos
   const handlePhotoUpload = (veiculoId: number, file: File) => {
@@ -143,9 +173,12 @@ export default function GaragemClient() {
     <div className="flex min-h-screen bg-gray-50">
       <BeautifulSidebar 
         userType="motorista"
-        userName="Motorista"
-        userEmail="motorista@email.com"
-        onLogout={() => {}}
+        userName={profile?.name || user?.email?.split('@')[0] || 'Motorista'}
+        userEmail={user?.email || 'email@email.com'}
+        onLogout={async () => {
+          await supabase.auth.signOut()
+          window.location.href = '/login'
+        }}
       />
       
       <div className="flex-1 md:ml-64 transition-all duration-300">

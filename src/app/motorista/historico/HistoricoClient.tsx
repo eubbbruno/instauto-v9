@@ -257,8 +257,8 @@ export default function HistoricoClient() {
     <div className="flex min-h-screen bg-gray-50">
       <BeautifulSidebar 
         userType="motorista"
-        userName="Motorista"
-        userEmail="motorista@email.com"
+        userName="João Silva"
+        userEmail="joao.silva@email.com"
         onLogout={() => {}}
       />
       

@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { supabase } from '@/lib/supabase'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import { 
   CalendarIcon, 
@@ -54,9 +55,44 @@ export default function AgendamentosClient() {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([])
   const [filtroStatus, setFiltroStatus] = useState<string>("todos")
   const [carregando, setCarregando] = useState(true)
+  const [user, setUser] = useState<any>(null)
+  const [profile, setProfile] = useState<any>(null)
 
   useEffect(() => {
-    const carregarAgendamentos = async () => {
+    checkUser()
+  }, [])
+
+  const checkUser = async () => {
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser()
+      
+      if (error || !user) {
+        window.location.href = '/login'
+        return
+      }
+
+      setUser(user)
+
+      // Buscar perfil do usuário
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      setProfile(profile)
+    } catch (error) {
+      console.error('Erro ao verificar usuário:', error)
+    }
+  }
+
+  useEffect(() => {
+    if (user) {
+      carregarAgendamentos()
+    }
+  }, [user])
+
+  const carregarAgendamentos = async () => {
       setCarregando(true)
       
       try {
@@ -164,9 +200,6 @@ export default function AgendamentosClient() {
         setCarregando(false)
       }
     }
-    
-    carregarAgendamentos()
-  }, [])
 
   // Calcular estatísticas dos agendamentos
   const stats = {
@@ -258,9 +291,12 @@ export default function AgendamentosClient() {
     <div className="flex min-h-screen bg-gray-50">
       <BeautifulSidebar 
         userType="motorista"
-        userName="Motorista"
-        userEmail="motorista@email.com"
-        onLogout={() => {}}
+        userName={profile?.name || user?.email?.split('@')[0] || 'Motorista'}
+        userEmail={user?.email || 'email@email.com'}
+        onLogout={async () => {
+          await supabase.auth.signOut()
+          window.location.href = '/login'
+        }}
       />
       
       <div className="flex-1 md:ml-64 transition-all duration-300">
@@ -282,9 +318,8 @@ export default function AgendamentosClient() {
         </div>
 
         {/* Content Container */}
-        <div className="flex-1 overflow-hidden">
-          <div className="h-full overflow-y-auto">
-            <div className="p-6">
+        <div className="flex-1">
+          <div className="p-6 space-y-6">
 
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -517,8 +552,6 @@ export default function AgendamentosClient() {
                   })
                 )}
               </div>
-
-            </div>
           </div>
         </div>
       </div>
