@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
+import ChatFloatingButton from '@/components/chat/ChatFloatingButton'
 import { SkeletonDashboardAdvanced } from '@/components/ui/SkeletonAdvanced'
 import PushNotificationButton from '@/components/notifications/PushNotificationButton'
 import { OnboardingProvider } from '@/components/onboarding/OnboardingManager'
@@ -242,6 +243,15 @@ export default function MotoristaClient() {
           userType="motorista"
           currentUserId={user?.id || ''}
         />
+
+        {/* Realtime Chat */}
+        {user && (
+          <ChatFloatingButton
+            currentUserId={user.id}
+            currentUserType="motorista"
+            position="bottom-left"
+          />
+        )}
 
         {/* Onboarding & Tips */}
         {user && (

@@ -1,275 +1,250 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ChatBubbleLeftRightIcon,
-  XMarkIcon,
-  UserIcon,
-  MagnifyingGlassIcon
+  BellIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline'
-import RealTimeChatInterface, { useChatManager } from './RealTimeChatInterface'
-
-interface ChatContact {
-  id: string
-  name: string
-  avatar?: string
-  status: 'online' | 'offline' | 'typing'
-  lastMessage?: string
-  unreadCount: number
-  userType: 'motorista' | 'oficina'
-}
+import { useRealtimeChat } from '@/hooks/useRealtimeChat'
+import RealtimeChat from './RealtimeChat'
 
 interface ChatFloatingButtonProps {
   currentUserId: string
-  userType: 'motorista' | 'oficina-free' | 'oficina-pro'
+  currentUserType: 'motorista' | 'oficina'
   className?: string
+  position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left'
 }
 
 export default function ChatFloatingButton({
   currentUserId,
-  userType,
-  className = ''
+  currentUserType,
+  className = '',
+  position = 'bottom-right'
 }: ChatFloatingButtonProps) {
-  const [isContactsOpen, setIsContactsOpen] = useState(false)
-  const [searchTerm, setSearchTerm] = useState('')
-  
-  const { activeChats, unreadCounts, openChat, closeChat } = useChatManager(currentUserId)
+  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [showNotification, setShowNotification] = useState(false)
+  const [lastNotificationCount, setLastNotificationCount] = useState(0)
 
-  // Mock contacts - em produção viria do Supabase
-  const mockContacts: ChatContact[] = [
-    {
-      id: 'user1',
-      name: userType === 'motorista' ? 'Auto Center Silva' : 'João Silva',
-      status: 'online',
-      lastMessage: 'Oi, tudo bem? Quando você pode trazer o carro?',
-      unreadCount: 2,
-      userType: userType === 'motorista' ? 'oficina' : 'motorista'
-    },
-    {
-      id: 'user2', 
-      name: userType === 'motorista' ? 'MegaMotors' : 'Maria Santos',
-      status: 'offline',
-      lastMessage: 'Obrigado pelo atendimento!',
-      unreadCount: 0,
-      userType: userType === 'motorista' ? 'oficina' : 'motorista'
-    },
-    {
-      id: 'user3',
-      name: userType === 'motorista' ? 'Pneus & Rodas' : 'Carlos Costa',
-      status: 'typing',
-      lastMessage: 'Está digitando...',
-      unreadCount: 1,
-      userType: userType === 'motorista' ? 'oficina' : 'motorista'
+  const {
+    totalUnreadCount,
+    isConnected,
+    hasUnreadMessages
+  } = useRealtimeChat({
+    currentUserId,
+    currentUserType,
+    onNewMessage: (message) => {
+      // Mostrar notificação para novas mensagens se o chat estiver fechado
+      if (!isChatOpen && message.sender_id !== currentUserId) {
+        setShowNotification(true)
+        setTimeout(() => setShowNotification(false), 3000)
+      }
     }
-  ]
+  })
 
-  const filteredContacts = mockContacts.filter(contact =>
-    contact.name.toLowerCase().includes(searchTerm.toLowerCase())
-  )
-
-  const totalUnreadCount = mockContacts.reduce((total, contact) => total + contact.unreadCount, 0)
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'online': return 'bg-green-500'
-      case 'typing': return 'bg-yellow-500 animate-pulse'
-      default: return 'bg-gray-400'
+  // Efeito para animar quando há novas mensagens
+  useEffect(() => {
+    if (totalUnreadCount > lastNotificationCount && totalUnreadCount > 0) {
+      setShowNotification(true)
+      setTimeout(() => setShowNotification(false), 2000)
     }
+    setLastNotificationCount(totalUnreadCount)
+  }, [totalUnreadCount, lastNotificationCount])
+
+  const positionClasses = {
+    'bottom-right': 'bottom-4 right-4',
+    'bottom-left': 'bottom-4 left-4',
+    'top-right': 'top-4 right-4',
+    'top-left': 'top-4 left-4'
   }
 
-  const getThemeColors = () => {
-    switch (userType) {
-      case 'motorista':
-        return {
-          primary: 'bg-blue-600 hover:bg-blue-700',
-          secondary: 'bg-blue-50 text-blue-600'
-        }
-      case 'oficina-free':
-        return {
-          primary: 'bg-blue-600 hover:bg-blue-700',
-          secondary: 'bg-blue-50 text-blue-600'
-        }
-      case 'oficina-pro':
-        return {
-          primary: 'bg-blue-600 hover:bg-blue-700',
-          secondary: 'bg-blue-50 text-blue-600'
-        }
-      default:
-        return {
-          primary: 'bg-blue-600 hover:bg-blue-700',
-          secondary: 'bg-blue-50 text-blue-600'
-        }
-    }
+  const toggleChat = () => {
+    setIsChatOpen(!isChatOpen)
+    setShowNotification(false)
   }
-
-  const theme = getThemeColors()
 
   return (
-    <div className={`fixed bottom-6 right-6 z-40 ${className}`}>
-      {/* Chat Interfaces */}
-      <AnimatePresence>
-        {Array.from(activeChats.entries()).map(([targetUserId, isOpen]) => {
-          const contact = mockContacts.find(c => c.id === targetUserId)
-          if (!contact || !isOpen) return null
-
-          return (
-            <RealTimeChatInterface
-              key={targetUserId}
-              currentUserId={currentUserId}
-              targetUserId={targetUserId}
-              targetUserName={contact.name}
-              targetUserAvatar={contact.avatar}
-              isOpen={isOpen}
-              onClose={() => closeChat(targetUserId)}
-              className="mb-4 mr-20"
-            />
-          )
-        })}
-      </AnimatePresence>
-
-      {/* Contacts List */}
-      <AnimatePresence>
-        {isContactsOpen && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="absolute bottom-20 right-0 w-80 h-96 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden"
-          >
-            {/* Header */}
-            <div className={`${theme.primary} p-4 text-white`}>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-semibold">Conversas</h3>
-                <button 
-                  onClick={() => setIsContactsOpen(false)}
-                  className="p-1 hover:bg-white/10 rounded"
-                >
-                  <XMarkIcon className="w-5 h-5" />
-                </button>
+    <>
+      {/* Botão Flutuante */}
+      <motion.div
+        className={`fixed z-40 ${positionClasses[position]} ${className}`}
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+      >
+        {/* Notificação de nova mensagem */}
+        <AnimatePresence>
+          {showNotification && (
+            <motion.div
+              className="absolute bottom-16 right-0 bg-white rounded-lg shadow-lg border p-3 max-w-xs mb-2"
+              initial={{ opacity: 0, y: 10, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex items-center space-x-2">
+                <BellIcon className="w-4 h-4 text-blue-600" />
+                <p className="text-sm text-gray-800 font-medium">
+                  {totalUnreadCount > 0 
+                    ? `${totalUnreadCount} nova${totalUnreadCount > 1 ? 's' : ''} mensagem${totalUnreadCount > 1 ? 'ns' : ''}`
+                    : 'Nova mensagem!'
+                  }
+                </p>
               </div>
-              
-              {/* Search */}
-              <div className="relative">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/70" />
-                <input
-                  type="text"
-                  placeholder="Buscar conversas..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-3 py-2 bg-white/20 rounded-lg text-white placeholder-white/70 text-sm focus:outline-none focus:ring-2 focus:ring-white/30"
-                />
-              </div>
-            </div>
+              <button
+                onClick={() => setShowNotification(false)}
+                className="absolute top-1 right-1 p-1 hover:bg-gray-100 rounded"
+              >
+                <XMarkIcon className="w-3 h-3 text-gray-400" />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-            {/* Contacts List */}
-            <div className="flex-1 overflow-y-auto">
-              {filteredContacts.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-32 text-gray-500">
-                  <UserIcon className="w-8 h-8 mb-2" />
-                  <p className="text-sm">Nenhuma conversa encontrada</p>
-                </div>
-              ) : (
-                <div className="divide-y divide-gray-100">
-                  {filteredContacts.map((contact) => (
+        {/* Botão Principal */}
+        <motion.button
+          onClick={toggleChat}
+          className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
+            isChatOpen 
+              ? 'bg-red-600 hover:bg-red-700' 
+              : 'bg-blue-600 hover:bg-blue-700'
+          } text-white`}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          animate={{
+            boxShadow: hasUnreadMessages 
+              ? '0 0 20px rgba(59, 130, 246, 0.5)' 
+              : '0 10px 25px rgba(0, 0, 0, 0.15)'
+          }}
+        >
+          <AnimatePresence mode="wait">
+            {isChatOpen ? (
+              <motion.div
+                key="close"
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <XMarkIcon className="w-6 h-6" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="chat"
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="relative"
+              >
+                <ChatBubbleLeftRightIcon className="w-6 h-6" />
+                
+                {/* Badge de mensagens não lidas */}
+                <AnimatePresence>
+                  {totalUnreadCount > 0 && (
                     <motion.div
-                      key={contact.id}
-                      whileHover={{ backgroundColor: '#f9fafb' }}
-                      onClick={() => {
-                        openChat(contact.id)
-                        setIsContactsOpen(false)
-                      }}
-                      className="p-4 cursor-pointer"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                            {contact.avatar ? (
-                              <img src={contact.avatar} alt={contact.name} className="w-full h-full rounded-full" />
-                            ) : (
-                              <span className="text-sm font-bold text-gray-600">
-                                {contact.name.charAt(0).toUpperCase()}
-                              </span>
-                            )}
-                          </div>
-                          <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${getStatusColor(contact.status)}`} />
-                        </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <h4 className="font-medium text-gray-900 truncate">{contact.name}</h4>
-                            {contact.unreadCount > 0 && (
-                              <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
-                                {contact.unreadCount}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-sm text-gray-500 truncate">
-                            {contact.status === 'typing' ? (
-                              <span className="text-blue-600 italic">digitando...</span>
-                            ) : (
-                              contact.lastMessage
-                            )}
-                          </p>
-                        </div>
-                      </div>
+                      {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
                     </motion.div>
-                  ))}
-                </div>
-              )}
-            </div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.button>
+
+        {/* Indicador de Conexão */}
+        <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
+          isConnected ? 'bg-green-500' : 'bg-red-500'
+        }`} />
+
+        {/* Pulse animation para mensagens não lidas */}
+        {hasUnreadMessages && !isChatOpen && (
+          <motion.div
+            className="absolute inset-0 rounded-full bg-blue-400"
+            initial={{ scale: 1, opacity: 0.7 }}
+            animate={{ scale: 1.4, opacity: 0 }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeOut"
+            }}
+          />
+        )}
+      </motion.div>
+
+      {/* Chat Modal */}
+      <AnimatePresence>
+        {isChatOpen && (
+          <RealtimeChat
+            currentUserId={currentUserId}
+            currentUserType={currentUserType}
+            isOpen={isChatOpen}
+            onClose={() => setIsChatOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
+
+// Componente alternativo compacto para integrar em sidebars
+export function ChatIconButton({
+  currentUserId,
+  currentUserType,
+  onClick,
+  className = ''
+}: {
+  currentUserId: string
+  currentUserType: 'motorista' | 'oficina'
+  onClick?: () => void
+  className?: string
+}) {
+  const { totalUnreadCount, hasUnreadMessages } = useRealtimeChat({
+    currentUserId,
+    currentUserType
+  })
+
+  return (
+    <motion.button
+      onClick={onClick}
+      className={`relative p-2 rounded-lg hover:bg-gray-100 transition-colors ${className}`}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      <ChatBubbleLeftRightIcon className="w-6 h-6 text-gray-600" />
+      
+      {/* Badge de notificação */}
+      <AnimatePresence>
+        {totalUnreadCount > 0 && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0 }}
+            className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
+          >
+            {totalUnreadCount > 9 ? '9+' : totalUnreadCount}
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Floating Button */}
-      <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => setIsContactsOpen(!isContactsOpen)}
-        className={`
-          w-16 h-16 ${theme.primary} text-white rounded-full shadow-lg
-          flex items-center justify-center relative
-          transition-all duration-200
-        `}
-      >
-        <AnimatePresence mode="wait">
-          {isContactsOpen ? (
-            <motion.div
-              key="close"
-              initial={{ rotate: -180, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 180, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <XMarkIcon className="w-6 h-6" />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="chat"
-              initial={{ rotate: -180, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 180, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <ChatBubbleLeftRightIcon className="w-6 h-6" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Unread Badge */}
-        <AnimatePresence>
-          {totalUnreadCount > 0 && (
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0 }}
-              className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold"
-            >
-              {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.button>
-    </div>
+      
+      {/* Pulse para novas mensagens */}
+      {hasUnreadMessages && (
+        <motion.div
+          className="absolute inset-0 rounded-lg bg-blue-400"
+          initial={{ scale: 1, opacity: 0.3 }}
+          animate={{ scale: 1.2, opacity: 0 }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: "easeOut"
+          }}
+        />
+      )}
+    </motion.button>
   )
 }

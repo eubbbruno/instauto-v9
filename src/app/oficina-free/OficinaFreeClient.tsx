@@ -9,6 +9,7 @@ import AIDiagnosticSystem from '@/components/ai/AIDiagnosticSystem'
 import AIControlPanel from '@/components/ai/AIControlPanel'
 import { OnboardingProvider } from '@/components/onboarding/OnboardingManager'
 import ContextualTips from '@/components/onboarding/ContextualTips'
+import ChatFloatingButton from '@/components/chat/ChatFloatingButton'
 import { 
   CalendarDaysIcon, 
   ClipboardDocumentListIcon, 
@@ -403,6 +404,15 @@ export default function OficinaFreeClient() {
             console.log('Serviço sugerido:', suggestion)
             // Aqui pode integrar com sistema de orçamentos
           }}
+        />
+      )}
+
+      {/* Realtime Chat */}
+      {user && (
+        <ChatFloatingButton
+          currentUserId={user.id}
+          currentUserType="oficina"
+          position="bottom-left"
         />
       )}
 
