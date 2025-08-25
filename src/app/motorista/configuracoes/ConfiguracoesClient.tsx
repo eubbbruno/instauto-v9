@@ -59,7 +59,7 @@ export default function ConfiguracoesClient() {
 
   // Mock data
   const [profile, setProfile] = useState<UserProfile>({
-    nome: 'João Silva',
+    nome: 'Motorista',
     email: 'joao.silva@email.com',
     telefone: '(11) 99999-9999',
     cpf: '123.456.789-00',
