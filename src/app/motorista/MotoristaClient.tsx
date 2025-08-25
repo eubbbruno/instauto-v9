@@ -1,6 +1,7 @@
 'use client'
 import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
+import RouteGuard from '@/components/auth/RouteGuard'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
 import ChatFloatingButton from '@/components/chat/ChatFloatingButton'
@@ -63,7 +64,8 @@ export default function MotoristaClient() {
   }
   
   return (
-    <OnboardingProvider userType="motorista" userId={user?.id || ''}>
+    <RouteGuard allowedUserTypes={['motorista']}>
+      <OnboardingProvider userType="motorista" userId={user?.id || ''}>
       <div className="flex min-h-screen bg-gray-50">
         {/* Sidebar */}
         <BeautifulSidebar 
@@ -265,5 +267,6 @@ export default function MotoristaClient() {
         )}
       </div>
     </OnboardingProvider>
+    </RouteGuard>
   )
 }

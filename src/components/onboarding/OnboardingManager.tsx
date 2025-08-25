@@ -79,6 +79,7 @@ export function OnboardingProvider({ children, userType, userId }: OnboardingPro
   const [progress, setProgress] = useState<OnboardingProgress | null>(null)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [isActive, setIsActive] = useState(false)
+  const [hasShownWelcome, setHasShownWelcome] = useState(false)
 
   // Definir steps baseado no tipo de usuário
   const getStepsForUserType = (type: 'motorista' | 'oficina-free' | 'oficina-pro'): OnboardingStep[] => {
@@ -182,9 +183,18 @@ export function OnboardingProvider({ children, userType, userId }: OnboardingPro
 
   const steps = getStepsForUserType(userType)
 
+  // Verificar localStorage para controlar popup de boas-vindas
   useEffect(() => {
-    loadProgress()
+    const storageKey = `onboarding-welcome-${userType}-${userId}`
+    const hasShown = localStorage.getItem(storageKey) === 'true'
+    setHasShownWelcome(hasShown)
   }, [userId, userType])
+
+  useEffect(() => {
+    if (userId && !hasShownWelcome) {
+      loadProgress()
+    }
+  }, [userId, userType, hasShownWelcome])
 
   const loadProgress = async () => {
     try {
@@ -320,6 +330,12 @@ export function OnboardingProvider({ children, userType, userId }: OnboardingPro
     
     setProgress(newProgress as OnboardingProgress)
     setIsActive(false)
+    
+    // Salvar no localStorage para não mostrar novamente
+    const storageKey = `onboarding-welcome-${userType}-${userId}`
+    localStorage.setItem(storageKey, 'true')
+    setHasShownWelcome(true)
+    
     saveProgress(newProgress)
   }
 
@@ -345,7 +361,7 @@ export function OnboardingProvider({ children, userType, userId }: OnboardingPro
   return (
     <OnboardingContext.Provider value={value}>
       {children}
-      {isActive && <OnboardingOverlay />}
+      {isActive && !hasShownWelcome && <OnboardingOverlay />}
     </OnboardingContext.Provider>
   )
 }
