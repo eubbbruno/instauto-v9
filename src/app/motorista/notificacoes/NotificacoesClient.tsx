@@ -232,8 +232,8 @@ export default function NotificacoesClient() {
     <div className="flex min-h-screen bg-gray-50">
       <BeautifulSidebar 
         userType="motorista"
-        userName="João Silva"
-        userEmail="joao@email.com"
+        userName="Motorista"
+        userEmail="motorista@email.com"
         onLogout={() => {}}
       />
       

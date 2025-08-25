@@ -1,6 +1,7 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { supabase } from '@/lib/supabase'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import { 
   ClockIcon,
@@ -191,7 +192,36 @@ export default function HistoricoClient() {
   const [statusFilter, setStatusFilter] = useState<string>('todos')
   const [selectedItem, setSelectedItem] = useState<HistoricoServico | null>(null)
   const [showModal, setShowModal] = useState(false)
+  const [user, setUser] = useState<any>(null)
+  const [profile, setProfile] = useState<any>(null)
   const [dateFilter, setDateFilter] = useState<string>('todos')
+
+  useEffect(() => {
+    checkUser()
+  }, [])
+
+  const checkUser = async () => {
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser()
+      
+      if (error || !user) {
+        window.location.href = '/login'
+        return
+      }
+
+      setUser(user)
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      setProfile(profile)
+    } catch (error) {
+      console.error('Erro ao verificar usuário:', error)
+    }
+  }
 
   // Filtrar histórico
   const historicoFiltrado = useMemo(() => {
@@ -257,9 +287,12 @@ export default function HistoricoClient() {
     <div className="flex min-h-screen bg-gray-50">
       <BeautifulSidebar 
         userType="motorista"
-        userName="João Silva"
-        userEmail="joao.silva@email.com"
-        onLogout={() => {}}
+        userName={profile?.name || user?.email?.split('@')[0] || 'Motorista'}
+        userEmail={user?.email || 'email@email.com'}
+        onLogout={async () => {
+          await supabase.auth.signOut()
+          window.location.href = '/login'
+        }}
       />
       
       <div className="flex-1 md:ml-64 transition-all duration-300">
