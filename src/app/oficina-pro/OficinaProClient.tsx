@@ -2,6 +2,7 @@
 import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import RouteGuard from '@/components/auth/RouteGuard'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
 import AnalyticsDashboard from '@/components/ai/AnalyticsDashboard'
@@ -155,7 +156,8 @@ export default function OficinaProClient() {
   }
   
   return (
-    <OnboardingProvider userType="oficina-pro" userId={user?.id || ''}>
+    <RouteGuard allowedUserTypes={['oficina-pro']}>
+      <OnboardingProvider userType="oficina-pro" userId={user?.id || ''}>
       <div className="flex min-h-screen bg-gray-50">
         {/* Beautiful Sidebar PRO */}
         <BeautifulSidebar 
@@ -558,5 +560,6 @@ export default function OficinaProClient() {
       )}
       </div>
     </OnboardingProvider>
+    </RouteGuard>
   )
 }

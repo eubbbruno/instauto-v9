@@ -412,12 +412,27 @@ function OnboardingOverlay() {
                 </p>
               </div>
             </div>
-            <button 
-              onClick={() => setActive(false)}
-              className="p-2 hover:bg-white/20 rounded-lg transition-all"
-            >
-              <XMarkIcon className="w-5 h-5" />
-            </button>
+            <div className="flex items-center space-x-2">
+              <button 
+                onClick={() => {
+                  // Salvar no localStorage para não mostrar novamente
+                  const storageKey = `onboarding-welcome-${progress?.userType}-${progress?.userId}`
+                  localStorage.setItem(storageKey, 'true')
+                  setActive(false)
+                }}
+                className="text-xs text-white/70 hover:text-white px-2 py-1 rounded"
+                title="Não mostrar novamente"
+              >
+                Não mostrar +
+              </button>
+              <button 
+                onClick={() => setActive(false)}
+                className="p-2 hover:bg-white/20 rounded-lg transition-all"
+                title="Fechar"
+              >
+                <XMarkIcon className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           {/* Progress Bar */}
@@ -607,12 +622,28 @@ export function useOnboardingTrigger() {
   const { startOnboarding, setActive, progress } = useOnboarding()
 
   const triggerOnboarding = () => {
+    // Verificar localStorage primeiro
+    const storageKey = `onboarding-welcome-${progress?.userType}-${progress?.userId}`
+    const hasShownFromStorage = localStorage.getItem(storageKey) === 'true'
+    
+    if (hasShownFromStorage) {
+      return
+    }
+    
     if (!progress?.isCompleted) {
       setActive(true)
     }
   }
 
   const shouldShowOnboarding = () => {
+    // Verificar localStorage primeiro
+    const storageKey = `onboarding-welcome-${progress?.userType}-${progress?.userId}`
+    const hasShownFromStorage = localStorage.getItem(storageKey) === 'true'
+    
+    if (hasShownFromStorage) {
+      return false
+    }
+    
     return !progress?.isCompleted && (progress?.completedSteps.length || 0) < 3
   }
 

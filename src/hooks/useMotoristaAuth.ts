@@ -1,53 +1,57 @@
-'use client'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 
-interface UseMotoristaAuthReturn {
-  user: any
-  profile: any
-  loading: boolean
-  error: string | null
-  logout: () => Promise<void>
+interface User {
+  id: string
+  email: string
 }
 
-export function useMotoristaAuth(): UseMotoristaAuthReturn {
-  const [user, setUser] = useState<any>(null)
-  const [profile, setProfile] = useState<any>(null)
+interface Profile {
+  id: string
+  name: string
+  email: string
+  type: string
+  avatar_url?: string
+}
+
+export function useMotoristaAuth() {
+  const [user, setUser] = useState<User | null>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    checkUser()
+    loadUserData()
   }, [])
 
-  const checkUser = async () => {
+  const loadUserData = async () => {
     try {
       setLoading(true)
-      const { data: { user }, error } = await supabase.auth.getUser()
       
-      if (error || !user) {
-        window.location.href = '/login'
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      
+      if (sessionError || !session?.user) {
+        setLoading(false)
         return
       }
 
-      setUser(user)
+      setUser({
+        id: session.user.id,
+        email: session.user.email || ''
+      })
 
-      // Buscar perfil do usuário
-      const { data: profile, error: profileError } = await supabase
+      // Buscar perfil
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('id', session.user.id)
         .single()
 
-      if (profileError) {
-        console.error('Erro ao buscar perfil:', profileError)
-        setError('Erro ao carregar perfil do usuário')
-      } else {
-        setProfile(profile)
+      if (profileData && !profileError) {
+        setProfile(profileData)
       }
+
     } catch (error) {
-      console.error('Erro ao verificar usuário:', error)
-      setError('Erro de autenticação')
+      console.error('Erro ao carregar dados do usuário:', error)
     } finally {
       setLoading(false)
     }
@@ -56,9 +60,29 @@ export function useMotoristaAuth(): UseMotoristaAuthReturn {
   const logout = async () => {
     try {
       await supabase.auth.signOut()
+      setUser(null)
+      setProfile(null)
       window.location.href = '/login'
     } catch (error) {
       console.error('Erro ao fazer logout:', error)
+    }
+  }
+
+  const refreshProfile = async () => {
+    if (!user) return
+
+    try {
+      const { data: profileData, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      if (profileData && !error) {
+        setProfile(profileData)
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar perfil:', error)
     }
   }
 
@@ -66,19 +90,7 @@ export function useMotoristaAuth(): UseMotoristaAuthReturn {
     user,
     profile,
     loading,
-    error,
-    logout
-  }
-}
-
-// Hook para sidebar props
-export function useMotoristasidebar() {
-  const { user, profile, logout } = useMotoristaAuth()
-
-  return {
-    userType: 'motorista' as const,
-    userName: profile?.name || user?.email?.split('@')[0] || 'Motorista',
-    userEmail: user?.email || 'email@email.com',
-    onLogout: logout
+    logout,
+    refreshProfile
   }
 }
