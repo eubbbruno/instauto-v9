@@ -55,6 +55,7 @@ const menuItems = {
     { icon: ChatBubbleLeftRightIcon, label: 'Mensagens', href: '/motorista/mensagens' },
     { icon: BellIcon, label: 'Notificações', href: '/motorista/notificacoes' },
     { icon: PhoneIcon, label: 'Emergência', href: '/motorista/emergencia' },
+    { icon: UserCircleIcon, label: 'Meu Perfil', href: '/motorista/perfil' },
     { icon: CogIcon, label: 'Configurações', href: '/motorista/configuracoes' }
   ],
   'oficina-free': [
@@ -63,6 +64,7 @@ const menuItems = {
     { icon: ClipboardDocumentListIcon, label: 'Ordens', href: '/oficina-free/ordens' },
     { icon: CalendarDaysIcon, label: 'Agendamentos', href: '/oficina-free/agendamentos' },
     { icon: ChatBubbleLeftRightIcon, label: 'Mensagens', href: '/oficina-free/mensagens' },
+    { icon: UserCircleIcon, label: 'Perfil Oficina', href: '/oficina-free/perfil' },
     { icon: StarIcon, label: 'Upgrade PRO', href: '/oficina-free/upgrade', isUpgrade: true, badge: 'PRO' },
     { icon: CogIcon, label: 'Configurações', href: '/oficina-free/configuracoes' }
   ],
@@ -75,6 +77,7 @@ const menuItems = {
     { icon: CreditCardIcon, label: 'Financeiro', href: '/oficina-pro/financeiro' },
     { icon: ChatBubbleLeftRightIcon, label: 'WhatsApp', href: '/oficina-pro/whatsapp' },
     { icon: BuildingStorefrontIcon, label: 'Estoque', href: '/oficina-pro/estoque' },
+    { icon: UserCircleIcon, label: 'Perfil PRO', href: '/oficina-pro/perfil' },
     { icon: CogIcon, label: 'Configurações', href: '/oficina-pro/configuracoes' }
   ]
 }

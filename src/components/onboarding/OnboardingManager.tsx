@@ -7,6 +7,7 @@ import {
   ArrowRightIcon,
   XMarkIcon,
   AcademicCapIcon,
+  ClockIcon,
   RocketLaunchIcon,
   TrophyIcon,
   LightBulbIcon,
@@ -361,8 +362,156 @@ export function OnboardingProvider({ children, userType, userId }: OnboardingPro
   return (
     <OnboardingContext.Provider value={value}>
       {children}
-      {isActive && !hasShownWelcome && <OnboardingOverlay />}
+      {!hasShownWelcome && <WelcomeModal />}
+      {isActive && hasShownWelcome && <OnboardingOverlay />}
     </OnboardingContext.Provider>
+  )
+}
+
+// Componente simples de boas-vindas
+function WelcomeModal() {
+  const context = useContext(OnboardingContext)
+  if (!context) return null
+  
+  const [isVisible, setIsVisible] = useState(true)
+
+  const handleDismiss = () => {
+    setIsVisible(false)
+  }
+
+  const handleNeverShowAgain = () => {
+    const storageKey = `onboarding-welcome-${context.progress?.userType || 'motorista'}-${context.progress?.userId || 'unknown'}`
+    localStorage.setItem(storageKey, 'true')
+    setIsVisible(false)
+    window.location.reload() // Recarregar para aplicar mudança
+  }
+
+  const handleStartTour = () => {
+    const storageKey = `onboarding-welcome-${context.progress?.userType || 'motorista'}-${context.progress?.userId || 'unknown'}`
+    localStorage.setItem(storageKey, 'true')
+    setIsVisible(false)
+    // Trigger onboarding tour aqui se quiser
+  }
+
+  if (!isVisible) return null
+
+  const getWelcomeContent = () => {
+    switch (context.progress?.userType || 'motorista') {
+      case 'motorista':
+        return {
+          emoji: '🚗',
+          title: 'Bem-vindo ao seu Dashboard!',
+          description: 'Aqui você encontra um resumo de todos os seus veículos, agendamentos e atividades recentes.',
+          features: [
+            '🚙 Gerencie seus veículos',
+            '📅 Acompanhe agendamentos', 
+            '🔍 Encontre oficinas próximas',
+            '⭐ Avalie serviços'
+          ]
+        }
+      case 'oficina-free':
+        return {
+          emoji: '🔧',
+          title: 'Bem-vindo à sua Oficina!',
+          description: 'Gerencie seus clientes, agendamentos e serviços em um só lugar.',
+          features: [
+            '👥 Gerencie clientes',
+            '📅 Controle agendamentos',
+            '🛠️ Organize serviços',
+            '📊 Relatórios básicos'
+          ]
+        }
+      case 'oficina-pro':
+        return {
+          emoji: '💎',
+          title: 'Bem-vindo à sua Oficina PRO!',
+          description: 'Acesse recursos premium e ferramentas avançadas para impulsionar seu negócio.',
+          features: [
+            '🤖 IA Diagnóstico',
+            '📈 Analytics avançados',
+            '💰 Gestão financeira',
+            '🏆 Recursos exclusivos'
+          ]
+        }
+      default:
+        return {
+          emoji: '👋',
+          title: 'Bem-vindo!',
+          description: 'Explore todas as funcionalidades disponíveis.',
+          features: []
+        }
+    }
+  }
+
+  const content = getWelcomeContent()
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        <motion.div
+          className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden"
+          initial={{ scale: 0.8, y: 50 }}
+          animate={{ scale: 1, y: 0 }}
+          exit={{ scale: 0.8, y: 50 }}
+        >
+          {/* Header */}
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 text-center">
+            <div className="text-4xl mb-3">{content.emoji}</div>
+            <h2 className="text-xl font-bold mb-2">{content.title}</h2>
+            <p className="text-blue-100 text-sm">{content.description}</p>
+          </div>
+
+          {/* Content */}
+          <div className="p-6">
+            <div className="space-y-3 mb-6">
+              {content.features.map((feature, index) => (
+                <motion.div
+                  key={index}
+                  className="flex items-center gap-3 text-sm text-gray-700"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                  {feature}
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Buttons */}
+            <div className="space-y-3">
+              <button
+                onClick={handleStartTour}
+                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-all font-medium flex items-center justify-center gap-2"
+              >
+                ✨ Entendi
+                <ArrowRightIcon className="w-4 h-4" />
+              </button>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={handleDismiss}
+                  className="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-all text-sm"
+                >
+                  Dispensar
+                </button>
+                <button
+                  onClick={handleNeverShowAgain}
+                  className="flex-1 bg-red-50 text-red-600 py-2 px-4 rounded-lg hover:bg-red-100 transition-all text-sm font-medium"
+                >
+                  🚫 Não mostrar mais
+                </button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   )
 }
 

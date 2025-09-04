@@ -1,7 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { supabase } from '@/lib/supabase'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
+import RouteGuard from '@/components/auth/RouteGuard'
 import { 
   BuildingStorefrontIcon,
   UserIcon,
@@ -128,11 +130,41 @@ const mockProfilePro: OficinaProfilePro = {
 }
 
 export default function PerfilClient() {
+  const [user, setUser] = useState<any>(null)
+  const [profileData, setProfileData] = useState<any>(null)
   const [profile, setProfile] = useState<OficinaProfilePro>(mockProfilePro)
   const [activeTab, setActiveTab] = useState('dados')
   const [isEditing, setIsEditing] = useState(false)
   const [newEspecialidade, setNewEspecialidade] = useState('')
   const [newCertificacao, setNewCertificacao] = useState('')
+
+  useEffect(() => {
+    loadUserData()
+  }, [])
+
+  const loadUserData = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) return
+
+      setUser(session.user)
+
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single()
+
+      setProfileData(profileData)
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error)
+    }
+  }
+
+  const logout = async () => {
+    await supabase.auth.signOut()
+    window.location.href = '/login'
+  }
 
   // Stats avançadas
   const stats = {
@@ -202,12 +234,13 @@ export default function PerfilClient() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <RouteGuard allowedUserTypes={['oficina-pro']}>
+      <div className="flex min-h-screen bg-gray-50">
       <BeautifulSidebar 
         userType="oficina-pro"
-        userName="AutoCenter Premium"
-        userEmail="oficina@email.com"
-        onLogout={() => {}}
+        userName={profileData?.name || user?.email?.split('@')[0] || 'Oficina PRO'}
+        userEmail={user?.email || 'email@email.com'}
+        onLogout={logout}
       />
       
       <div className="flex-1 md:ml-64 transition-all duration-300">
@@ -998,6 +1031,7 @@ export default function PerfilClient() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </RouteGuard>
   )
 }
