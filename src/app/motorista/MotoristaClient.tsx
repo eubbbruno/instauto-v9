@@ -8,7 +8,6 @@ import ChatFloatingButton from '@/components/chat/ChatFloatingButton'
 import { SkeletonDashboardAdvanced } from '@/components/ui/SkeletonAdvanced'
 import PushNotificationButton from '@/components/notifications/PushNotificationButton'
 import { OnboardingProvider } from '@/components/onboarding/OnboardingManager'
-import ContextualTips from '@/components/onboarding/ContextualTips'
 import OnboardingTrigger from '@/components/onboarding/OnboardingTrigger'
 
 export default function MotoristaClient() {
@@ -258,10 +257,6 @@ export default function MotoristaClient() {
         {/* Onboarding & Tips */}
         {user && (
           <>
-            <ContextualTips 
-              userId={user.id}
-              userType="motorista"
-            />
             <OnboardingTrigger variant="floating" />
           </>
         )}
