@@ -131,7 +131,26 @@ export default function BeautifulSidebar({
 
   useEffect(() => {
     setIsMounted(true)
-  }, [])
+    
+    // Fechar sidebar mobile quando clicar fora
+    const handleClickOutside = (e: MouseEvent) => {
+      if (isMobileOpen && !(e.target as Element).closest('.sidebar-mobile')) {
+        setIsMobileOpen(false)
+      }
+    }
+    
+    if (isMobileOpen) {
+      document.addEventListener('click', handleClickOutside)
+      document.body.style.overflow = 'hidden' // Prevenir scroll
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+      document.body.style.overflow = 'unset'
+    }
+  }, [isMobileOpen])
 
   if (!isMounted) {
     return (
@@ -145,40 +164,39 @@ export default function BeautifulSidebar({
 
   const SidebarContent = () => (
     <>
-      {/* Elementos decorativos de fundo */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.07] pointer-events-none"></div>
-      <div className="absolute top-20 -right-20 w-64 h-64 bg-white/5 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-20 -left-20 w-64 h-64 bg-white/5 rounded-full blur-[100px] pointer-events-none"></div>
-      
-      {/* Partículas decorativas */}
-      <div className="absolute top-10 left-[10%] w-1 h-1 bg-white/30 rounded-full"></div>
-      <div className="absolute top-[30%] right-[15%] w-2 h-2 bg-white/20 rounded-full"></div>
-      <div className="absolute bottom-[20%] left-[20%] w-1.5 h-1.5 bg-white/20 rounded-full"></div>
+      {/* Elementos decorativos simplificados para performance */}
+      <div className="absolute top-20 -right-10 w-32 h-32 bg-white/3 rounded-full blur-3xl pointer-events-none hidden md:block"></div>
+      <div className="absolute bottom-20 -left-10 w-32 h-32 bg-white/3 rounded-full blur-3xl pointer-events-none hidden md:block"></div>
 
-      {/* Header com Logo */}
-      <div className={`flex items-center justify-center p-6 ${isCollapsed ? 'px-4' : ''}`}>
-        <div className={`flex items-center justify-center ${isCollapsed ? 'w-full' : 'w-full'}`}>
-          <div className="relative">
-            <div className={`${isCollapsed ? 'w-12 h-12' : 'w-16 h-16'} rounded-2xl bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center p-3`}>
-              <Image
-                src="/images/logo.svg"
-                alt="InstaAuto"
-                width={isCollapsed ? 32 : 48}
-                height={isCollapsed ? 32 : 48}
-                className="w-full h-full object-contain filter brightness-0 invert"
-              />
-            </div>
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full animate-pulse flex items-center justify-center">
-              <span className="text-xs font-bold text-white">
-                {userType === 'oficina-pro' ? 'P' : userType === 'oficina-free' ? 'F' : 'M'}
-              </span>
-            </div>
+      {/* Logo Externa - Flutuante */}
+      <div className="absolute -top-4 left-4 z-20">
+        <Link href="/" className="block group">
+          <div className="relative bg-white rounded-2xl p-3 shadow-2xl border-2 border-white/30 group-hover:scale-105 transition-transform duration-200">
+            <Image
+              src="/images/logo-of.svg"
+              alt="InstaAuto"
+              width={36}
+              height={36}
+              className="drop-shadow-sm"
+              priority
+            />
+          </div>
+        </Link>
+      </div>
+
+      {/* Header Simplificado */}
+      <div className="pt-16 pb-4 px-4 flex items-center justify-between">
+        <div className={`${isCollapsed ? 'hidden' : 'block'}`}>
+          <h1 className="text-lg font-bold text-white">InstaAuto</h1>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-white/70 capitalize">{userType.replace('-', ' ')}</span>
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
           </div>
         </div>
         
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="hidden md:flex w-8 h-8 items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all"
+          className="hidden md:flex w-8 h-8 items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
         >
           <Bars3Icon className="w-4 h-4 text-white" />
         </button>

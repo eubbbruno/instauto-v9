@@ -408,15 +408,6 @@ export default function OficinaFreeClient() {
         />
       )}
 
-      {/* Realtime Chat */}
-      {user && (
-        <ChatFloatingButton
-          currentUserId={user.id}
-          currentUserType="oficina"
-          position="bottom-left"
-        />
-      )}
-
       </div>
     </OnboardingProvider>
     </RouteGuard>

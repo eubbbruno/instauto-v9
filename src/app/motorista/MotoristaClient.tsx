@@ -245,15 +245,6 @@ export default function MotoristaClient() {
           currentUserId={user?.id || ''}
         />
 
-        {/* Realtime Chat */}
-        {user && (
-          <ChatFloatingButton
-            currentUserId={user.id}
-            currentUserType="motorista"
-            position="bottom-left"
-          />
-        )}
-
         {/* Onboarding & Tips */}
         {user && (
           <>

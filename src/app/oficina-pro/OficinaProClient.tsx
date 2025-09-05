@@ -541,14 +541,6 @@ export default function OficinaProClient() {
         />
       )}
 
-      {/* Realtime Chat */}
-      {user && (
-        <ChatFloatingButton
-          currentUserId={user.id}
-          currentUserType="oficina"
-          position="bottom-left"
-        />
-      )}
 
       </div>
     </OnboardingProvider>
