@@ -19,6 +19,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import Link from 'next/link';
+import AdvancedGoogleMap from '@/components/maps/AdvancedGoogleMap';
 
 // Dados mockados de oficinas
 const mockOficinas = [
@@ -477,14 +478,20 @@ export default function BuscarOficinasPage() {
 
         {/* Visualização Mapa */}
         {visualizacao === 'mapa' && (
-          <div className="bg-white rounded-xl shadow-sm border p-6">
-            <div className="h-96 bg-gray-100 rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <MapIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Mapa em Desenvolvimento</h3>
-                <p className="text-gray-600">A visualização em mapa será implementada em breve</p>
-              </div>
-            </div>
+          <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+            <AdvancedGoogleMap
+              className="h-96"
+              showSearch={false}
+              showFilters={false}
+              height="400px"
+              onWorkshopSelect={(workshop) => {
+                // Redirecionar para detalhes da oficina
+                window.location.href = `/oficinas/${workshop.id}`;
+              }}
+              onRouteCalculated={(route) => {
+                console.log('Rota calculada:', route);
+              }}
+            />
           </div>
         )}
 

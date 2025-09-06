@@ -200,16 +200,13 @@ export default function UpgradePage() {
             ) : (
               <div className="space-y-4">
                 <MercadoPagoCheckout
-                  planId="oficina-pro"
-                  userId={user?.id}
-                  userEmail={user?.email}
+                  planType="pro"
                   onSuccess={() => {
-                    alert('Upgrade realizado com sucesso!')
-                    window.location.href = '/dashboard'
+                    alert('🎉 Upgrade realizado com sucesso!')
+                    window.location.href = '/oficina-pro?upgraded=true'
                   }}
-                  onError={(error) => {
-                    console.error('Erro no pagamento:', error)
-                    alert('Erro no pagamento. Tente novamente.')
+                  onError={() => {
+                    alert('❌ Erro no pagamento. Tente novamente.')
                   }}
                 />
                 <button

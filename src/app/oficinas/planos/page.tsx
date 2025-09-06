@@ -85,7 +85,7 @@ export default function PlanosPage() {
             <MercadoPagoCheckout 
               planType="pro"
               onSuccess={() => {
-                window.location.href = '/dashboard?plan=pro';
+                window.location.href = '/oficina-pro?plan=pro&status=success';
               }}
               onError={() => {
                 setShowCheckout(false);

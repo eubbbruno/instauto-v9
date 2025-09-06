@@ -9,7 +9,7 @@ import {
   ClipboardDocumentListIcon
 } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
-import QuickDiagnosticAI from "@/components/QuickDiagnosticAI";
+import QuickDiagnosticAI from "@/components/ai/QuickDiagnosticAI";
 import Link from "next/link";
 
 export default function DiagnosticoPage() {
@@ -50,8 +50,14 @@ export default function DiagnosticoPage() {
         {/* Coluna de IA e Diagnóstico */}
         <div className="lg:col-span-2 space-y-6">
           {/* Ferramenta de diagnóstico rápido */}
-          <div className="h-[500px]">
-            <QuickDiagnosticAI />
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            <QuickDiagnosticAI 
+              className="h-[500px]"
+              onDiagnosisComplete={(results) => {
+                console.log('Diagnóstico concluído:', results);
+                // Aqui poderia redirecionar para criar OS ou salvar resultado
+              }}
+            />
           </div>
           
           {/* Histórico de diagnósticos recentes */}
