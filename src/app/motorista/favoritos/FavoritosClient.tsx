@@ -2,7 +2,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
-import { useMotoristasidebar } from '@/hooks/useMotoristaAuth'
+import { useMotoristaAuth } from '@/hooks/useMotoristaAuth'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import { 
   HeartIcon,
@@ -142,7 +142,7 @@ const mockFavoritos: Oficina[] = [
 ]
 
 export default function FavoritosClient() {
-  const sidebarProps = useMotoristasidebar()
+  const { user, profile, loading: authLoading, logout } = useMotoristaAuth()
   const [favoritos, setFavoritos] = useState<Oficina[]>(mockFavoritos)
   const [searchTerm, setSearchTerm] = useState('')
   const [filtroEspecialidade, setFiltroEspecialidade] = useState<string>('todas')

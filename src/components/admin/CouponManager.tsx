@@ -31,7 +31,7 @@ interface Coupon {
   influencer_email?: string
 }
 
-export function CouponManager() {
+export default function CouponManager() {
   const [coupons, setCoupons] = useState<Coupon[]>([])
   const [loading, setLoading] = useState(true)
   const [showCreateModal, setShowCreateModal] = useState(false)

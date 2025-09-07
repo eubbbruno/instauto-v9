@@ -9,7 +9,7 @@ import {
   ClockIcon,
   CpuChipIcon,
   CloudIcon,
-  DatabaseIcon,
+  CircleStackIcon,
   GlobeAltIcon,
   BoltIcon,
   ShieldCheckIcon,
@@ -233,7 +233,7 @@ export default function SystemMonitoring() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-xl">
-                <DatabaseIcon className="w-6 h-6 text-blue-600" />
+                <CircleStackIcon className="w-6 h-6 text-blue-600" />
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">Database</h3>

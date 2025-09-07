@@ -11,7 +11,7 @@ interface OAuthButtonsProps {
   couponCode?: string
 }
 
-export function OAuthButtons({ userType = 'motorista', planType, couponCode }: OAuthButtonsProps) {
+export default function OAuthButtons({ userType = 'motorista', planType, couponCode }: OAuthButtonsProps) {
   const [loading, setLoading] = useState<string | null>(null)
   const { addToast } = useToast()
 

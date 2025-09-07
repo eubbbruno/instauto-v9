@@ -13,7 +13,7 @@ import {
   EyeIcon,
   UserPlusIcon,
   BuildingOfficeIcon,
-  CarIcon,
+  TruckIcon,
   ClockIcon
 } from '@heroicons/react/24/outline'
 import { supabase } from '@/lib/supabase'
@@ -179,7 +179,7 @@ export default function UserManagement() {
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'motorista': return <CarIcon className="w-4 h-4 text-blue-600" />
+      case 'motorista': return <TruckIcon className="w-4 h-4 text-blue-600" />
       case 'oficina': return <BuildingOfficeIcon className="w-4 h-4 text-green-600" />
       case 'admin': return <UsersIcon className="w-4 h-4 text-red-600" />
       default: return <UsersIcon className="w-4 h-4 text-gray-600" />
@@ -235,7 +235,7 @@ export default function UserManagement() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard title="Total" value={stats.total} icon={UsersIcon} color="bg-gray-100 text-gray-600" />
-        <StatCard title="Motoristas" value={stats.motoristas} icon={CarIcon} color="bg-blue-100 text-blue-600" />
+        <StatCard title="Motoristas" value={stats.motoristas} icon={TruckIcon} color="bg-blue-100 text-blue-600" />
         <StatCard title="Oficinas" value={stats.oficinas} icon={BuildingOfficeIcon} color="bg-green-100 text-green-600" />
         <StatCard title="Usuários PRO" value={stats.proUsers} icon={UsersIcon} color="bg-purple-100 text-purple-600" />
         <StatCard title="Admins" value={stats.admins} icon={UsersIcon} color="bg-red-100 text-red-600" />
