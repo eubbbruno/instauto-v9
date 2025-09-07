@@ -110,6 +110,22 @@ const Header = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-3">
+            {/* Botão para Oficinas */}
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="relative group"
+            >
+              <Link href="/oficinas">
+                <button 
+                  className="px-3 py-2 rounded-lg font-medium text-white/90 hover:text-white text-sm border border-white/20 hover:border-white/40 hover:bg-white/10 transition-all"
+                >
+                  Sou Oficina
+                </button>
+              </Link>
+            </motion.div>
+            
             <motion.div
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}

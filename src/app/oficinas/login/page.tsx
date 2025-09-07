@@ -155,15 +155,20 @@ export default function OficinaLogin() {
       {/* Form Side */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-8">
         <div className="max-w-md w-full">
-          {/* Mobile Image */}
-          <div className="lg:hidden mb-6 relative h-32 rounded-xl overflow-hidden">
+          {/* Mobile Image - Melhorado */}
+          <div className="lg:hidden mb-8 relative h-40 rounded-2xl overflow-hidden shadow-lg">
             <Image
               src="/images/oficina.png"
-              alt="Oficina"
+              alt="Oficina Profissional"
               fill
-              className="object-cover"
+              className="object-cover object-center"
+              priority
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-orange-600/30 to-red-600/30"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+            <div className="absolute bottom-4 left-4 text-white">
+              <h3 className="font-bold text-xl mb-1">Oficina Profissional!</h3>
+              <p className="text-white/90 text-sm">Gerencie sua oficina com tecnologia</p>
+            </div>
           </div>
 
           <motion.div

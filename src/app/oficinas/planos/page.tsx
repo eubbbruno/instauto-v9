@@ -113,7 +113,7 @@ export default function PlanosPage() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center">
-              <img src="/logo-instauto.svg" alt="Instauto" className="h-8" />
+              <img src="/images/logo-of.svg" alt="Instauto" className="h-8" />
             </Link>
             <Link href="/auth" className="text-blue-600 hover:text-blue-700 font-medium">
               Já tenho conta

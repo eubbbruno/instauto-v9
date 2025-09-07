@@ -29,7 +29,7 @@ const planDetails = {
   },
   pro: {
     name: 'Plano Profissional',
-    price: 89,
+    price: 149,
     features: [
       'ERP + CRM completo',
       'Ordens de Servico',

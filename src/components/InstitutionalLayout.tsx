@@ -71,7 +71,7 @@ export default function InstitutionalLayout({
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-3">
               <Image
-                src="/logo-instauto.svg"
+                src="/images/logo-of.svg"
                 alt="Instauto"
                 width={40}
                 height={40}
@@ -180,11 +180,11 @@ export default function InstitutionalLayout({
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center space-x-3 mb-4">
                 <Image
-                  src="/logo-instauto.svg"
+                  src="/images/logo-of-dark.svg"
                   alt="Instauto"
                   width={32}
                   height={32}
-                  className="h-8 w-auto brightness-0 invert"
+                  className="h-8 w-auto"
                 />
                 <span className="text-xl font-bold">Instauto</span>
               </div>
