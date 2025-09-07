@@ -204,7 +204,7 @@ const PlansSection = () => {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Link href="/cadastro" className="btn-light-blue block w-full text-center">
+                <Link href="/oficinas/login?plan=free" className="btn-light-blue block w-full text-center">
                   Começar grátis
                 </Link>
               </motion.div>
@@ -301,7 +301,7 @@ const PlansSection = () => {
                 whileTap={{ scale: 0.98 }}
                 animate={isProHovered ? { y: [0, -3, 0], transition: { repeat: 0 } } : {}}
               >
-                <Link href="/cadastro-pro" className="btn-primary block w-full text-center">
+                <Link href="/oficinas/login?plan=pro" className="btn-primary block w-full text-center">
                   Testar grátis por 14 dias
                 </Link>
               </motion.div>

@@ -175,7 +175,7 @@ const HeroSection = () => {
               className="flex flex-col sm:flex-row gap-4 mb-8"
             >
               <Link 
-                href="/auth/oficina" 
+                href="/oficinas/login" 
                 ref={ctaButtonRef}
                 className="btn-secondary group relative overflow-hidden flex items-center justify-center"
               >

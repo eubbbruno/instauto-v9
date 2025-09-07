@@ -330,7 +330,7 @@ const CtaSection = () => {
                 whileTap={{ scale: 0.98 }}
               >
                 <Link 
-                  href="/auth/oficina"
+                  href="/oficinas/login"
                   ref={ctaButtonRef}
                   className="btn-secondary relative overflow-hidden py-4 px-8 text-lg shadow-xl flex items-center justify-center group"
                 >

@@ -201,7 +201,7 @@ const Header = () => {
         {/* Botões desktop */}
         <div className="hidden md:flex items-center space-x-4">
           <Link 
-            href="/login" 
+            href="/oficinas/login" 
             className="btn-outline"
           >
             Entrar

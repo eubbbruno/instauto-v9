@@ -57,14 +57,14 @@ export default function PlanosPage() {
       
       if (!user) {
         // Redirecionar para login com query parameter
-        window.location.href = '/login?return_url=/oficinas/planos&plan=pro';
+        window.location.href = '/oficinas/login?return_url=/oficinas/planos&plan=pro';
         return;
       }
       
       setShowCheckout(true);
     } else {
       // Para plano gratuito, redirecionar para login/cadastro
-      window.location.href = '/login?plan=free&type=oficina';
+      window.location.href = '/oficinas/login?plan=free&type=oficina';
     }
   };
 

@@ -9,7 +9,7 @@ import { useToast } from '@/components/ui'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { OAuthButtons } from '@/components/auth/OAuthButtons'
+import OAuthButtons from '@/components/auth/OAuthButtons'
 
 export default function OficinaLogin() {
   const [email, setEmail] = useState('')
