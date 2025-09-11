@@ -296,7 +296,7 @@ export default function AddressAutocomplete({
       <div className="relative">
         <div className="flex items-center rounded-lg border border-gray-200 overflow-hidden shadow-sm bg-white hover:border-[#0047CC]/30 transition-colors">
           <div className="absolute left-3 z-10">
-            <MapPin className="h-5 w-5 text-gray-400" />
+            <MapPin className="h-4 w-4 md:h-5 md:w-5 text-gray-400" />
           </div>
           
           <input
@@ -307,7 +307,7 @@ export default function AddressAutocomplete({
             onKeyDown={handleKeyDown}
             onFocus={() => query && setShowSuggestions(true)}
             placeholder={placeholder}
-            className="block w-full pl-10 pr-20 py-3 focus:outline-none text-gray-700 bg-transparent"
+            className="block w-full pl-8 md:pl-10 pr-16 md:pr-20 py-2.5 md:py-3 focus:outline-none text-gray-700 bg-transparent text-sm md:text-base"
           />
           
           <div className="absolute right-12 flex items-center">

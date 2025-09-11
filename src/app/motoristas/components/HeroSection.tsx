@@ -100,13 +100,13 @@ export default function HeroSection() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="relative z-10"
           >
-            {/* Card principal com conteúdo */}
-            <div className="bg-white p-8 rounded-3xl shadow-lg">
+            {/* Card principal com conteúdo - Mobile Optimized */}
+            <div className="bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-lg">
               <motion.span 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
-                className="inline-block bg-[#0047CC]/10 text-[#0047CC] px-5 py-2 rounded-full text-sm font-medium mb-6"
+                className="inline-block bg-[#0047CC]/10 text-[#0047CC] px-3 md:px-5 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium mb-4 md:mb-6"
               >
                 Conseguir um orçamento nunca ficou tão fácil
               </motion.span>
@@ -115,7 +115,7 @@ export default function HeroSection() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
-                className="text-4xl md:text-5xl font-bold mb-6 leading-tight"
+                className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 leading-tight"
               >
                 Conectando o seu{" "}
                 <span className="relative inline-block min-w-32">
@@ -197,7 +197,7 @@ export default function HeroSection() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6, duration: 0.5 }}
-                className="text-gray-600 text-lg mb-8 max-w-lg"
+                className="text-gray-600 text-sm md:text-lg mb-6 md:mb-8 max-w-lg leading-relaxed"
               >
                 Conecte-se instantaneamente com as melhores oficinas credenciadas perto de você. Compare preços, leia avaliações e agende serviços diretamente pelo app.
               </motion.p>
@@ -207,7 +207,7 @@ export default function HeroSection() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.5 }}
-                className="mb-8"
+                className="mb-6 md:mb-8"
               >
                 <AddressAutocomplete
                   placeholder="Digite seu endereço ou CEP"

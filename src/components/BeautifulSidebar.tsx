@@ -184,13 +184,13 @@ export default function BeautifulSidebar({
         </Link>
       </div>
 
-      {/* Header Simplificado */}
+      {/* Header Simplificado - Mobile Optimized */}
       <div className="pt-16 pb-4 px-4 flex items-center justify-between">
         <div className={`${isCollapsed ? 'hidden' : 'block'}`}>
-          <h1 className="text-lg font-bold text-white">InstaAuto</h1>
+          <h1 className="text-base md:text-lg font-bold text-white">InstaAuto</h1>
           <div className="flex items-center gap-2">
             <span className="text-xs text-white/70 capitalize">{userType.replace('-', ' ')}</span>
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full animate-pulse"></div>
           </div>
         </div>
         
@@ -217,7 +217,7 @@ export default function BeautifulSidebar({
             >
               <Link
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group relative ${
+                className={`flex items-center gap-2 md:gap-3 px-2 md:px-3 py-2 md:py-2.5 rounded-lg md:rounded-xl transition-all group relative ${
                   isActive 
                     ? 'bg-white/15 backdrop-blur-sm border border-white/20 text-white shadow-lg' 
                     : 'text-white/80 hover:text-white hover:bg-white/10'
@@ -229,21 +229,21 @@ export default function BeautifulSidebar({
                 )}
                 
                 <div className={`flex-shrink-0 ${isCollapsed ? 'mx-auto' : ''}`}>
-                  <Icon className={`w-5 h-5 ${item.isUpgrade ? 'text-yellow-400' : ''}`} />
+                  <Icon className={`w-4 h-4 md:w-5 md:h-5 ${item.isUpgrade ? 'text-yellow-400' : ''}`} />
                 </div>
                 
                 {!isCollapsed && (
                   <>
-                    <span className={`font-medium flex-1 ${item.isUpgrade ? 'text-yellow-400' : ''}`}>
+                    <span className={`font-medium flex-1 text-sm md:text-base ${item.isUpgrade ? 'text-yellow-400' : ''}`}>
                       {item.label}
                     </span>
                     {item.badge && (
-                      <span className="px-2 py-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black text-xs font-bold rounded-full">
+                      <span className="px-1.5 md:px-2 py-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black text-xs font-bold rounded-full">
                         {item.badge}
                       </span>
                     )}
                     {item.isUpgrade && (
-                      <SparklesIcon className="w-4 h-4 text-yellow-400 animate-pulse" />
+                      <SparklesIcon className="w-3 h-3 md:w-4 md:h-4 text-yellow-400 animate-pulse" />
                     )}
                   </>
                 )}

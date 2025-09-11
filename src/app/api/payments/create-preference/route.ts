@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       },
       pro: {
         title: 'Plano Profissional - Instauto Oficinas',
-        price: 149,
+        price: 89,
         description: 'ERP + CRM completo + Ordens de Servico + Estoque + Relatorios + Suporte IA'
       }
     };

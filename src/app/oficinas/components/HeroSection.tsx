@@ -109,7 +109,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="bg-gray-50 py-20 md:py-32 relative overflow-hidden" data-contrast="light">
+    <section className="bg-gray-50 py-12 md:py-20 lg:py-32 relative overflow-hidden" data-contrast="light">
       {/* Partículas de fundo */}
       <div ref={particlesContainerRef} className="absolute inset-0 pointer-events-none"></div>
       
