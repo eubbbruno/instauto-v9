@@ -1,6 +1,7 @@
 'use client'
 import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import RouteGuard from '@/components/auth/RouteGuard'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'

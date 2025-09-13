@@ -162,26 +162,26 @@ export default function PagamentoPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Header - Mobile Optimized */}
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center py-4">
-            <Link href="/oficinas" className="mr-4">
-              <ArrowLeftIcon className="h-6 w-6 text-gray-600" />
+        <div className="max-w-4xl mx-auto px-3 md:px-4 lg:px-8">
+          <div className="flex items-center py-3 md:py-4">
+            <Link href="/oficinas" className="mr-3 md:mr-4 p-1 hover:bg-gray-100 rounded-lg transition-colors">
+              <ArrowLeftIcon className="h-5 w-5 md:h-6 md:w-6 text-gray-600" />
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Finalizar Pagamento</h1>
-              <p className="text-gray-600">Confirme os dados e escolha a forma de pagamento</p>
+              <h1 className="text-lg md:text-2xl font-bold text-gray-900">Finalizar Pagamento</h1>
+              <p className="text-sm md:text-base text-gray-600 hidden sm:block">Confirme os dados e escolha a forma de pagamento</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-4xl mx-auto px-3 md:px-4 lg:px-8 py-4 md:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
           {/* Resumo do Pedido */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border p-6 sticky top-6">
+          <div className="lg:col-span-1 order-2 lg:order-1">
+            <div className="bg-white rounded-xl shadow-sm border p-4 md:p-6 lg:sticky lg:top-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumo do Pedido</h3>
               
               {/* Oficina */}
@@ -255,46 +255,46 @@ export default function PagamentoPage() {
           </div>
 
           {/* Formulário de Pagamento */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Forma de Pagamento</h3>
+          <div className="lg:col-span-2 order-1 lg:order-2">
+            <div className="bg-white rounded-xl shadow-sm border p-4 md:p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 md:mb-6">Forma de Pagamento</h3>
               
-              {/* Abas de Pagamento */}
-              <div className="grid grid-cols-3 gap-2 mb-6">
+              {/* Abas de Pagamento - Mobile Optimized */}
+              <div className="grid grid-cols-3 gap-1 md:gap-2 mb-4 md:mb-6">
                 <button
                   onClick={() => setFormaPagamento('cartao')}
-                  className={`p-4 border rounded-lg text-center transition-colors ${
+                  className={`p-2 md:p-4 border rounded-lg text-center transition-colors ${
                     formaPagamento === 'cartao'
                       ? 'bg-[#0047CC] text-white border-[#0047CC]'
                       : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                   }`}
                 >
-                  <CreditCardIcon className="h-6 w-6 mx-auto mb-2" />
-                  <span className="text-sm font-medium">Cartão</span>
+                  <CreditCardIcon className="h-4 w-4 md:h-6 md:w-6 mx-auto mb-1 md:mb-2" />
+                  <span className="text-xs md:text-sm font-medium">Cartão</span>
                 </button>
                 
                 <button
                   onClick={() => setFormaPagamento('pix')}
-                  className={`p-4 border rounded-lg text-center transition-colors ${
+                  className={`p-2 md:p-4 border rounded-lg text-center transition-colors ${
                     formaPagamento === 'pix'
                       ? 'bg-[#0047CC] text-white border-[#0047CC]'
                       : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                   }`}
                 >
-                  <QrCodeIcon className="h-6 w-6 mx-auto mb-2" />
-                  <span className="text-sm font-medium">PIX</span>
+                  <QrCodeIcon className="h-4 w-4 md:h-6 md:w-6 mx-auto mb-1 md:mb-2" />
+                  <span className="text-xs md:text-sm font-medium">PIX</span>
                 </button>
                 
                 <button
                   onClick={() => setFormaPagamento('boleto')}
-                  className={`p-4 border rounded-lg text-center transition-colors ${
+                  className={`p-2 md:p-4 border rounded-lg text-center transition-colors ${
                     formaPagamento === 'boleto'
                       ? 'bg-[#0047CC] text-white border-[#0047CC]'
                       : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                   }`}
                 >
-                  <BanknotesIcon className="h-6 w-6 mx-auto mb-2" />
-                  <span className="text-sm font-medium">Boleto</span>
+                  <BanknotesIcon className="h-4 w-4 md:h-6 md:w-6 mx-auto mb-1 md:mb-2" />
+                  <span className="text-xs md:text-sm font-medium">Boleto</span>
                 </button>
               </div>
 
