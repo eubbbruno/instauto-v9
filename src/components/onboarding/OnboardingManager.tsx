@@ -213,7 +213,7 @@ export function OnboardingProvider({ children, userType, userId }: OnboardingPro
       if (data) {
         setProgress({
           userId: data.user_id,
-          userType: data.user_type,
+          userType: userType, // Usar o userType do provider, não do banco
           currentStep: data.current_step || 0,
           completedSteps: data.completed_steps || [],
           startedAt: new Date(data.started_at),
@@ -227,9 +227,34 @@ export function OnboardingProvider({ children, userType, userId }: OnboardingPro
         if (!data.is_completed && (data.completed_steps?.length || 0) < 2) {
           setIsActive(true)
         }
+      } else {
+        // Se não há dados no banco, criar progress inicial
+        const initialProgress = {
+          userId,
+          userType,
+          currentStep: 0,
+          completedSteps: [],
+          startedAt: new Date(),
+          isCompleted: false,
+          skipOptional: false
+        }
+        setProgress(initialProgress)
+        console.log('🆕 Progress inicial criado:', initialProgress)
       }
     } catch (error) {
       console.error('Erro ao carregar onboarding:', error)
+      // Fallback: criar progress inicial mesmo com erro
+      const fallbackProgress = {
+        userId,
+        userType,
+        currentStep: 0,
+        completedSteps: [],
+        startedAt: new Date(),
+        isCompleted: false,
+        skipOptional: false
+      }
+      setProgress(fallbackProgress)
+      console.log('🔄 Progress fallback criado:', fallbackProgress)
     }
   }
 
@@ -396,7 +421,10 @@ function WelcomeModal() {
   if (!isVisible) return null
 
   const getWelcomeContent = () => {
-    switch (context.progress?.userType || 'motorista') {
+    const userType = context.progress?.userType || 'motorista'
+    console.log('🎯 WelcomeModal userType:', userType) // Debug
+    
+    switch (userType) {
       case 'motorista':
         return {
           emoji: '🚗',
