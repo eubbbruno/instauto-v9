@@ -2,6 +2,7 @@
 import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import RouteGuard from '@/components/auth/RouteGuard'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
