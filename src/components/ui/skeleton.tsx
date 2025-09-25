@@ -1,220 +1,212 @@
-"use client";
+'use client'
 
-import { motion } from 'framer-motion';
+import React from 'react'
+import { motion } from 'framer-motion'
 
 interface SkeletonProps {
-  className?: string;
+  className?: string
+  variant?: 'text' | 'rectangular' | 'circular' | 'rounded'
+  width?: string | number
+  height?: string | number
+  animation?: 'pulse' | 'wave' | 'none'
 }
 
-export const Skeleton = ({ className = '' }: SkeletonProps) => (
-  <motion.div
-    className={`bg-gray-200 rounded animate-pulse ${className}`}
-    initial={{ opacity: 0.5 }}
-    animate={{ opacity: [0.5, 1, 0.5] }}
-    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-  />
-);
-
-// Skeleton para texto
-export const SkeletonText = ({ 
-  lines = 1, 
-  className = '' 
-}: { 
-  lines?: number; 
-  className?: string; 
-}) => (
-  <div className={`space-y-2 ${className}`}>
-    {Array.from({ length: lines }).map((_, index) => (
-      <Skeleton 
-        key={index}
-        className={`h-4 ${index === lines - 1 ? 'w-3/4' : 'w-full'}`}
-      />
-    ))}
-  </div>
-);
-
-// Skeleton para avatar
-export const SkeletonAvatar = ({ 
-  size = 'default',
-  className = '' 
-}: { 
-  size?: 'sm' | 'default' | 'lg'; 
-  className?: string; 
-}) => {
-  const sizeClasses = {
-    sm: 'w-8 h-8',
-    default: 'w-12 h-12',
-    lg: 'w-16 h-16'
-  };
-  
-  return (
-    <Skeleton className={`${sizeClasses[size]} rounded-full ${className}`} />
-  );
-};
-
-// Skeleton para cartão
-export const SkeletonCard = ({ 
+export const Skeleton: React.FC<SkeletonProps> = ({
   className = '',
-  showAvatar = false,
-  lines = 3
-}: { 
-  className?: string;
-  showAvatar?: boolean;
-  lines?: number;
+  variant = 'rectangular',
+  width,
+  height,
+  animation = 'pulse'
+}) => {
+  const getVariantClasses = () => {
+    switch (variant) {
+      case 'text':
+        return 'h-4 rounded'
+      case 'circular':
+        return 'rounded-full'
+      case 'rounded':
+        return 'rounded-lg'
+      case 'rectangular':
+      default:
+        return 'rounded'
+    }
+  }
+
+  const getAnimationClasses = () => {
+    switch (animation) {
+      case 'pulse':
+        return 'animate-pulse'
+      case 'wave':
+        return 'animate-shimmer'
+      case 'none':
+      default:
+        return ''
+    }
+  }
+
+  const style: React.CSSProperties = {}
+  if (width) style.width = typeof width === 'number' ? `${width}px` : width
+  if (height) style.height = typeof height === 'number' ? `${height}px` : height
+
+  return (
+    <div
+      className={`
+        bg-gray-200 dark:bg-gray-700
+        ${getVariantClasses()}
+        ${getAnimationClasses()}
+        ${className}
+      `}
+      style={style}
+    />
+  )
+}
+
+// Skeleton para Card
+export const SkeletonCard: React.FC<{ className?: string }> = ({ className = '' }) => (
+  <div className={`bg-white dark:bg-gray-800 rounded-lg shadow p-6 ${className}`}>
+    <div className="space-y-4">
+      <Skeleton variant="text" className="w-3/4" />
+      <Skeleton variant="text" className="w-1/2" />
+      <Skeleton variant="rectangular" height={120} />
+      <div className="flex space-x-2">
+        <Skeleton variant="rounded" className="w-20 h-8" />
+        <Skeleton variant="rounded" className="w-16 h-8" />
+      </div>
+    </div>
+  </div>
+)
+
+// Skeleton para Lista
+export const SkeletonList: React.FC<{ items?: number; className?: string }> = ({ 
+  items = 3, 
+  className = '' 
 }) => (
-  <div className={`bg-white p-6 rounded-lg border border-gray-200 shadow-sm ${className}`}>
-    {showAvatar && (
-      <div className="flex items-center gap-3 mb-4">
-        <SkeletonAvatar />
-        <div className="flex-1">
-          <Skeleton className="h-4 w-1/2 mb-2" />
-          <Skeleton className="h-3 w-1/3" />
+  <div className={`space-y-3 ${className}`}>
+    {Array.from({ length: items }).map((_, i) => (
+      <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div className="flex items-center space-x-4">
+          <Skeleton variant="circular" width={40} height={40} />
+          <div className="flex-1 space-y-2">
+            <Skeleton variant="text" className="w-3/4" />
+            <Skeleton variant="text" className="w-1/2" />
+          </div>
+          <Skeleton variant="rounded" className="w-16 h-6" />
         </div>
       </div>
-    )}
-    <SkeletonText lines={lines} />
+    ))}
   </div>
-);
+)
 
-// Skeleton para tabela
-export const SkeletonTable = ({ 
-  rows = 5,
-  columns = 4,
-  className = ''
-}: { 
-  rows?: number;
-  columns?: number;
-  className?: string;
-}) => (
-  <div className={`bg-white rounded-lg border border-gray-200 overflow-hidden ${className}`}>
+// Skeleton para Tabela
+export const SkeletonTable: React.FC<{ 
+  rows?: number
+  columns?: number
+  className?: string 
+}> = ({ rows = 5, columns = 4, className = '' }) => (
+  <div className={`bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden ${className}`}>
     {/* Header */}
-    <div className="bg-gray-50 p-4 border-b border-gray-200">
-      <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
-        {Array.from({ length: columns }).map((_, index) => (
-          <Skeleton key={index} className="h-4 w-full" />
+    <div className="bg-gray-50 dark:bg-gray-700 px-6 py-3 border-b border-gray-200 dark:border-gray-600">
+      <div className="flex space-x-4">
+        {Array.from({ length: columns }).map((_, i) => (
+          <Skeleton key={i} variant="text" className="flex-1" />
         ))}
       </div>
     </div>
     
     {/* Rows */}
-    <div className="divide-y divide-gray-200">
+    <div className="divide-y divide-gray-200 dark:divide-gray-600">
       {Array.from({ length: rows }).map((_, rowIndex) => (
-        <div key={rowIndex} className="p-4">
-          <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+        <div key={rowIndex} className="px-6 py-4">
+          <div className="flex space-x-4">
             {Array.from({ length: columns }).map((_, colIndex) => (
-              <Skeleton key={colIndex} className="h-4 w-full" />
+              <div key={colIndex} className="flex-1">
+                <Skeleton 
+                  variant="text" 
+                  className={colIndex === 0 ? "w-3/4" : "w-full"} 
+                />
+              </div>
             ))}
           </div>
         </div>
       ))}
     </div>
   </div>
-);
+)
 
-// Skeleton para lista
-export const SkeletonList = ({ 
-  items = 5,
-  className = '',
-  showAvatar = true
-}: { 
-  items?: number;
-  className?: string;
-  showAvatar?: boolean;
-}) => (
-  <div className={`space-y-4 ${className}`}>
-    {Array.from({ length: items }).map((_, index) => (
-      <div key={index} className="flex items-center gap-4 p-4 bg-white rounded-lg border border-gray-200">
-        {showAvatar && <SkeletonAvatar />}
-        <div className="flex-1">
-          <Skeleton className="h-4 w-1/2 mb-2" />
-          <Skeleton className="h-3 w-3/4" />
-        </div>
-        <Skeleton className="h-8 w-20" />
-      </div>
-    ))}
-  </div>
-);
-
-// Skeleton para dashboard
-export const SkeletonDashboard = ({ className = '' }: { className?: string }) => (
+// Skeleton para Dashboard
+export const SkeletonDashboard: React.FC<{ className?: string }> = ({ className = '' }) => (
   <div className={`space-y-6 ${className}`}>
-    {/* Stats cards */}
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {Array.from({ length: 4 }).map((_, index) => (
-        <div key={index} className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+    {/* Stats Cards */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <Skeleton className="h-4 w-1/2 mb-2" />
-              <Skeleton className="h-8 w-3/4" />
+            <div className="space-y-2">
+              <Skeleton variant="text" className="w-20" />
+              <Skeleton variant="text" className="w-16 h-8" />
             </div>
-            <Skeleton className="w-12 h-12 rounded-lg" />
+            <Skeleton variant="circular" width={48} height={48} />
           </div>
         </div>
       ))}
     </div>
     
-    {/* Charts/content area */}
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <SkeletonCard lines={8} className="h-80" />
-      <SkeletonCard lines={6} className="h-80" />
+    {/* Chart Area */}
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <Skeleton variant="text" className="w-48 mb-4" />
+      <Skeleton variant="rectangular" height={300} />
     </div>
     
-    {/* Recent activity */}
-    <SkeletonTable rows={6} columns={5} />
-  </div>
-);
-
-// Skeleton para formulário
-export const SkeletonForm = ({ 
-  fields = 5,
-  className = ''
-}: { 
-  fields?: number;
-  className?: string;
-}) => (
-  <div className={`space-y-6 ${className}`}>
-    {Array.from({ length: fields }).map((_, index) => (
-      <div key={index}>
-        <Skeleton className="h-4 w-1/4 mb-2" />
-        <Skeleton className="h-12 w-full" />
-      </div>
-    ))}
-    <div className="flex gap-4 pt-4">
-      <Skeleton className="h-12 w-32" />
-      <Skeleton className="h-12 w-24" />
+    {/* Recent Activity */}
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <Skeleton variant="text" className="w-40 mb-4" />
+      <SkeletonList items={5} className="space-y-3" />
     </div>
   </div>
-);
+)
 
-// Skeleton personalizado por tipo de usuário
-export const SkeletonByUserType = ({ 
-  userType,
-  className = ''
-}: { 
-  userType: 'motorista' | 'oficina' | 'admin';
-  className?: string;
-}) => {
-  if (userType === 'motorista') {
-    return (
-      <div className={`space-y-6 ${className}`}>
-        {/* Veículos do motorista */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <SkeletonCard key={index} showAvatar={false} lines={4} />
-          ))}
+// Skeleton para Profile
+export const SkeletonProfile: React.FC<{ className?: string }> = ({ className = '' }) => (
+  <div className={`bg-white dark:bg-gray-800 rounded-lg shadow p-6 ${className}`}>
+    <div className="flex items-center space-x-6 mb-6">
+      <Skeleton variant="circular" width={80} height={80} />
+      <div className="space-y-2 flex-1">
+        <Skeleton variant="text" className="w-48" />
+        <Skeleton variant="text" className="w-32" />
+        <Skeleton variant="text" className="w-40" />
+      </div>
+    </div>
+    
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="space-y-2">
+            <Skeleton variant="text" className="w-24" />
+            <Skeleton variant="rounded" className="w-full h-10" />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)
+
+// Skeleton para Loading Screen
+export const SkeletonLoadingScreen: React.FC = () => (
+  <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+    <div className="max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow mb-6 p-4">
+        <div className="flex items-center justify-between">
+          <Skeleton variant="text" className="w-48" />
+          <div className="flex space-x-2">
+            <Skeleton variant="circular" width={40} height={40} />
+            <Skeleton variant="rounded" className="w-24 h-10" />
+          </div>
         </div>
-        <SkeletonList items={4} />
       </div>
-    );
-  }
-  
-  if (userType === 'oficina') {
-    return (
-      <div className={`space-y-6 ${className}`}>
-        <SkeletonDashboard />
-      </div>
-    );
-  }
-  
-  return <SkeletonDashboard className={className} />;
-}; 
+      
+      {/* Main Content */}
+      <SkeletonDashboard />
+    </div>
+  </div>
+)

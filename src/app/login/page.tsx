@@ -1,11 +1,13 @@
 'use client'
 
+// Desabilitar prerendering para essa página
+export const dynamic = 'force-dynamic'
+
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
-import { Button } from '@/components/ui'
-import { useToast } from '@/components/ui'
+// import { useToastHelpers } from '@/components/ui/Toast'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -19,7 +21,7 @@ export default function MotoristaLogin() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
-  const { addToast } = useToast()
+  // const { success, error: showError } = useToastHelpers()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -34,11 +36,7 @@ export default function MotoristaLogin() {
 
       if (authError) {
         setError(authError.message)
-        addToast({
-          type: 'error',
-          title: 'Erro no login',
-          message: authError.message
-        })
+        // showError('Erro no login', authError.message)
         return
       }
 
@@ -51,21 +49,13 @@ export default function MotoristaLogin() {
 
       if (profileError || !profile || profile.type !== 'motorista') {
         setError('Esta conta não é de motorista')
-        addToast({
-          type: 'error',
-          title: 'Acesso negado',
-          message: 'Esta conta não é de motorista'
-        })
+        // showError('Acesso negado', 'Esta conta não é de motorista')
         await supabase.auth.signOut()
         return
       }
 
       // Sucesso no login
-      addToast({
-        type: 'success',
-        title: 'Login realizado!',
-        message: `Bem-vindo de volta, motorista!`
-      })
+      // success('Login realizado!', 'Bem-vindo de volta, motorista!')
 
       // Redirecionar para dashboard motorista
       router.push('/motorista')
@@ -99,11 +89,7 @@ export default function MotoristaLogin() {
       }
 
       if (data.user) {
-        addToast({
-          type: 'success',
-          title: 'Motorista cadastrado!',
-          message: 'Agora faça login para acessar seu painel.'
-        })
+        // success('Motorista cadastrado!', 'Agora faça login para acessar seu painel.')
         setIsSignUp(false)
       }
 
@@ -247,15 +233,13 @@ export default function MotoristaLogin() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
             >
-              <Button
+              <button
                 type="submit"
-                variant="primary"
-                size="lg"
-                loading={loading}
-                className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-700 hover:via-blue-800 hover:to-indigo-800 shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5 transition-all duration-200 text-white font-semibold text-lg py-4 rounded-xl border-0"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-700 hover:via-blue-800 hover:to-indigo-800 shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5 transition-all duration-200 text-white font-semibold text-lg py-4 rounded-xl border-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSignUp ? '🚗 Criar Conta Motorista' : '🚀 Entrar como Motorista'}
-              </Button>
+                {loading ? '⏳ Carregando...' : (isSignUp ? '🚗 Criar Conta Motorista' : '🚀 Entrar como Motorista')}
+              </button>
             </motion.div>
           </form>
 

@@ -1,11 +1,14 @@
 'use client'
 
+// Desabilitar prerendering para essa página
+export const dynamic = 'force-dynamic'
+
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
-import { Button } from '@/components/ui'
-import { useToast } from '@/components/ui'
+// import { Button } from '@/components/ui'
+// import { useToast } from '@/components/ui'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -21,7 +24,7 @@ export default function OficinaLogin() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
-  const { addToast } = useToast()
+  // const { addToast } = useToast()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,11 +39,11 @@ export default function OficinaLogin() {
 
       if (authError) {
         setError(authError.message)
-        addToast({
-          type: 'error',
-          title: 'Erro no login',
-          message: authError.message
-        })
+        // addToast({
+        //   type: 'error',
+        //   title: 'Erro no login',
+        //   message: authError.message
+        // })
         return
       }
 
@@ -53,11 +56,11 @@ export default function OficinaLogin() {
 
       if (profileError || !profile || profile.type !== 'oficina') {
         setError('Esta conta não é de uma oficina')
-        addToast({
-          type: 'error',
-          title: 'Acesso negado',
-          message: 'Esta conta não é de uma oficina'
-        })
+        // addToast({
+        //   type: 'error',
+        //   title: 'Acesso negado',
+        //   message: 'Esta conta não é de uma oficina'
+        // })
         await supabase.auth.signOut()
         return
       }
@@ -69,11 +72,11 @@ export default function OficinaLogin() {
         .eq('profile_id', data.user.id)
         .single()
 
-      addToast({
-        type: 'success',
-        title: 'Login realizado!',
-        message: `Bem-vindo à sua oficina!`
-      })
+      // addToast({
+      //   type: 'success',
+      //   title: 'Login realizado!',
+      //   message: `Bem-vindo à sua oficina!`
+      // })
 
       // Redirecionar baseado no plano
       if (workshop?.plan_type === 'pro') {
@@ -110,20 +113,20 @@ export default function OficinaLogin() {
 
       if (authError) {
         setError(authError.message)
-        addToast({
-          type: 'error',
-          title: 'Erro no cadastro',
-          message: authError.message
-        })
+        // addToast({
+        //   type: 'error',
+        //   title: 'Erro no cadastro',
+        //   message: authError.message
+        // })
         return
       }
 
       if (data.user) {
-        addToast({
-          type: 'success',
-          title: 'Oficina cadastrada!',
-          message: 'Agora faça login para acessar seu painel.'
-        })
+        // addToast({
+        //   type: 'success',
+        //   title: 'Oficina cadastrada!',
+        //   message: 'Agora faça login para acessar seu painel.'
+        // })
         setIsSignUp(false)
       }
 
@@ -326,15 +329,13 @@ export default function OficinaLogin() {
             )}
 
             {/* Botão Submit */}
-            <Button
+            <button
               type="submit"
-              variant="primary"
-              size="lg"
-              loading={loading}
-              className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 shadow-lg"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 shadow-lg text-white font-semibold py-4 px-6 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             >
-              {isSignUp ? '🚀 Criar Oficina' : '🔧 Entrar na Oficina'}
-            </Button>
+              {loading ? '⏳ Carregando...' : (isSignUp ? '🚀 Criar Oficina' : '🔧 Entrar na Oficina')}
+            </button>
           </form>
 
           {/* OAuth Buttons */}

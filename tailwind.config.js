@@ -61,6 +61,15 @@ module.exports = {
         'fadeIn': 'fadeIn 0.3s ease-out forwards',
         'scale': 'scale 0.3s ease-out forwards',
         'ping': 'ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'shimmer': 'shimmer 2s ease-in-out infinite',
+        'slide-up': 'slideUp 0.3s ease-out forwards',
+        'slide-down': 'slideDown 0.3s ease-out forwards',
+        'slide-in-right': 'slideInRight 0.3s ease-out forwards',
+        'slide-in-left': 'slideInLeft 0.3s ease-out forwards',
+        'zoom-in': 'zoomIn 0.2s ease-out forwards',
+        'zoom-out': 'zoomOut 0.2s ease-out forwards',
+        'rotate-in': 'rotateIn 0.3s ease-out forwards',
+        'shake': 'shake 0.5s ease-in-out',
       },
       keyframes: {
         float: {
@@ -80,6 +89,43 @@ module.exports = {
             transform: 'scale(2)',
             opacity: '0',
           },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideDown: {
+          '0%': { transform: 'translateY(-10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideInRight: {
+          '0%': { transform: 'translateX(10px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        slideInLeft: {
+          '0%': { transform: 'translateX(-10px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        zoomIn: {
+          '0%': { transform: 'scale(0.9)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        zoomOut: {
+          '0%': { transform: 'scale(1.1)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        rotateIn: {
+          '0%': { transform: 'rotate(-5deg) scale(0.9)', opacity: '0' },
+          '100%': { transform: 'rotate(0deg) scale(1)', opacity: '1' },
+        },
+        shake: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-2px)' },
+          '20%, 40%, 60%, 80%': { transform: 'translateX(2px)' },
         },
       },
     },

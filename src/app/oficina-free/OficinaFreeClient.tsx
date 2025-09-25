@@ -10,6 +10,9 @@ import AIDiagnosticSystem from '@/components/ai/AIDiagnosticSystem'
 import AIControlPanel from '@/components/ai/AIControlPanel'
 import { OnboardingProvider } from '@/components/onboarding/OnboardingManager'
 import ChatFloatingButton from '@/components/chat/ChatFloatingButton'
+import { useToastHelpers } from '@/components/ui/Toast'
+import { SkeletonDashboard } from '@/components/ui/Skeleton'
+import { PageTransition, CardTransition, ButtonTransition } from '@/components/ui/PageTransition'
 import { 
   CalendarDaysIcon, 
   ClipboardDocumentListIcon, 
@@ -70,6 +73,7 @@ export default function OficinaFreeClient() {
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const { success, error, info } = useToastHelpers()
   
   useEffect(() => {
     checkUser()
@@ -81,6 +85,7 @@ export default function OficinaFreeClient() {
       const { data: { user }, error } = await supabase.auth.getUser()
       
       if (!user) {
+        error('Acesso negado', 'Você precisa estar logado')
         window.location.href = '/login'
         return
       }
@@ -98,14 +103,17 @@ export default function OficinaFreeClient() {
       // Verificar se é realmente oficina
       if (profile?.type === 'motorista') {
         console.log('🚗 [OFICINA-FREE] Motorista detectado, redirecionando...')
+        error('Acesso negado', 'Esta área é exclusiva para oficinas')
         window.location.href = '/motorista'
         return
       }
       
       console.log('✅ [OFICINA-FREE] Oficina FREE carregada:', profile)
+      success('Bem-vindo!', `Oficina ${profile?.nome || profile?.email} - Plano FREE`)
       
-    } catch (error) {
-      console.error('❌ [OFICINA-FREE] Erro:', error)
+    } catch (err) {
+      console.error('❌ [OFICINA-FREE] Erro:', err)
+      error('Erro de conexão', 'Não foi possível carregar seus dados')
     } finally {
       setLoading(false)
     }
@@ -118,14 +126,8 @@ export default function OficinaFreeClient() {
   
   if (loading) {
     return (
-      <div className="flex min-h-screen bg-gray-50">
-        <div className="hidden md:block w-64 h-screen bg-gradient-to-b from-blue-800 to-blue-600"></div>
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600">Carregando dashboard...</p>
-          </div>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-6">
+        <SkeletonDashboard />
       </div>
     )
   }
@@ -144,8 +146,9 @@ export default function OficinaFreeClient() {
       
       {/* Main Content */}
       <div className="flex-1 transition-all duration-300 ml-0 md:ml-60">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-4">
+        <PageTransition>
+          {/* Header */}
+          <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">🆓 Dashboard Oficina FREE</h1>
@@ -387,6 +390,7 @@ export default function OficinaFreeClient() {
             </div>
           </div>
         </div>
+        </PageTransition>
       </div>
 
       {/* Chat Components */}

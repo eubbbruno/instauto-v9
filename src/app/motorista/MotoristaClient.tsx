@@ -7,15 +7,18 @@ import RouteGuard from '@/components/auth/RouteGuard'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
 import ChatFloatingButton from '@/components/chat/ChatFloatingButton'
-import { SkeletonDashboardAdvanced } from '@/components/ui/SkeletonAdvanced'
+import { SkeletonDashboard } from '@/components/ui/Skeleton'
 import PushNotificationButton from '@/components/notifications/PushNotificationButton'
 import { OnboardingProvider } from '@/components/onboarding/OnboardingManager'
 import OnboardingTrigger from '@/components/onboarding/OnboardingTrigger'
+import { useToastHelpers } from '@/components/ui/Toast'
+import { PageTransition, CardTransition, ListTransition, ListItem, ButtonTransition } from '@/components/ui/PageTransition'
 
 export default function MotoristaClient() {
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const { success, error, info } = useToastHelpers()
   
   useEffect(() => {
     checkUser()
@@ -26,6 +29,7 @@ export default function MotoristaClient() {
       const { data: { user }, error } = await supabase.auth.getUser()
       
       if (!user) {
+        error('Acesso negado', 'Você precisa estar logado')
         window.location.href = '/login'
         return
       }
@@ -39,13 +43,16 @@ export default function MotoristaClient() {
         .single()
       
       if (profile?.type !== 'motorista') {
+        error('Acesso negado', 'Esta área é exclusiva para motoristas')
         window.location.href = '/dashboard'
         return
       }
       
       setProfile(profile)
+      success('Bem-vindo!', `Olá, ${profile.nome || profile.email}`)
     } catch (error) {
       console.error('Erro:', error)
+      error('Erro de conexão', 'Não foi possível carregar seus dados')
     } finally {
       setLoading(false)
     }
@@ -59,7 +66,7 @@ export default function MotoristaClient() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-6">
-        <SkeletonDashboardAdvanced />
+        <SkeletonDashboard />
       </div>
     )
   }
@@ -81,7 +88,7 @@ export default function MotoristaClient() {
         {/* Dashboard Content */}
         <div className="flex-1 overflow-hidden">
           <div className="h-full overflow-y-auto">
-            <div className="p-4 md:p-6 max-w-7xl">
+            <PageTransition className="p-4 md:p-6 max-w-7xl">
               {/* Dashboard Home Content */}
               <div className="space-y-6">
                 {/* Header */}
@@ -115,96 +122,114 @@ export default function MotoristaClient() {
 
                 {/* Quick Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-                  <div className="bg-white rounded-xl shadow-sm border p-4 md:p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-xs md:text-sm font-medium text-gray-600">Veículos</p>
-                        <p className="text-xl md:text-3xl font-bold text-gray-900">2</p>
-                      </div>
-                      <div className="w-8 h-8 md:w-12 md:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <span className="text-lg md:text-2xl">🚗</span>
+                  <CardTransition delay={0.1}>
+                    <div className="bg-white rounded-xl shadow-sm border p-4 md:p-6 hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs md:text-sm font-medium text-gray-600">Veículos</p>
+                          <p className="text-xl md:text-3xl font-bold text-gray-900">2</p>
+                        </div>
+                        <div className="w-8 h-8 md:w-12 md:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <span className="text-lg md:text-2xl">🚗</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </CardTransition>
 
-                  <div className="bg-white rounded-xl shadow-sm border p-4 md:p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-xs md:text-sm font-medium text-gray-600">Agendamentos</p>
-                        <p className="text-xl md:text-3xl font-bold text-gray-900">3</p>
-                      </div>
-                      <div className="w-8 h-8 md:w-12 md:h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                        <span className="text-lg md:text-2xl">📅</span>
+                  <CardTransition delay={0.2}>
+                    <div className="bg-white rounded-xl shadow-sm border p-4 md:p-6 hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs md:text-sm font-medium text-gray-600">Agendamentos</p>
+                          <p className="text-xl md:text-3xl font-bold text-gray-900">3</p>
+                        </div>
+                        <div className="w-8 h-8 md:w-12 md:h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                          <span className="text-lg md:text-2xl">📅</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </CardTransition>
 
-                  <div className="bg-white rounded-xl shadow-sm border p-4 md:p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-xs md:text-sm font-medium text-gray-600">Favoritas</p>
-                        <p className="text-xl md:text-3xl font-bold text-gray-900">8</p>
-                      </div>
-                      <div className="w-8 h-8 md:w-12 md:h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                        <span className="text-lg md:text-2xl">⭐</span>
+                  <CardTransition delay={0.3}>
+                    <div className="bg-white rounded-xl shadow-sm border p-4 md:p-6 hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs md:text-sm font-medium text-gray-600">Favoritas</p>
+                          <p className="text-xl md:text-3xl font-bold text-gray-900">8</p>
+                        </div>
+                        <div className="w-8 h-8 md:w-12 md:h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                          <span className="text-lg md:text-2xl">⭐</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </CardTransition>
 
-                  <div className="bg-white rounded-xl shadow-sm border p-4 md:p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-xs md:text-sm font-medium text-gray-600">Gastos</p>
-                        <p className="text-xl md:text-3xl font-bold text-gray-900">R$ 450</p>
-                      </div>
-                      <div className="w-8 h-8 md:w-12 md:h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <span className="text-lg md:text-2xl">💰</span>
+                  <CardTransition delay={0.4}>
+                    <div className="bg-white rounded-xl shadow-sm border p-4 md:p-6 hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs md:text-sm font-medium text-gray-600">Gastos</p>
+                          <p className="text-xl md:text-3xl font-bold text-gray-900">R$ 450</p>
+                        </div>
+                        <div className="w-8 h-8 md:w-12 md:h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                          <span className="text-lg md:text-2xl">💰</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </CardTransition>
                 </div>
 
                 {/* Quick Actions */}
-                <div className="bg-white rounded-xl shadow-sm border p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">⚡ Ações Rápidas</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-                    <a
-                      href="/motorista/buscar"
-                      className="p-3 md:p-4 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors text-center group"
-                    >
-                      <div className="text-2xl md:text-3xl mb-1 md:mb-2">🔍</div>
-                      <p className="text-sm md:text-base font-medium text-blue-900">Buscar</p>
-                      <p className="text-xs md:text-sm text-blue-600 hidden md:block">Encontre oficinas próximas</p>
-                    </a>
+                <CardTransition delay={0.5}>
+                  <div className="bg-white rounded-xl shadow-sm border p-6 hover:shadow-md transition-shadow">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">⚡ Ações Rápidas</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+                      <Link href="/motorista/buscar">
+                        <ButtonTransition 
+                          variant="lift"
+                          className="w-full p-3 md:p-4 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors text-center group"
+                        >
+                          <div className="text-2xl md:text-3xl mb-1 md:mb-2">🔍</div>
+                          <p className="text-sm md:text-base font-medium text-blue-900">Buscar</p>
+                          <p className="text-xs md:text-sm text-blue-600 hidden md:block">Encontre oficinas próximas</p>
+                        </ButtonTransition>
+                      </Link>
 
-                    <a
-                      href="/motorista/garagem"
-                      className="p-3 md:p-4 bg-green-50 rounded-lg border border-green-200 hover:bg-green-100 transition-colors text-center group"
-                    >
-                      <div className="text-2xl md:text-3xl mb-1 md:mb-2">🚗</div>
-                      <p className="text-sm md:text-base font-medium text-green-900">Garagem</p>
-                      <p className="text-xs md:text-sm text-green-600 hidden md:block">Gerencie seus veículos</p>
-                    </a>
+                      <Link href="/motorista/garagem">
+                        <ButtonTransition 
+                          variant="lift"
+                          className="w-full p-3 md:p-4 bg-green-50 rounded-lg border border-green-200 hover:bg-green-100 transition-colors text-center group"
+                        >
+                          <div className="text-2xl md:text-3xl mb-1 md:mb-2">🚗</div>
+                          <p className="text-sm md:text-base font-medium text-green-900">Garagem</p>
+                          <p className="text-xs md:text-sm text-green-600 hidden md:block">Gerencie seus veículos</p>
+                        </ButtonTransition>
+                      </Link>
 
-                    <a
-                      href="/motorista/agendamentos"
-                      className="p-3 md:p-4 bg-yellow-50 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition-colors text-center group"
-                    >
-                      <div className="text-2xl md:text-3xl mb-1 md:mb-2">📅</div>
-                      <p className="text-sm md:text-base font-medium text-yellow-900">Agenda</p>
-                      <p className="text-xs md:text-sm text-yellow-600 hidden md:block">Veja seus serviços</p>
-                    </a>
+                      <Link href="/motorista/agendamentos">
+                        <ButtonTransition 
+                          variant="lift"
+                          className="w-full p-3 md:p-4 bg-yellow-50 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition-colors text-center group"
+                        >
+                          <div className="text-2xl md:text-3xl mb-1 md:mb-2">📅</div>
+                          <p className="text-sm md:text-base font-medium text-yellow-900">Agenda</p>
+                          <p className="text-xs md:text-sm text-yellow-600 hidden md:block">Veja seus serviços</p>
+                        </ButtonTransition>
+                      </Link>
 
-                    <a
-                      href="/motorista/emergencia"
-                      className="p-3 md:p-4 bg-red-50 rounded-lg border border-red-200 hover:bg-red-100 transition-colors text-center group"
-                    >
-                      <div className="text-2xl md:text-3xl mb-1 md:mb-2">🚨</div>
-                      <p className="text-sm md:text-base font-medium text-red-900">Socorro</p>
-                      <p className="text-xs md:text-sm text-red-600 hidden md:block">Socorro 24h</p>
-                    </a>
+                      <Link href="/motorista/emergencia">
+                        <ButtonTransition 
+                          variant="lift"
+                          className="w-full p-3 md:p-4 bg-red-50 rounded-lg border border-red-200 hover:bg-red-100 transition-colors text-center group"
+                        >
+                          <div className="text-2xl md:text-3xl mb-1 md:mb-2">🚨</div>
+                          <p className="text-sm md:text-base font-medium text-red-900">Socorro</p>
+                          <p className="text-xs md:text-sm text-red-600 hidden md:block">Socorro 24h</p>
+                        </ButtonTransition>
+                      </Link>
+                    </div>
                   </div>
-                </div>
+                </CardTransition>
 
                 {/* IA Diagnóstico Rápido */}
                 <div className="bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl shadow-sm p-6 text-white">
@@ -253,7 +278,7 @@ export default function MotoristaClient() {
                   </div>
                 </div>
               </div>
-            </div>
+            </PageTransition>
           </div>
         </div>
         </div>
