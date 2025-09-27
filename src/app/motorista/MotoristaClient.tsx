@@ -7,11 +7,11 @@ import RouteGuard from '@/components/auth/RouteGuard'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
 import ChatManager from '@/components/chat/ChatManager'
 import ChatFloatingButton from '@/components/chat/ChatFloatingButton'
-import { SkeletonDashboard } from '@/components/ui/Skeleton'
+import { SkeletonDashboard } from '@/components/ui/skeleton'
 import PushNotificationButton from '@/components/notifications/PushNotificationButton'
 import { OnboardingProvider } from '@/components/onboarding/OnboardingManager'
 import OnboardingTrigger from '@/components/onboarding/OnboardingTrigger'
-import { useToastHelpers } from '@/components/ui/Toast'
+import { useToastHelpers } from '@/components/ui/toast'
 import { PageTransition, CardTransition, ListTransition, ListItem, ButtonTransition } from '@/components/ui/PageTransition'
 
 export default function MotoristaClient() {

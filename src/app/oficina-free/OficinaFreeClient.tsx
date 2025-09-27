@@ -10,8 +10,8 @@ import AIDiagnosticSystem from '@/components/ai/AIDiagnosticSystem'
 import AIControlPanel from '@/components/ai/AIControlPanel'
 import { OnboardingProvider } from '@/components/onboarding/OnboardingManager'
 import ChatFloatingButton from '@/components/chat/ChatFloatingButton'
-import { useToastHelpers } from '@/components/ui/Toast'
-import { SkeletonDashboard } from '@/components/ui/Skeleton'
+import { useToastHelpers } from '@/components/ui/toast'
+import { SkeletonDashboard } from '@/components/ui/skeleton'
 import { PageTransition, CardTransition, ButtonTransition } from '@/components/ui/PageTransition'
 import { 
   CalendarDaysIcon, 
