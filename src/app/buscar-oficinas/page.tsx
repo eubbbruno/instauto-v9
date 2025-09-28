@@ -1,7 +1,11 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { supabase } from '@/lib/supabase';
+import { useToastHelpers } from '@/components/ui/toast';
+import { SkeletonCard } from '@/components/ui/skeleton';
+import { PageTransition, CardTransition, ButtonTransition } from '@/components/ui/PageTransition';
 import { 
   MagnifyingGlassIcon,
   MapPinIcon,
@@ -97,6 +101,10 @@ export default function BuscarOficinasPage() {
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [visualizacao, setVisualizacao] = useState<'lista' | 'mapa'>('lista');
   const [oficinas, setOficinas] = useState(mockOficinas);
+  const [oficinasSupabase, setOficinasSupabase] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+  const { success, error: showError } = useToastHelpers();
   
   const [filtros, setFiltros] = useState({
     servicos: [] as string[],
@@ -105,6 +113,71 @@ export default function BuscarOficinasPage() {
     precoMaximo: 1000,
     apenasVerificadas: false
   });
+
+  useEffect(() => {
+    getCurrentLocation();
+    fetchOficinas();
+  }, []);
+
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+          success('Localização obtida com sucesso!');
+        },
+        (error) => {
+          console.error('Erro ao obter localização:', error);
+          showError('Não foi possível obter sua localização');
+        }
+      );
+    }
+  };
+
+  const fetchOficinas = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('workshops')
+        .select(`
+          id,
+          name,
+          description,
+          address,
+          city,
+          state,
+          latitude,
+          longitude,
+          phone,
+          whatsapp,
+          email,
+          plan_type,
+          is_verified,
+          rating,
+          review_count,
+          services,
+          specializations,
+          photos,
+          created_at
+        `)
+        .eq('is_active', true)
+        .order('rating', { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+
+      setOficinasSupabase(data || []);
+      success(`${data?.length || 0} oficinas encontradas!`);
+    } catch (error) {
+      console.error('Erro ao buscar oficinas:', error);
+      showError('Erro ao carregar oficinas');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Função para alternar favorito
   const toggleFavorito = (oficinaId: string) => {
@@ -153,35 +226,40 @@ export default function BuscarOficinasPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header com busca */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Buscar Oficinas</h1>
-              <p className="text-gray-600">Encontre as melhores oficinas próximas a você</p>
-            </div>
-            <Link
-              href="/motorista"
-              className="text-blue-600 hover:text-blue-800 font-medium"
-            >
-              ← Voltar ao Dashboard
-            </Link>
-          </div>
+    <PageTransition>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header com busca */}
+        <CardTransition>
+          <div className="bg-white shadow-sm border-b">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+              <div className="flex items-center justify-between mb-4 md:mb-6">
+                <div>
+                  <h1 className="text-xl md:text-2xl font-bold text-gray-900">Buscar Oficinas</h1>
+                  <p className="text-sm md:text-base text-gray-600 hidden sm:block">Encontre as melhores oficinas próximas a você</p>
+                </div>
+                <ButtonTransition>
+                  <Link
+                    href="/motorista"
+                    className="text-blue-600 hover:text-blue-800 font-medium text-sm md:text-base"
+                  >
+                    <span className="hidden sm:inline">← Voltar ao Dashboard</span>
+                    <span className="sm:hidden">← Voltar</span>
+                  </Link>
+                </ButtonTransition>
+              </div>
 
-          {/* Barra de busca */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-            <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Buscar por oficina ou serviço..."
-                value={termoBusca}
-                onChange={(e) => setTermoBusca(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
+              {/* Barra de busca */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4 mb-3 md:mb-4">
+                <div className="relative">
+                  <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Buscar por oficina ou serviço..."
+                    value={termoBusca}
+                    onChange={(e) => setTermoBusca(e.target.value)}
+                    className="w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2.5 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
+                  />
+                </div>
             
             <div className="relative">
               <MapPinIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
