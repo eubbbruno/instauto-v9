@@ -7,6 +7,9 @@ import AdminAnalyticsDashboard from '@/components/admin/AdminAnalyticsDashboard'
 import UserManagement from '@/components/admin/UserManagement'
 import SystemMonitoring from '@/components/admin/SystemMonitoring'
 import CouponManager from '@/components/admin/CouponManager'
+import { useToastHelpers } from '@/components/ui/toast'
+import { SkeletonDashboard } from '@/components/ui/skeleton'
+import { PageTransition, CardTransition, ButtonTransition } from '@/components/ui/PageTransition'
 import { 
   ChartBarIcon,
   UsersIcon,
@@ -28,6 +31,7 @@ export default function AdminClient() {
   const [user, setUser] = useState<AdminUser | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'analytics' | 'users' | 'monitoring' | 'coupons' | 'workshops'>('analytics')
+  const { success, error: showError } = useToastHelpers()
 
   useEffect(() => {
     checkAdminAccess()
@@ -38,6 +42,7 @@ export default function AdminClient() {
       const { data: { user }, error } = await supabase.auth.getUser()
       
       if (error || !user) {
+        showError('Acesso de admin necessário')
         window.location.href = '/login?error=admin_access_required'
         return
       }
@@ -50,6 +55,7 @@ export default function AdminClient() {
         .single()
 
       if (!profile || profile.type !== 'admin') {
+        showError('Acesso negado - Apenas administradores')
         window.location.href = '/login?error=admin_access_denied'
         return
       }
@@ -60,6 +66,7 @@ export default function AdminClient() {
         name: profile.name,
         type: profile.type
       })
+      success('Bem-vindo ao painel administrativo!')
     } catch (error) {
       console.error('Erro ao verificar acesso admin:', error)
       window.location.href = '/login?error=admin_verification_failed'
@@ -74,14 +81,7 @@ export default function AdminClient() {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Verificando acesso administrativo...</p>
-        </div>
-      </div>
-    )
+    return <SkeletonDashboard />
   }
 
   const tabs = [
@@ -94,79 +94,90 @@ export default function AdminClient() {
 
   return (
     <RouteGuard allowedUserTypes={['admin']}>
-      <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center mr-3">
-                <span className="text-white font-bold text-lg">A</span>
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-                <p className="text-sm text-gray-500">Controle total da plataforma InstaAuto</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{user?.name || 'Admin'}</p>
-                <p className="text-xs text-gray-500">{user?.email}</p>
-              </div>
-              <motion.button
-                onClick={handleLogout}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all flex items-center gap-2"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <ArrowRightOnRectangleIcon className="w-4 h-4" />
-                Sair
-              </motion.button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation Tabs */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex space-x-8">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-all ${
-                  activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <tab.icon className="w-5 h-5" />
-                  {tab.label}
+      <PageTransition>
+        <div className="min-h-screen bg-gray-50">
+          {/* Header */}
+          <CardTransition>
+            <div className="bg-white shadow-sm border-b">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between items-center py-3 md:py-4">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center mr-2 md:mr-3">
+                      <span className="text-white font-bold text-sm md:text-lg">A</span>
+                    </div>
+                    <div>
+                      <h1 className="text-lg md:text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+                      <p className="text-xs md:text-sm text-gray-500 hidden sm:block">Controle total da plataforma InstaAuto</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 md:gap-4">
+                    <div className="text-right hidden md:block">
+                      <p className="text-sm font-medium text-gray-900">{user?.name || 'Admin'}</p>
+                      <p className="text-xs text-gray-500">{user?.email}</p>
+                    </div>
+                    <ButtonTransition>
+                      <motion.button
+                        onClick={handleLogout}
+                        className="bg-red-600 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg hover:bg-red-700 transition-all flex items-center gap-1 md:gap-2 text-sm md:text-base"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <ArrowRightOnRectangleIcon className="w-4 h-4" />
+                        <span className="hidden sm:inline">Sair</span>
+                      </motion.button>
+                    </ButtonTransition>
+                  </div>
                 </div>
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
+              </div>
+            </div>
+          </CardTransition>
 
-      {/* Content */}
-      <motion.div
-        key={activeTab}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="flex-1"
-      >
-        {activeTab === 'analytics' && <AdminAnalyticsDashboard />}
-        {activeTab === 'users' && <UserManagement />}
-        {activeTab === 'workshops' && <WorkshopsManagement />}
-        {activeTab === 'coupons' && <CouponManager />}
-        {activeTab === 'monitoring' && <SystemMonitoring />}
-      </motion.div>
-    </div>
+          {/* Navigation Tabs */}
+          <CardTransition delay={0.1}>
+            <div className="bg-white shadow-sm">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <nav className="flex space-x-4 md:space-x-8 overflow-x-auto">
+                  {tabs.map((tab, index) => (
+                    <ButtonTransition key={tab.id} delay={index * 0.05}>
+                      <button
+                        onClick={() => setActiveTab(tab.id as any)}
+                        className={`py-3 md:py-4 px-1 border-b-2 font-medium text-xs md:text-sm transition-all whitespace-nowrap ${
+                          activeTab === tab.id
+                            ? 'border-blue-500 text-blue-600'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-1 md:gap-2">
+                          <tab.icon className="w-4 h-4 md:w-5 md:h-5" />
+                          <span className="hidden sm:inline">{tab.label}</span>
+                        </div>
+                      </button>
+                    </ButtonTransition>
+                  ))}
+                </nav>
+              </div>
+            </div>
+          </CardTransition>
+
+          {/* Content */}
+          <CardTransition delay={0.2}>
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex-1 p-4 md:p-6"
+            >
+              {activeTab === 'analytics' && <AdminAnalyticsDashboard />}
+              {activeTab === 'users' && <UserManagement />}
+              {activeTab === 'workshops' && <WorkshopsManagement />}
+              {activeTab === 'coupons' && <CouponManager />}
+              {activeTab === 'monitoring' && <SystemMonitoring />}
+            </motion.div>
+          </CardTransition>
+        </div>
+      </PageTransition>
     </RouteGuard>
   )
 }
@@ -174,19 +185,19 @@ export default function AdminClient() {
 // Component para gerenciamento de oficinas (reutilizar código existente)
 function WorkshopsManagement() {
   return (
-    <div className="p-6">
-      <div className="bg-white rounded-xl shadow-sm border p-6">
-        <h2 className="text-xl font-bold mb-4">🔧 Gerenciamento de Oficinas</h2>
-        <p className="text-gray-600 mb-4">
+    <CardTransition>
+      <div className="bg-white rounded-xl shadow-sm border p-4 md:p-6">
+        <h2 className="text-lg md:text-xl font-bold mb-4">🔧 Gerenciamento de Oficinas</h2>
+        <p className="text-gray-600 mb-4 text-sm md:text-base">
           Funcionalidade de gerenciamento de oficinas será integrada aqui.
         </p>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-blue-800 text-sm">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4">
+          <p className="text-blue-800 text-xs md:text-sm">
             💡 <strong>Próxima implementação:</strong> Interface completa para gerenciar oficinas, 
             verificações, planos e configurações avançadas.
           </p>
         </div>
       </div>
-    </div>
+    </CardTransition>
   )
 }

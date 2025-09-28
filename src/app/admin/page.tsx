@@ -10,6 +10,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import RouteProtection from '@/components/auth/RouteProtection'
+import { useToastHelpers } from '@/components/ui/toast'
+import { SkeletonDashboard } from '@/components/ui/skeleton'
+import { PageTransition, CardTransition, ButtonTransition } from '@/components/ui/PageTransition'
 import {
   PlusIcon,
   PencilIcon,
@@ -57,6 +60,7 @@ function AdminDashboardContent() {
   const router = useRouter()
   const [user, setUser] = useState<AdminUser | null>(null)
   const [loading, setLoading] = useState(true)
+  const { success, error: showError } = useToastHelpers()
   const [workshops, setWorkshops] = useState<Workshop[]>([])
   const [filteredWorkshops, setFilteredWorkshops] = useState<Workshop[]>([])
   const [searchTerm, setSearchTerm] = useState('')
@@ -87,6 +91,7 @@ function AdminDashboardContent() {
       const { data: { user }, error } = await supabase.auth.getUser()
       
       if (error || !user) {
+        showError('Acesso de admin necessário')
         router.push('/login?error=admin_access_required')
         return
       }
@@ -99,6 +104,7 @@ function AdminDashboardContent() {
         .single()
 
       if (!profile || profile.type !== 'admin') {
+        showError('Acesso negado - Apenas administradores')
         router.push('/login?error=admin_access_denied')
         return
       }
@@ -109,6 +115,7 @@ function AdminDashboardContent() {
         name: profile.name,
         type: profile.type
       })
+      success('Bem-vindo ao painel administrativo!')
     } catch (error) {
       console.error('Erro ao verificar acesso admin:', error)
       router.push('/login?error=admin_verification_failed')
