@@ -2,6 +2,9 @@
 import { supabase } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
 import RouteProtection from '@/components/auth/RouteProtection'
+import { useToastHelpers } from '@/components/ui/toast'
+import { SkeletonDashboard } from '@/components/ui/skeleton'
+import { PageTransition, CardTransition, ButtonTransition } from '@/components/ui/PageTransition'
 
 function DashboardContent() {
   // Prevenir renderização no servidor
@@ -9,6 +12,7 @@ function DashboardContent() {
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const { success, error } = useToastHelpers()
   
   useEffect(() => {
     setIsMounted(true)
@@ -23,17 +27,20 @@ function DashboardContent() {
       
       if (error) {
         console.error('❌ [DASHBOARD] Erro ao buscar usuário:', error)
+        error('Erro ao verificar autenticação')
         window.location.href = '/login'
         return
       }
       
       if (!user) {
         console.log('❌ [DASHBOARD] Nenhum usuário logado')
+        error('Usuário não autenticado')
         window.location.href = '/login'
         return
       }
       
       console.log('✅ [DASHBOARD] Usuário encontrado:', user.email)
+      success(`Bem-vindo, ${user.email}!`)
       setUser(user)
       
       // Buscar profile
@@ -45,7 +52,7 @@ function DashboardContent() {
       
       if (profileError) {
         console.error('❌ [DASHBOARD] Erro ao buscar profile:', profileError)
-        alert('Erro ao carregar perfil!')
+        error('Erro ao carregar perfil!')
         return
       }
       
@@ -108,14 +115,7 @@ function DashboardContent() {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-xl text-gray-600">🔄 Carregando dashboard...</p>
-        </div>
-      </div>
-    )
+    return <SkeletonDashboard />
   }
   
   if (!profile) {
@@ -135,95 +135,121 @@ function DashboardContent() {
   }
   
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Dashboard {profile.type === 'motorista' ? 'Motorista' : 'Oficina'}
-              </h1>
-              <p className="text-gray-600">Bem-vindo, {user.email}!</p>
+    <PageTransition>
+      <div className="min-h-screen bg-gray-100">
+        {/* Header */}
+        <CardTransition>
+          <div className="bg-white shadow">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex justify-between items-center py-4 md:py-6">
+                <div>
+                  <h1 className="text-xl md:text-3xl font-bold text-gray-900">
+                    Dashboard {profile.type === 'motorista' ? 'Motorista' : 'Oficina'}
+                  </h1>
+                  <p className="text-sm md:text-base text-gray-600">Bem-vindo, {user.email}!</p>
+                </div>
+                <ButtonTransition>
+                  <button 
+                    onClick={logout}
+                    className="bg-red-500 text-white px-3 py-2 md:px-4 md:py-2 rounded text-sm md:text-base hover:bg-red-600 transition-colors"
+                  >
+                    Sair
+                  </button>
+                </ButtonTransition>
+              </div>
             </div>
-            <button 
-              onClick={logout}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            >
-              Sair
-            </button>
+          </div>
+        </CardTransition>
+
+        {/* Content */}
+        <div className="max-w-7xl mx-auto py-4 md:py-6 sm:px-6 lg:px-8">
+          <div className="px-4 py-4 md:py-6 sm:px-0">
+            <CardTransition>
+              <div className="border-4 border-dashed border-gray-200 rounded-lg p-4 md:p-8">
+                
+                {/* Debug Info */}
+                <CardTransition delay={0.1}>
+                  <div className="bg-green-50 p-3 md:p-4 rounded-lg mb-4 md:mb-6">
+                    <h2 className="text-base md:text-lg font-semibold text-green-800 mb-2">
+                      ✅ Dashboard Funcionando!
+                    </h2>
+                    <div className="text-xs md:text-sm text-green-700">
+                      <p><strong>User ID:</strong> {user.id}</p>
+                      <p><strong>Email:</strong> {user.email}</p>
+                      <p><strong>Tipo:</strong> {profile.type}</p>
+                      <p><strong>Criado em:</strong> {new Date(profile.created_at).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                </CardTransition>
+
+                {/* Motorista Content */}
+                {profile.type === 'motorista' && (
+                  <CardTransition delay={0.2}>
+                    <div className="bg-blue-50 p-4 md:p-6 rounded-lg">
+                      <h2 className="text-lg md:text-2xl font-bold text-blue-800 mb-3 md:mb-4">
+                        🚗 Painel do Motorista
+                      </h2>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+                        <CardTransition delay={0.3}>
+                          <div className="bg-white p-3 md:p-4 rounded shadow hover:shadow-md transition-shadow">
+                            <h3 className="font-semibold mb-2 text-sm md:text-base">Veículos</h3>
+                            <p className="text-gray-600 text-xs md:text-sm">Gerencie seus veículos</p>
+                          </div>
+                        </CardTransition>
+                        <CardTransition delay={0.4}>
+                          <div className="bg-white p-3 md:p-4 rounded shadow hover:shadow-md transition-shadow">
+                            <h3 className="font-semibold mb-2 text-sm md:text-base">Agendamentos</h3>
+                            <p className="text-gray-600 text-xs md:text-sm">Seus próximos serviços</p>
+                          </div>
+                        </CardTransition>
+                        <CardTransition delay={0.5}>
+                          <div className="bg-white p-3 md:p-4 rounded shadow hover:shadow-md transition-shadow">
+                            <h3 className="font-semibold mb-2 text-sm md:text-base">Histórico</h3>
+                            <p className="text-gray-600 text-xs md:text-sm">Serviços realizados</p>
+                          </div>
+                        </CardTransition>
+                      </div>
+                    </div>
+                  </CardTransition>
+                )}
+
+                {/* Oficina Content */}
+                {profile.type === 'oficina' && (
+                  <CardTransition delay={0.2}>
+                    <div className="bg-amber-50 p-4 md:p-6 rounded-lg">
+                      <h2 className="text-lg md:text-2xl font-bold text-amber-800 mb-3 md:mb-4">
+                        🔧 Painel da Oficina
+                      </h2>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+                        <CardTransition delay={0.3}>
+                          <div className="bg-white p-3 md:p-4 rounded shadow hover:shadow-md transition-shadow">
+                            <h3 className="font-semibold mb-2 text-sm md:text-base">Clientes</h3>
+                            <p className="text-gray-600 text-xs md:text-sm">Gerencie seus clientes</p>
+                          </div>
+                        </CardTransition>
+                        <CardTransition delay={0.4}>
+                          <div className="bg-white p-3 md:p-4 rounded shadow hover:shadow-md transition-shadow">
+                            <h3 className="font-semibold mb-2 text-sm md:text-base">Ordens de Serviço</h3>
+                            <p className="text-gray-600 text-xs md:text-sm">Serviços em andamento</p>
+                          </div>
+                        </CardTransition>
+                        <CardTransition delay={0.5}>
+                          <div className="bg-white p-3 md:p-4 rounded shadow hover:shadow-md transition-shadow">
+                            <h3 className="font-semibold mb-2 text-sm md:text-base">Relatórios</h3>
+                            <p className="text-gray-600 text-xs md:text-sm">Análise de performance</p>
+                          </div>
+                        </CardTransition>
+                      </div>
+                    </div>
+                  </CardTransition>
+                )}
+
+              </div>
+            </CardTransition>
           </div>
         </div>
       </div>
-
-      {/* Content */}
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="border-4 border-dashed border-gray-200 rounded-lg p-8">
-            
-            {/* Debug Info */}
-            <div className="bg-green-50 p-4 rounded-lg mb-6">
-              <h2 className="text-lg font-semibold text-green-800 mb-2">
-                ✅ Dashboard Funcionando!
-              </h2>
-              <div className="text-sm text-green-700">
-                <p><strong>User ID:</strong> {user.id}</p>
-                <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Tipo:</strong> {profile.type}</p>
-                <p><strong>Criado em:</strong> {new Date(profile.created_at).toLocaleDateString()}</p>
-              </div>
-            </div>
-
-            {/* Motorista Content */}
-            {profile.type === 'motorista' && (
-              <div className="bg-blue-50 p-6 rounded-lg">
-                <h2 className="text-2xl font-bold text-blue-800 mb-4">
-                  🚗 Painel do Motorista
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-white p-4 rounded shadow">
-                    <h3 className="font-semibold mb-2">Veículos</h3>
-                    <p className="text-gray-600">Gerencie seus veículos</p>
-                  </div>
-                  <div className="bg-white p-4 rounded shadow">
-                    <h3 className="font-semibold mb-2">Agendamentos</h3>
-                    <p className="text-gray-600">Seus próximos serviços</p>
-                  </div>
-                  <div className="bg-white p-4 rounded shadow">
-                    <h3 className="font-semibold mb-2">Histórico</h3>
-                    <p className="text-gray-600">Serviços realizados</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Oficina Content */}
-            {profile.type === 'oficina' && (
-              <div className="bg-amber-50 p-6 rounded-lg">
-                <h2 className="text-2xl font-bold text-amber-800 mb-4">
-                  🔧 Painel da Oficina
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-white p-4 rounded shadow">
-                    <h3 className="font-semibold mb-2">Clientes</h3>
-                    <p className="text-gray-600">Gerencie seus clientes</p>
-                  </div>
-                  <div className="bg-white p-4 rounded shadow">
-                    <h3 className="font-semibold mb-2">Ordens de Serviço</h3>
-                    <p className="text-gray-600">Serviços em andamento</p>
-                  </div>
-                  <div className="bg-white p-4 rounded shadow">
-                    <h3 className="font-semibold mb-2">Relatórios</h3>
-                    <p className="text-gray-600">Análise de performance</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-          </div>
-        </div>
-      </div>
-    </div>
+    </PageTransition>
   )
 }
 

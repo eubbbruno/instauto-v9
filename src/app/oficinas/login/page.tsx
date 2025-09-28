@@ -7,12 +7,12 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
-// import { Button } from '@/components/ui'
-// import { useToast } from '@/components/ui'
+import { useToastHelpers } from '@/components/ui/toast'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import OAuthButtons from '@/components/auth/OAuthButtons'
+import { PageTransition, CardTransition, ButtonTransition } from '@/components/ui/PageTransition'
 
 export default function OficinaLogin() {
   const [email, setEmail] = useState('')
@@ -24,7 +24,7 @@ export default function OficinaLogin() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
-  // const { addToast } = useToast()
+  const { success, error: showError } = useToastHelpers()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,11 +39,7 @@ export default function OficinaLogin() {
 
       if (authError) {
         setError(authError.message)
-        // addToast({
-        //   type: 'error',
-        //   title: 'Erro no login',
-        //   message: authError.message
-        // })
+        showError('Erro no login: ' + authError.message)
         return
       }
 
@@ -56,11 +52,7 @@ export default function OficinaLogin() {
 
       if (profileError || !profile || profile.type !== 'oficina') {
         setError('Esta conta não é de uma oficina')
-        // addToast({
-        //   type: 'error',
-        //   title: 'Acesso negado',
-        //   message: 'Esta conta não é de uma oficina'
-        // })
+        showError('Esta conta não é de uma oficina')
         await supabase.auth.signOut()
         return
       }
@@ -72,11 +64,7 @@ export default function OficinaLogin() {
         .eq('profile_id', data.user.id)
         .single()
 
-      // addToast({
-      //   type: 'success',
-      //   title: 'Login realizado!',
-      //   message: `Bem-vindo à sua oficina!`
-      // })
+      success('Login realizado! Bem-vindo à sua oficina!')
 
       // Redirecionar baseado no plano
       if (workshop?.plan_type === 'pro') {
@@ -113,20 +101,12 @@ export default function OficinaLogin() {
 
       if (authError) {
         setError(authError.message)
-        // addToast({
-        //   type: 'error',
-        //   title: 'Erro no cadastro',
-        //   message: authError.message
-        // })
+        showError('Erro no cadastro: ' + authError.message)
         return
       }
 
       if (data.user) {
-        // addToast({
-        //   type: 'success',
-        //   title: 'Oficina cadastrada!',
-        //   message: 'Agora faça login para acessar seu painel.'
-        // })
+        success('Oficina cadastrada! Agora faça login para acessar seu painel.')
         setIsSignUp(false)
       }
 
@@ -138,7 +118,8 @@ export default function OficinaLogin() {
   }
 
     return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100 flex">
+    <PageTransition>
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100 flex">
       {/* Desktop Image Side */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-orange-600/20 to-red-600/20 z-10"></div>
@@ -155,58 +136,61 @@ export default function OficinaLogin() {
         </div>
       </div>
 
-      {/* Form Side */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-8">
-        <div className="max-w-md w-full">
-          {/* Mobile Image - Melhorado */}
-          <div className="lg:hidden mb-8 relative h-40 rounded-2xl overflow-hidden shadow-lg">
-            <Image
-              src="/images/oficina.png"
-              alt="Oficina Profissional"
-              fill
-              className="object-cover object-center"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-            <div className="absolute bottom-4 left-4 text-white">
-              <h3 className="font-bold text-xl mb-1">Oficina Profissional!</h3>
-              <p className="text-white/90 text-sm">Gerencie sua oficina com tecnologia</p>
-            </div>
-          </div>
+        {/* Form Side */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-8">
+          <div className="max-w-md w-full">
+            {/* Mobile Image - Melhorado */}
+            <CardTransition>
+              <div className="lg:hidden mb-4 md:mb-6 lg:mb-8 relative h-32 md:h-36 lg:h-40 rounded-2xl overflow-hidden shadow-lg">
+                <Image
+                  src="/images/oficina.png"
+                  alt="Oficina Profissional"
+                  fill
+                  className="object-cover object-center"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                <div className="absolute bottom-3 md:bottom-4 left-3 md:left-4 text-white">
+                  <h3 className="font-bold text-lg md:text-xl mb-1">Oficina Profissional!</h3>
+                  <p className="text-white/90 text-xs md:text-sm">Gerencie sua oficina com tecnologia</p>
+                </div>
+              </div>
+            </CardTransition>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden"
-          >
+            <CardTransition delay={0.1}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-4 md:p-6 lg:p-8 relative overflow-hidden"
+              >
             {/* Glassmorphism Effect */}
             <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 to-red-50/30 -z-10"></div>
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-orange-200/20 to-transparent rounded-full -translate-y-16 translate-x-16"></div>
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-red-200/20 to-transparent rounded-full translate-y-12 -translate-x-12"></div>
-          {/* Header */}
-          <div className="text-center mb-8 relative z-10">
-            <motion.div 
-              className="mx-auto mb-6 p-3 bg-white/80 rounded-2xl shadow-lg w-fit"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <Image
-                src="/images/logo-of.svg"
-                alt="InstaAuto"
-                width={120}
-                height={40}
-                className="mx-auto"
-              />
-            </motion.div>
-            <motion.h1 
-              className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-3"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              {isSignUp ? '🔧 Cadastrar Oficina' : '⚙️ Oficina Login'}
-            </motion.h1>
+                {/* Header */}
+                <div className="text-center mb-6 md:mb-8 relative z-10">
+                  <motion.div 
+                    className="mx-auto mb-4 md:mb-6 p-2 md:p-3 bg-white/80 rounded-2xl shadow-lg w-fit"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <Image
+                      src="/images/logo-of.svg"
+                      alt="InstaAuto"
+                      width={100}
+                      height={32}
+                      className="mx-auto md:w-[120px] md:h-[40px]"
+                    />
+                  </motion.div>
+                  <motion.h1 
+                    className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-2 md:mb-3"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    {isSignUp ? '🔧 Cadastrar Oficina' : '⚙️ Oficina Login'}
+                  </motion.h1>
             <motion.p 
               className="text-gray-600 text-lg"
               initial={{ opacity: 0 }}
