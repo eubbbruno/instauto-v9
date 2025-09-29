@@ -117,24 +117,24 @@ export default function OficinaLogin() {
     }
   }
 
-    return (
+  return (
     <PageTransition>
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100 flex">
-      {/* Desktop Image Side */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-600/20 to-red-600/20 z-10"></div>
-        <Image
-          src="/images/oficina.png"
-          alt="Oficina Profissional"
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute bottom-8 left-8 z-20 text-white">
-          <h2 className="text-3xl font-bold mb-2">Oficina Profissional!</h2>
-          <p className="text-orange-100 text-lg">Gerencie sua oficina com tecnologia</p>
+        {/* Desktop Image Side */}
+        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-600/20 to-red-600/20 z-10"></div>
+          <Image
+            src="/images/oficina.png"
+            alt="Oficina Profissional"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute bottom-8 left-8 z-20 text-white">
+            <h2 className="text-3xl font-bold mb-2">Oficina Profissional!</h2>
+            <p className="text-orange-100 text-lg">Gerencie sua oficina com tecnologia</p>
+          </div>
         </div>
-      </div>
 
         {/* Form Side */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-8">
@@ -347,10 +347,12 @@ export default function OficinaLogin() {
             >
               🚗 Sou Motorista
             </Link>
+            </div>
+              </motion.div>
+            </CardTransition>
           </div>
-          </motion.div>
         </div>
       </div>
-    </div>
+    </PageTransition>
   )
 }

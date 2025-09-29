@@ -581,7 +581,9 @@ export default function BuscarOficinasPage() {
             <p className="text-gray-600">Tente ajustar os filtros ou buscar por outro termo</p>
           </div>
         )}
+          </div>
+        </CardTransition>
       </div>
-    </div>
+    </PageTransition>
   );
 } 
