@@ -237,19 +237,20 @@ export default function MotoristaLogin() {
             )}
 
             <ButtonTransition>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-700 hover:via-blue-800 hover:to-indigo-800 shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5 transition-all duration-200 text-white font-semibold text-base md:text-lg py-3 md:py-4 rounded-xl border-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-700 hover:via-blue-800 hover:to-indigo-800 shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5 transition-all duration-200 text-white font-semibold text-base md:text-lg py-3 md:py-4 rounded-xl border-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? '⏳ Carregando...' : (isSignUp ? '🚗 Criar Conta Motorista' : '🚀 Entrar como Motorista')}
-                </button>
-              </motion.div>
+                {loading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    Carregando...
+                  </div>
+                ) : (
+                  isSignUp ? '🚗 Criar Conta Motorista' : '🚀 Entrar como Motorista'
+                )}
+              </button>
             </ButtonTransition>
                 </form>
 

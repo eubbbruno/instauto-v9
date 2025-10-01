@@ -1,7 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import BeautifulSidebar from '@/components/BeautifulSidebar'
+import { supabase } from '@/lib/supabase'
+import { useToastHelpers } from '@/components/ui/toast'
 import { 
   UserIcon,
   BellIcon,
@@ -56,24 +58,77 @@ export default function ConfiguracoesClient() {
   const [activeTab, setActiveTab] = useState('perfil')
   const [isEditing, setIsEditing] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [user, setUser] = useState<any>(null)
+  const { success, error: showError } = useToastHelpers()
 
-  // Mock data
   const [profile, setProfile] = useState<UserProfile>({
-    nome: 'Motorista',
-    email: 'joao.silva@email.com',
-    telefone: '(11) 99999-9999',
-    cpf: '123.456.789-00',
+    nome: '',
+    email: '',
+    telefone: '',
+    cpf: '',
     endereco: {
-      cep: '01234-567',
-      rua: 'Rua das Flores',
-      numero: '123',
-      complemento: 'Apto 45',
-      bairro: 'Centro',
-      cidade: 'São Paulo',
+      cep: '',
+      rua: '',
+      numero: '',
+      complemento: '',
+      bairro: '',
+      cidade: '',
       estado: 'SP'
     },
-    nascimento: '1990-05-15'
+    nascimento: ''
   })
+
+  useEffect(() => {
+    loadUserData()
+  }, [])
+
+  const loadUserData = async () => {
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser()
+      
+      if (error || !user) {
+        showError('Usuário não autenticado')
+        return
+      }
+
+      setUser(user)
+
+      // Buscar dados do perfil
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      if (profileError) {
+        console.error('Erro ao carregar perfil:', profileError)
+        return
+      }
+
+      if (profileData) {
+        setProfile({
+          nome: profileData.name || '',
+          email: user.email || '',
+          telefone: profileData.phone || '',
+          cpf: profileData.cpf || '',
+          endereco: {
+            cep: profileData.address?.cep || '',
+            rua: profileData.address?.rua || '',
+            numero: profileData.address?.numero || '',
+            complemento: profileData.address?.complemento || '',
+            bairro: profileData.address?.bairro || '',
+            cidade: profileData.address?.cidade || '',
+            estado: profileData.address?.estado || 'SP'
+          },
+          nascimento: profileData.birth_date || ''
+        })
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error)
+      showError('Erro ao carregar dados do usuário')
+    }
+  }
 
   const [notifications, setNotifications] = useState<NotificationSettings>({
     agendamentos: true,
@@ -91,10 +146,36 @@ export default function ConfiguracoesClient() {
     avaliacoes: true
   })
 
-  const handleSaveProfile = () => {
-    setIsEditing(false)
-    // Aqui seria feita a chamada para a API
-    console.log('Perfil salvo:', profile)
+  const handleSaveProfile = async () => {
+    if (!user) {
+      showError('Usuário não autenticado')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          name: profile.nome,
+          phone: profile.telefone,
+          cpf: profile.cpf,
+          address: profile.endereco,
+          birth_date: profile.nascimento,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id)
+
+      if (error) throw error
+
+      setIsEditing(false)
+      success('Perfil atualizado com sucesso!')
+    } catch (error) {
+      console.error('Erro ao salvar perfil:', error)
+      showError('Erro ao salvar perfil')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleNotificationChange = (key: keyof NotificationSettings) => {
@@ -127,13 +208,13 @@ export default function ConfiguracoesClient() {
         onLogout={() => {}}
       />
       
-      <div className="flex-1 md:ml-64 transition-all duration-300">
+      <div className="flex-1 ml-0 md:ml-60 transition-all duration-300 pt-16 md:pt-0">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-3 md:py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">⚙️ Configurações</h1>
-              <p className="text-gray-600">Gerencie suas preferências e dados pessoais</p>
+              <h1 className="text-xl md:text-2xl font-bold text-gray-900">⚙️ Configurações</h1>
+              <p className="text-sm md:text-base text-gray-600 hidden sm:block">Gerencie suas preferências e dados pessoais</p>
             </div>
           </div>
         </div>
@@ -200,13 +281,19 @@ export default function ConfiguracoesClient() {
                           <h3 className="text-lg font-semibold text-gray-900">Dados Pessoais</h3>
                           <button
                             onClick={() => isEditing ? handleSaveProfile() : setIsEditing(true)}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                            disabled={loading}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                               isEditing 
                                 ? 'bg-green-600 text-white hover:bg-green-700' 
                                 : 'bg-blue-600 text-white hover:bg-blue-700'
                             }`}
                           >
-                            {isEditing ? (
+                            {loading ? (
+                              <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                Salvando...
+                              </>
+                            ) : isEditing ? (
                               <>
                                 <CheckIcon className="h-4 w-4" />
                                 Salvar

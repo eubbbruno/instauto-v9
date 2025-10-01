@@ -55,7 +55,6 @@ const menuItems = {
     { icon: ChatBubbleLeftRightIcon, label: 'Mensagens', href: '/motorista/mensagens' },
     { icon: BellIcon, label: 'Notificações', href: '/motorista/notificacoes' },
     { icon: PhoneIcon, label: 'Emergência', href: '/motorista/emergencia' },
-    { icon: UserCircleIcon, label: 'Meu Perfil', href: '/motorista/perfil' },
     { icon: CogIcon, label: 'Configurações', href: '/motorista/configuracoes' }
   ],
   'oficina-free': [
@@ -168,15 +167,15 @@ export default function BeautifulSidebar({
       <div className="absolute top-20 -right-10 w-32 h-32 bg-white/3 rounded-full blur-3xl pointer-events-none hidden md:block"></div>
       <div className="absolute bottom-20 -left-10 w-32 h-32 bg-white/3 rounded-full blur-3xl pointer-events-none hidden md:block"></div>
 
-      {/* Logo Externa - Flutuante */}
-      <div className="absolute -top-4 left-4 z-20">
+      {/* Logo Externa - Flutuante - Corrigida */}
+      <div className="absolute -top-2 left-4 z-20">
         <Link href="/" className="block group">
-          <div className="relative bg-white rounded-2xl p-3 shadow-2xl border-2 border-white/30 group-hover:scale-105 transition-transform duration-200">
+          <div className="relative bg-white rounded-2xl p-2.5 shadow-2xl border-2 border-white/30 group-hover:scale-105 transition-transform duration-200">
             <Image
               src="/images/logo-of.svg"
               alt="InstaAuto"
-              width={36}
-              height={36}
+              width={32}
+              height={32}
               className="drop-shadow-sm"
               priority
             />
@@ -187,7 +186,7 @@ export default function BeautifulSidebar({
       {/* Header Simplificado - Mobile Optimized */}
       <div className="pt-16 pb-4 px-4 flex items-center justify-between">
         <div className={`${isCollapsed ? 'hidden' : 'block'}`}>
-          <h1 className="text-base md:text-lg font-bold text-white">InstaAuto</h1>
+          <h1 className="text-base md:text-lg font-bold text-white truncate">{userName || 'Motorista'}</h1>
           <div className="flex items-center gap-2">
             <span className="text-xs text-white/70 capitalize">{userType.replace('-', ' ')}</span>
             <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full animate-pulse"></div>
@@ -313,7 +312,7 @@ export default function BeautifulSidebar({
       {/* Mobile Toggle Button */}
       <button
         onClick={() => setIsMobileOpen(true)}
-        className="md:hidden fixed top-4 left-4 z-50 w-10 h-10 bg-gray-900 text-white rounded-lg flex items-center justify-center shadow-lg"
+        className="md:hidden fixed top-4 left-4 z-50 w-10 h-10 bg-gray-900 text-white rounded-lg flex items-center justify-center shadow-lg hover:bg-gray-800 transition-colors"
       >
         <Bars3Icon className="w-5 h-5" />
       </button>
@@ -329,7 +328,7 @@ export default function BeautifulSidebar({
             initial={{ x: -300 }}
             animate={{ x: 0 }}
             exit={{ x: -300 }}
-            className={`md:hidden fixed left-0 top-0 h-screen w-80 z-50 bg-gradient-to-b ${theme.gradient} relative`}
+            className={`md:hidden fixed left-0 top-0 h-screen w-72 z-50 bg-gradient-to-b ${theme.gradient} relative sidebar-mobile`}
           >
             <button
               onClick={() => setIsMobileOpen(false)}
