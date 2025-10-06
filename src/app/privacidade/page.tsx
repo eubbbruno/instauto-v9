@@ -1,142 +1,140 @@
-import InstitutionalLayout from '@/components/InstitutionalLayout';
+import InstitutionalLayout from '@/components/InstitutionalLayout'
 
 export default function PrivacidadePage() {
   return (
     <InstitutionalLayout 
-      title="Proteção de Dados" 
-      description="Como protegemos seus dados pessoais de acordo com a LGPD"
+      title="Proteção de Dados"
+      description="Como protegemos seus dados pessoais e garantimos sua privacidade na InstaAuto"
     >
       <div className="prose prose-lg max-w-none">
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Nosso Compromisso com sua Privacidade</h2>
-          <p className="text-gray-600 leading-relaxed">
-            No Instauto, levamos a proteção de dados muito a sério. Implementamos as melhores práticas de segurança e privacidade para garantir que suas informações pessoais estejam sempre protegidas, em conformidade com a Lei Geral de Proteção de Dados (LGPD).
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Compromisso com a Privacidade</h2>
+          <p className="text-gray-700 leading-relaxed mb-4">
+            A <strong>InstaAuto</strong> está comprometida em proteger sua privacidade e dados pessoais. 
+            Esta página detalha nossas práticas específicas de proteção de dados e como garantimos 
+            que suas informações estejam sempre seguras.
           </p>
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Princípios de Proteção de Dados</h2>
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">1. Transparência</h3>
-              <p className="text-gray-600">
-                Somos transparentes sobre como coletamos, usamos e protegemos seus dados. Todas as nossas práticas estão documentadas e disponíveis para consulta.
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Princípios de Proteção</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-blue-50 p-6 rounded-lg">
+              <h3 className="text-lg font-semibold text-blue-900 mb-3">🔒 Segurança por Design</h3>
+              <p className="text-blue-800 text-sm">
+                Implementamos medidas de segurança desde o desenvolvimento, garantindo proteção em todas as camadas.
               </p>
             </div>
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">2. Minimização de Dados</h3>
-              <p className="text-gray-600">
-                Coletamos apenas os dados estritamente necessários para fornecer nossos serviços. Não solicitamos informações desnecessárias ou excessivas.
+            <div className="bg-green-50 p-6 rounded-lg">
+              <h3 className="text-lg font-semibold text-green-900 mb-3">🎯 Minimização de Dados</h3>
+              <p className="text-green-800 text-sm">
+                Coletamos apenas os dados estritamente necessários para fornecer nossos serviços.
               </p>
             </div>
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">3. Consentimento</h3>
-              <p className="text-gray-600">
-                Sempre solicitamos seu consentimento explícito antes de coletar ou processar dados pessoais sensíveis.
+            <div className="bg-purple-50 p-6 rounded-lg">
+              <h3 className="text-lg font-semibold text-purple-900 mb-3">⚡ Transparência Total</h3>
+              <p className="text-purple-800 text-sm">
+                Você sempre saberá quais dados coletamos, como usamos e por quanto tempo mantemos.
               </p>
             </div>
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">4. Segurança</h3>
-              <p className="text-gray-600">
-                Utilizamos criptografia de ponta a ponta e outras medidas de segurança para proteger seus dados contra acesso não autorizado.
+            <div className="bg-orange-50 p-6 rounded-lg">
+              <h3 className="text-lg font-semibold text-orange-900 mb-3">👤 Controle do Usuário</h3>
+              <p className="text-orange-800 text-sm">
+                Você tem controle total sobre seus dados, podendo acessar, corrigir ou excluir a qualquer momento.
               </p>
             </div>
           </div>
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Medidas de Segurança Implementadas</h2>
-          <ul className="list-disc pl-6 space-y-2 text-gray-600">
-            <li>Criptografia SSL/TLS em todas as comunicações</li>
-            <li>Autenticação de dois fatores (2FA) disponível</li>
-            <li>Backups regulares e criptografados</li>
-            <li>Monitoramento 24/7 de atividades suspeitas</li>
-            <li>Controle de acesso baseado em funções (RBAC)</li>
-            <li>Auditorias regulares de segurança</li>
-            <li>Treinamento contínuo da equipe em LGPD</li>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Medidas de Segurança Técnica</h2>
+          <ul className="space-y-4">
+            <li className="flex items-start gap-3">
+              <div className="bg-blue-100 p-1 rounded">
+                <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Criptografia End-to-End</h3>
+                <p className="text-gray-600 text-sm">Todos os dados são criptografados durante transmissão e armazenamento</p>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <div className="bg-green-100 p-1 rounded">
+                <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Autenticação Multifator</h3>
+                <p className="text-gray-600 text-sm">Camadas adicionais de segurança para proteger sua conta</p>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <div className="bg-purple-100 p-1 rounded">
+                <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Monitoramento 24/7</h3>
+                <p className="text-gray-600 text-sm">Sistemas de detecção de anomalias e resposta a incidentes</p>
+              </div>
+            </li>
           </ul>
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Seus Direitos sob a LGPD</h2>
-          <div className="bg-blue-50 p-6 rounded-lg">
-            <p className="text-gray-700 mb-4">
-              Como titular dos dados, você tem direitos garantidos pela LGPD:
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Conformidade Legal</h2>
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <p className="text-gray-700 leading-relaxed mb-4">
+              Estamos em total conformidade com:
             </p>
-            <ul className="space-y-3">
-              <li className="flex items-start">
-                <span className="text-blue-600 mr-2">✓</span>
-                <span className="text-gray-700"><strong>Confirmação e Acesso:</strong> Saber se processamos seus dados e acessá-los</span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-blue-600 mr-2">✓</span>
-                <span className="text-gray-700"><strong>Correção:</strong> Solicitar correção de dados incorretos</span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-blue-600 mr-2">✓</span>
-                <span className="text-gray-700"><strong>Exclusão:</strong> Pedir a exclusão de seus dados</span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-blue-600 mr-2">✓</span>
-                <span className="text-gray-700"><strong>Portabilidade:</strong> Transferir seus dados para outro serviço</span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-blue-600 mr-2">✓</span>
-                <span className="text-gray-700"><strong>Revogação:</strong> Retirar seu consentimento a qualquer momento</span>
-              </li>
+            <ul className="list-disc list-inside text-gray-700 space-y-2">
+              <li><strong>LGPD</strong> - Lei Geral de Proteção de Dados Pessoais (Brasil)</li>
+              <li><strong>Marco Civil da Internet</strong> - Lei 12.965/2014</li>
+              <li><strong>Código de Defesa do Consumidor</strong> - Lei 8.078/1990</li>
+              <li><strong>ISO 27001</strong> - Padrões internacionais de segurança da informação</li>
             </ul>
           </div>
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Como Exercer seus Direitos</h2>
-          <p className="text-gray-600 mb-4">
-            Para exercer qualquer um dos seus direitos relacionados à proteção de dados:
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Exercer Seus Direitos</h2>
+          <p className="text-gray-700 leading-relaxed mb-6">
+            Para exercer qualquer um dos seus direitos de proteção de dados, entre em contato conosco:
           </p>
-          <ol className="list-decimal pl-6 space-y-2 text-gray-600">
-            <li>Acesse sua conta e vá até &quot;Configurações de Privacidade&quot;</li>
-            <li>Ou envie um email para: <a href="mailto:privacidade@instauto.com.br" className="text-[#0047CC] hover:underline">privacidade@instauto.com.br</a></li>
-            <li>Inclua seu nome completo e o direito que deseja exercer</li>
-            <li>Responderemos em até 15 dias úteis</li>
-          </ol>
-        </section>
-
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Encarregado de Proteção de Dados (DPO)</h2>
-          <div className="bg-gray-100 p-6 rounded-lg">
-            <p className="text-gray-700 mb-2">
-              Nosso Encarregado de Proteção de Dados está disponível para esclarecer dúvidas:
-            </p>
-            <p className="text-gray-700">
-              <strong>Nome:</strong> João Silva<br />
-              <strong>Email:</strong> dpo@instauto.com.br<br />
-              <strong>Telefone:</strong> 0800 123 4568
-            </p>
+          <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <h4 className="font-semibold text-blue-900 mb-2">📧 Email do DPO</h4>
+                <p className="text-blue-800">dpo@instauto.com.br</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-blue-900 mb-2">📞 Telefone</h4>
+                <p className="text-blue-800">(11) 4000-0000</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-blue-900 mb-2">⏱️ Prazo de Resposta</h4>
+                <p className="text-blue-800">Até 15 dias úteis</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-blue-900 mb-2">🆔 Identificação</h4>
+                <p className="text-blue-800">Documento necessário</p>
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Relatório de Transparência</h2>
-          <p className="text-gray-600 mb-4">
-            Publicamos relatórios semestrais sobre solicitações de dados e nossa resposta a elas, mantendo total transparência sobre nossas práticas.
-          </p>
-          <div className="border border-gray-200 rounded-lg p-4">
-            <p className="text-sm text-gray-600">
-              Último relatório: Janeiro 2025<br />
-              Próximo relatório: Julho 2025
-            </p>
-          </div>
-        </section>
-
-        <div className="mt-12 p-6 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-green-800 font-medium mb-2">
-            🛡️ Certificações e Conformidade
-          </p>
-          <p className="text-green-700 text-sm">
-            Estamos em processo de certificação ISO 27001 e seguimos rigorosamente todas as diretrizes da LGPD e regulamentações internacionais de proteção de dados.
+        <div className="mt-12 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+          <h3 className="text-lg font-semibold text-blue-900 mb-3">🛡️ Compromisso Contínuo</h3>
+          <p className="text-blue-800 text-sm">
+            A proteção dos seus dados é uma responsabilidade que levamos muito a sério. 
+            Continuamos investindo em tecnologia e processos para garantir o mais alto nível de segurança.
           </p>
         </div>
       </div>
     </InstitutionalLayout>
-  );
+  )
 }

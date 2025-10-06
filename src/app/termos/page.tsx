@@ -1,4 +1,4 @@
-import InstitutionalLayout from '@/components/institutional/InstitutionalLayout'
+import InstitutionalLayout from '@/components/InstitutionalLayout'
 
 export default function TermosPage() {
   return (
