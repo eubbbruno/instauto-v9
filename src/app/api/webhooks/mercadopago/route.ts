@@ -1,120 +1,109 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { MercadoPagoConfig, Payment } from 'mercadopago';
-import { supabase } from '@/lib/supabase';
-
-// Configurar cliente MercadoPago
-const client = new MercadoPagoConfig({
-  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
-});
-
-const payment = new Payment(client);
+import { NextRequest, NextResponse } from 'next/server'
+import { mercadoPagoService } from '@/lib/mercadopago-server'
+import { supabase } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json()
+    console.log('Webhook MercadoPago recebido:', body)
+
+    // Processar webhook
+    const result = await mercadoPagoService.processWebhook(body)
     
-    console.log('📝 [WEBHOOK MERCADOPAGO] Recebido:', body);
-
-    // Verificar se é notificação de pagamento
-    if (body.type === 'payment') {
-      const paymentId = body.data.id;
+    if (result.processed && body.type === 'payment') {
+      // Atualizar status no banco de dados
+      await updatePaymentStatus(body.data.id, result.status, result.external_reference)
       
-      // Buscar detalhes do pagamento
-      const paymentData = await payment.get({ id: paymentId });
-      
-      console.log('💳 [PAGAMENTO] Dados:', {
-        id: paymentData.id,
-        status: paymentData.status,
-        status_detail: paymentData.status_detail,
-        external_reference: paymentData.external_reference,
-        transaction_amount: paymentData.transaction_amount
-      });
-
-      // Se pagamento foi aprovado
-      if (paymentData.status === 'approved') {
-        await processApprovedPayment(paymentData);
+      // Se aprovado, ativar plano do usuário
+      if (result.status === 'approved') {
+        await activateUserPlan(result.external_reference)
       }
     }
 
-    return NextResponse.json({ received: true });
-    
+    return NextResponse.json({ received: true, processed: result.processed })
   } catch (error) {
-    console.error('❌ [WEBHOOK] Erro ao processar:', error);
+    console.error('Erro ao processar webhook:', error)
     return NextResponse.json(
       { error: 'Erro ao processar webhook' },
       { status: 500 }
-    );
+    )
   }
 }
 
-async function processApprovedPayment(paymentData: any) {
+// Função para atualizar status do pagamento
+async function updatePaymentStatus(paymentId: string, status: string, externalReference: string) {
   try {
-    console.log('✅ [PAGAMENTO APROVADO] Processando...');
-    
-    // Extrair informações da external_reference
-    // Formato: workshop_${workshopId}_plan_${planType}_${timestamp}
-    const externalRef = paymentData.external_reference;
-    if (!externalRef) {
-      console.error('❌ External reference não encontrada');
-      return;
-    }
-
-    const parts = externalRef.split('_');
-    if (parts.length < 4) {
-      console.error('❌ External reference inválida:', externalRef);
-      return;
-    }
-
-    const workshopId = parts[1];
-    const planType = parts[3];
-
-    console.log('📊 [UPGRADE] Atualizando oficina:', { workshopId, planType });
-
-    // Atualizar plano da oficina
-    const { error: updateError } = await supabase
-      .from('workshops')
-      .update({ 
-        plan_type: planType,
-        updated_at: new Date().toISOString()
+    const { error } = await supabase
+      .from('payment_transactions')
+      .update({
+        status,
+        updated_at: new Date().toISOString(),
+        mercadopago_payment_id: paymentId
       })
-      .eq('profile_id', workshopId);
+      .eq('external_reference', externalReference)
 
-    if (updateError) {
-      console.error('❌ Erro ao atualizar oficina:', updateError);
-      return;
+    if (error) {
+      console.error('Erro ao atualizar status do pagamento:', error)
     }
-
-    // Registrar pagamento no histórico
-    const { error: historyError } = await supabase
-      .from('payment_history')
-      .insert({
-        user_id: workshopId,
-        payment_id: paymentData.id,
-        amount: paymentData.transaction_amount,
-        currency: paymentData.currency_id,
-        status: paymentData.status,
-        plan_type: planType,
-        external_reference: externalRef,
-        payment_method: paymentData.payment_method_id,
-        paid_at: new Date(paymentData.date_approved).toISOString(),
-        created_at: new Date().toISOString()
-      });
-
-    if (historyError) {
-      console.error('❌ Erro ao salvar histórico:', historyError);
-    }
-
-    console.log('🎉 [UPGRADE COMPLETO] Oficina atualizada para plano:', planType);
-
   } catch (error) {
-    console.error('❌ [PROCESS PAYMENT] Erro:', error);
+    console.error('Erro ao atualizar status no Supabase:', error)
   }
 }
 
-// Para desenvolvimento local, aceitar GET também
-export async function GET() {
-  return NextResponse.json({ 
-    message: 'Webhook MercadoPago funcionando',
-    timestamp: new Date().toISOString()
-  });
+// Função para ativar plano do usuário
+async function activateUserPlan(externalReference: string) {
+  try {
+    // Buscar transação
+    const { data: transaction, error: transactionError } = await supabase
+      .from('payment_transactions')
+      .select('*')
+      .eq('external_reference', externalReference)
+      .single()
+
+    if (transactionError || !transaction) {
+      console.error('Transação não encontrada:', externalReference)
+      return
+    }
+
+    // Buscar usuário pelo email
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('email', transaction.user_email)
+      .single()
+
+    if (profileError || !profile) {
+      console.error('Usuário não encontrado:', transaction.user_email)
+      return
+    }
+
+    // Atualizar plano do usuário
+    if (transaction.plan_type === 'pro') {
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({
+          plan_type: 'pro',
+          plan_activated_at: new Date().toISOString(),
+          plan_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 dias
+        })
+        .eq('id', profile.id)
+
+      if (updateError) {
+        console.error('Erro ao ativar plano PRO:', updateError)
+      } else {
+        console.log('Plano PRO ativado para:', transaction.user_email)
+        
+        // Enviar email de confirmação (implementar depois)
+        await sendActivationEmail(transaction.user_email, 'pro')
+      }
+    }
+  } catch (error) {
+    console.error('Erro ao ativar plano do usuário:', error)
+  }
+}
+
+// Função para enviar email de ativação (placeholder)
+async function sendActivationEmail(email: string, planType: string) {
+  // TODO: Implementar envio de email
+  console.log(`Email de ativação enviado para ${email} - Plano ${planType}`)
 }
