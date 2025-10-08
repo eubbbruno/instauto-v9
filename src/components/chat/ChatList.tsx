@@ -8,7 +8,7 @@ import {
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
 import { useRealtimeChat, ChatRoom } from '@/lib/realtime'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuthSimple } from '@/hooks/useAuthSimple'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import ChatInterface from './ChatInterface'
@@ -29,7 +29,7 @@ export default function ChatList({ className = '' }: ChatListProps) {
   } | null>(null)
   const [unreadCount, setUnreadCount] = useState(0)
 
-  const { user } = useAuth()
+  const { user } = useAuthSimple()
   const realtimeChat = useRealtimeChat()
 
   useEffect(() => {

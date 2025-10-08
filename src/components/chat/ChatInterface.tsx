@@ -10,7 +10,7 @@ import {
   UserCircleIcon
 } from '@heroicons/react/24/outline'
 import { useRealtimeChat, ChatMessage, ChatRoom } from '@/lib/realtime'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuthSimple } from '@/hooks/useAuthSimple'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -38,7 +38,7 @@ export default function ChatInterface({
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   
-  const { user } = useAuth()
+  const { user } = useAuthSimple()
   const realtimeChat = useRealtimeChat()
 
   // Scroll para a última mensagem
